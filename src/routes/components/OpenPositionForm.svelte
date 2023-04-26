@@ -3,7 +3,34 @@
 	let leverage = 0;
 </script>
 
-<div>
-	<input type="text" bind:value={collateral} />
-	<input type="text" bind:value={leverage} />
+<div class="p-6">
+	<label class="block mb-6">
+		<span class="block text-sm font-medium text-slate-700">Collateral</span>
+		<input
+			class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500
+      disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none
+      invalid:border-pink-500 invalid:text-pink-600
+      focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
+			type="text"
+			bind:value={collateral}
+		/>
+	</label>
+	<label class="block">
+		<span class="block text-sm font-medium text-slate-700">Leverage</span>
+		<input
+			class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500
+      disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none
+      invalid:border-pink-500 invalid:text-pink-600
+      focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
+			type="text"
+			bind:value={leverage}
+		/>
+	</label>
+
+	<button
+		class="mt-6 block w-full px-3 py-2 bg-slate-700 text-slate-100 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500
+      disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none
+      invalid:border-pink-500 invalid:text-pink-600
+      focus:invalid:border-pink-500 focus:invalid:ring-pink-500">Open Position</button
+	>
 </div>
