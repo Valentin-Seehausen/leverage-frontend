@@ -3,9 +3,10 @@
 		console.log(123);
 		// @ts-ignore
 		new TradingView.widget({
-			Autosize: true,
+			width: '100%',
+			height: '100%',
 			symbol: 'BINANCE:BTCUSDC',
-			interval: 'D',
+			interval: '15',
 			timezone: 'Etc/UTC',
 			theme: 'light',
 			style: '1',
@@ -13,7 +14,9 @@
 			toolbar_bg: '#f1f3f6',
 			enable_publishing: false,
 			allow_symbol_change: false,
-			container_id: 'tradingview_fd9fe'
+			hide_top_toolbar: true,
+			hide_legend: true,
+			container_id: 'tradingview_widget'
 		});
 	};
 </script>
@@ -26,13 +29,15 @@
 	></script>
 </svelte:head>
 
-<div class="tradingview-widget-container block w-100 h-100">
-	<div id="tradingview_fd9fe" />
-	<div class="tradingview-widget-copyright">
-		<a
-			href="https://www.tradingview.com/symbols/BTCUSDC/?exchange=BINANCE"
-			rel="noopener"
-			target="_blank"><span class="blue-text">BTCUSDC chart</span></a
-		> by TradingView
+<div class="p-2 w-full h-[512px]">
+	<div class="tradingview-widget-container">
+		<div id="tradingview_widget" />
+		<div class="tradingview-widget-copyright">
+			<a
+				href="https://www.tradingview.com/symbols/BTCUSDC/?exchange=BINANCE"
+				rel="noopener"
+				target="_blank"><span class="blue-text">BTCUSDC chart</span></a
+			> by TradingView
+		</div>
 	</div>
 </div>

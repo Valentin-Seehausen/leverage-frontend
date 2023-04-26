@@ -4,6 +4,7 @@
 </script>
 
 <h1 class="text-3xl font-bold m-6">Welcome to P2P Leverage</h1>
-
-<TradingViewWidget />
-<OpenPositionForm />
+<div class="">
+	<TradingViewWidget />
+	<OpenPositionForm />
+</div>
