@@ -2,7 +2,7 @@
 	import OpenPositionForm from './components/OpenPositionForm.svelte';
 </script>
 
-<h1>Welcome to P2P Leverage</h1>
+<h1 class="text-3xl font-bold">Welcome to P2P Leverage</h1>
 
 <div class="tradingview">Trading View</div>
 
