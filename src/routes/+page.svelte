@@ -1,5 +1,6 @@
 <script>
 	import OpenPositionForm from './components/OpenPositionForm.svelte';
+	import PositionList from './components/PositionList.svelte';
 	import TradingViewWidget from './components/TradingViewWidget.svelte';
 </script>
 
@@ -7,4 +8,5 @@
 <div class="">
 	<TradingViewWidget />
 	<OpenPositionForm />
+	<PositionList />
 </div>
