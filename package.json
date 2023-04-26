@@ -31,8 +31,5 @@
 		"vite": "^4.3.0",
 		"vitest": "^0.25.3"
 	},
-	"type": "module",
-	"dependencies": {
-		"@fontsource/roboto": "^4.5.8"
-	}
+	"type": "module"
 }
