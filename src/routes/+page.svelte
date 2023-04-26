@@ -1,4 +1,5 @@
 <script>
+	import HouseKeepingButton from './components/HouseKeepingButton.svelte';
 	import OpenPositionForm from './components/OpenPositionForm.svelte';
 	import PositionList from './components/PositionList.svelte';
 	import TradingViewWidget from './components/TradingViewWidget.svelte';
@@ -6,6 +7,7 @@
 
 <h1 class="text-3xl font-bold m-6">Welcome to P2P Leverage</h1>
 <div class="">
+	<HouseKeepingButton />
 	<TradingViewWidget />
 	<OpenPositionForm />
 	<PositionList />
