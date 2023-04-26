@@ -1,6 +1,10 @@
 <script>
-	let collateral = 0;
-	let leverage = 0;
+	let collateral = 100;
+	let leverage = 2;
+
+	let currentPrice = 20000;
+	$: takeProfitPrice = currentPrice * (1 + 1 / leverage);
+	$: liquidationPrice = currentPrice * (1 - 1 / leverage);
 </script>
 
 <div class="p-6">
@@ -26,6 +30,21 @@
 			bind:value={leverage}
 		/>
 	</label>
+
+	<div class="mt-6 mb-6 px-6">
+		<div class="flex flex-row">
+			<div class="basis-2/3">Take Profit Price:</div>
+			<div class="basis-1/3">{takeProfitPrice}</div>
+		</div>
+		<div class="flex flex-row">
+			<div class="basis-2/3">Entry Price:</div>
+			<div class="basis-1/3">{currentPrice}</div>
+		</div>
+		<div class="flex flex-row">
+			<div class="basis-2/3">Liquidation Price:</div>
+			<div class="basis-1/3">{liquidationPrice}</div>
+		</div>
+	</div>
 
 	<button
 		class="mt-6 block w-full px-3 py-2 bg-slate-700 text-slate-100 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500
