@@ -31,7 +31,7 @@
 		/>
 	</label>
 
-	<div class="mt-6 mb-6 px-6">
+	<div class="mt-6 mb-6 md:max-lg:px-2 px-6">
 		<div class="flex flex-row">
 			<div class="basis-2/3">Take Profit Price:</div>
 			<div class="basis-1/3">{takeProfitPrice}</div>
