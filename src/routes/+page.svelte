@@ -3,6 +3,7 @@
 	import OpenPositionForm from './components/OpenPositionForm.svelte';
 	import PositionList from './components/PositionList.svelte';
 	import TradingViewWidget from './components/TradingViewWidget.svelte';
+	import PositionBalance from './components/PositionBalance.svelte';
 </script>
 
 <div class="lg:flex items-center m-6 mb-12">
@@ -20,6 +21,12 @@
 	</div>
 	<div class="basis-1/3 xl:basis-1/4">
 		<OpenPositionForm />
+	</div>
+</div>
+
+<div class="lg:flex">
+	<div class="basis-1/2">
+		<PositionBalance />
 	</div>
 </div>
 
