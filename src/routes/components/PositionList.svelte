@@ -1,6 +1,8 @@
 <script>
 	import * as dayjs from 'dayjs';
 	import relativeTime from 'dayjs/plugin/relativeTime';
+	import Position from './Position.svelte';
+
 	dayjs.extend(relativeTime);
 
 	let positions = [
@@ -12,7 +14,9 @@
 			entryPrice: 20000,
 			liquidationPrice: 18000,
 			takeProfitPrice: 22000,
-			openDate: 1682516394
+			openDate: 1682516394,
+			closeDate: 0,
+			pnl: 0
 		},
 		{
 			id: 2,
@@ -22,7 +26,9 @@
 			entryPrice: 22000,
 			liquidationPrice: 24200,
 			takeProfitPrice: 19800,
-			openDate: 1682516794
+			openDate: 1682516794,
+			closeDate: 0,
+			pnl: 0
 		},
 		{
 			id: 3,
@@ -52,70 +58,10 @@
 </script>
 
 <div class="p-6">
-	<h2 class="font-semibold mb-2">Positions</h2>
-	{#each positions as position}
-		<div class="mb-8">
-			<!-- Open Position -->
-			{#if !position.closeDate}
-				<div class="flex flex-row">
-					<div class="basis-1/4">{position.leverage}x</div>
-					<div class="basis-1/4">
-						${position.collateral}
-					</div>
-					<div class="grow text-right">
-						{position.entryPrice}
-					</div>
-				</div>
-
-				<div class="flex flex-row">
-					<div class="basis-1/3">
-						{#if position.isLong}
-							<span class="text-green-500">Long</span>
-						{:else}
-							<span class="text-red-500">Short</span>
-						{/if}
-					</div>
-					<div class="grow justify-end text-right text-slate-500">
-						opened {dayjs.unix(position.openDate).fromNow()}
-					</div>
-				</div>
-			{:else}
-				<!-- Closed Position -->
-				<div class="flex flex-row">
-					<div class="basis-1/4">{position.leverage}x</div>
-					<div class="basis-1/4">
-						{#if position.pnl > 0}
-							<span class="text-green-500">
-								${position.pnl}
-							</span>
-							🤑
-						{:else}
-							<span class="text-red-500">
-								${position.pnl}
-							</span>
-							❌
-						{/if}
-					</div>
-					<div class="grow text-right">
-						{position.entryPrice} -> {position.pnl > 0
-							? position.takeProfitPrice
-							: position.liquidationPrice}
-					</div>
-				</div>
-
-				<div class="flex flex-row">
-					<div class="basis-1/4">
-						{#if position.isLong}
-							<span class="text-green-500">Long</span>
-						{:else}
-							<span class="text-red-500">Short</span>
-						{/if}
-					</div>
-					<div class="grow justify-end text-right text-slate-500">
-						closed {dayjs.unix(position.closeDate).fromNow()}
-					</div>
-				</div>
-			{/if}
-		</div>
-	{/each}
+	<h2 class="font-semibold font-heading mb-2">Positions</h2>
+	<div class="grid grid-cols-1 gap-4">
+		{#each positions as position}
+			<Position {position} />
+		{/each}
+	</div>
 </div>
