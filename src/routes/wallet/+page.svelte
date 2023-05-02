@@ -1,7 +1,7 @@
 <script>
 	import WalletConnectButton from './../components/WalletConnectButton.svelte';
 	import { wallet } from '../../stores/wallet';
-	import { priceFeedStore } from '../../stores/priceFeed';
+	import { currentPrice } from '../../stores/priceFeed';
 
 	let open = true;
 </script>
@@ -23,6 +23,6 @@
 
 {#if open}
 	<button class="lg:flex items-center m-6 mb-12" on:click={() => (open = false)}>
-		{$priceFeedStore}
+		{$currentPrice}
 	</button>
 {/if}

@@ -64,4 +64,4 @@ export const createPriceFeedStore = () => {
 	};
 };
 
-export const priceFeedStore = createPriceFeedStore();
+export const currentPrice = createPriceFeedStore();
