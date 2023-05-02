@@ -1,6 +1,5 @@
 <script>
 	const initTradingView = () => {
-		console.log(123);
 		// @ts-ignore
 		new TradingView.widget({
 			width: '100%',

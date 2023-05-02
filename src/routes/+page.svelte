@@ -4,12 +4,16 @@
 	import PositionList from './components/PositionList.svelte';
 	import TradingViewWidget from './components/TradingViewWidget.svelte';
 	import PositionBalance from './components/PositionBalance.svelte';
+	import WalletConnectButton from './components/WalletConnectButton.svelte';
 </script>
 
 <div class="lg:flex items-center m-6 mb-12">
 	<h1 class="flex-1 justify-center text-3xl font-bold flex-2 mb-4 lg:mb-0 font-heading">
 		Welcome to P2P Leverage
 	</h1>
+	<div class="flex-1 align-middle items-center justify-end lg:flex">
+		<WalletConnectButton />
+	</div>
 	<div class="flex-1 align-middle items-center justify-end lg:flex">
 		<HouseKeepingButton />
 	</div>
