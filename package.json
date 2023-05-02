@@ -33,8 +33,11 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@wagmi/core": "^0.10.10",
 		"chart.js": "^4.2.1",
 		"chartjs-plugin-datalabels": "^2.2.0",
-		"dayjs": "^1.11.7"
+		"dayjs": "^1.11.7",
+		"ethers": "^5.7.2",
+		"truncate-eth-address": "^1.0.2"
 	}
 }
