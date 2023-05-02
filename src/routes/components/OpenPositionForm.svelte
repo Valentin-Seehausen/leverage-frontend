@@ -1,10 +1,17 @@
 <script>
+	import { openPosition } from '../../stores/tradePair';
+	import { increaseAllowance } from '../../stores/usdc';
+
 	let collateral = 100;
 	let leverage = 2;
 
 	let currentPrice = 20000;
 	$: takeProfitPrice = currentPrice * (1 + 1 / leverage);
 	$: liquidationPrice = currentPrice * (1 - 1 / leverage);
+	const handleSubmit = async () => {
+		await (await increaseAllowance(collateral)).wait();
+		await openPosition(collateral, leverage, true);
+	};
 </script>
 
 <div class="p-6">
@@ -47,6 +54,7 @@
 	</div>
 
 	<button
+		on:click={handleSubmit}
 		class="mt-6 block w-full px-3 py-2 bg-slate-700 text-slate-100 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500
       disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none
       invalid:border-pink-500 invalid:text-pink-600

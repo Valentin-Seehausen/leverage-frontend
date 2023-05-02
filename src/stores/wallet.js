@@ -25,14 +25,21 @@ createClient({
 });
 
 function createWallet() {
-	const { subscribe, set } = writable({ isConnected: false, address: '', shortAddress: '' });
+	const { subscribe, set } = writable({
+		isConnected: false,
+		address: '',
+		shortAddress: ''
+	});
 
 	return {
 		subscribe,
 		connect: async () => {
 			const result = await connect({
-				connector: new MetaMaskConnector()
+				connector: new MetaMaskConnector({
+					options: {}
+				})
 			});
+
 			set({
 				isConnected: !!result.account,
 				address: result.account,
@@ -49,8 +56,9 @@ function createWallet() {
 
 export const wallet = createWallet();
 
-watchAccount((account) => {
+watchAccount(async (account) => {
 	console.log('watchAccount', account);
+
 	wallet.set({
 		address: account.address || '',
 		isConnected: account.isConnected,

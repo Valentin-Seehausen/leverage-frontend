@@ -1,5 +1,4 @@
 import { getContract, getProvider, readContract, watchReadContract } from '@wagmi/core';
-import { writable } from 'svelte/store';
 import priceFeedABI from './abis/AggregatorProxy';
 import aggregatorAbi from './abis/OffChainAggregator';
 import { formatUnits } from 'ethers/lib/utils.js';
