@@ -18,10 +18,15 @@ const { provider, webSocketProvider } = configureChains(
 	]
 );
 
+const metaMaskConnector = new MetaMaskConnector({
+	options: { shimDisconnect: true }
+});
+
 createClient({
 	autoConnect: true,
 	provider,
-	webSocketProvider
+	webSocketProvider,
+	connectors: [metaMaskConnector]
 });
 
 function createWallet() {
@@ -34,11 +39,7 @@ function createWallet() {
 	return {
 		subscribe,
 		connect: async () => {
-			const result = await connect({
-				connector: new MetaMaskConnector({
-					options: {}
-				})
-			});
+			const result = await connect({ connector: metaMaskConnector });
 
 			set({
 				isConnected: !!result.account,
@@ -57,8 +58,6 @@ function createWallet() {
 export const wallet = createWallet();
 
 watchAccount(async (account) => {
-	console.log('watchAccount', account);
-
 	wallet.set({
 		address: account.address || '',
 		isConnected: account.isConnected,
