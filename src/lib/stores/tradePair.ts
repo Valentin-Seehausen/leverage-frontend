@@ -13,16 +13,9 @@ export const openPosition = async (collateral: number, leverage: number, isLong:
 		abi: tradePairAbi,
 		signerOrProvider: signer
 	});
-	console.log(
-		'opening position',
-		parseUnits(collateral.toString(), 6),
-		parseUnits(collateral.toString(), 6),
-		isLong
-	);
 	await tradePair.openPosition(
 		parseUnits(collateral.toString(), 6),
 		parseUnits(collateral.toString(), 6),
 		isLong
 	);
-	console.log('position opened');
 };
