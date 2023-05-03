@@ -14,32 +14,18 @@
 	};
 </script>
 
-<div class="p-3 border rounded dark:border-slate-700 dark:bg-slate-800">
+<div class="box">
 	<label class="block mb-6">
 		<span class="block text-sm font-medium text-slate-700 dark:text-slate-50 info-label"
 			>Collateral</span
 		>
-		<input
-			class="dark:bg-slate-700 dark:border-slate-600 font-sans dark:text-white mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 dark:focus:ring-sky-700 dark:focus:border-sky-700
-      disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none
-      invalid:border-pink-500 invalid:text-pink-600
-      focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
-			type="text"
-			bind:value={collateral}
-		/>
+		<input class="user-input" type="text" bind:value={collateral} />
 	</label>
 	<label class="block">
 		<span class="block text-sm font-medium text-slate-700 dark:text-slate-50 info-label"
 			>Leverage</span
 		>
-		<input
-			class="dark:bg-slate-700 dark:border-slate-600 font-sans dark:text-white mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 dark:focus:ring-sky-700 dark:focus:border-sky-700
-      disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none
-      invalid:border-pink-500 invalid:text-pink-600
-      focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
-			type="text"
-			bind:value={leverage}
-		/>
+		<input class="user-input" type="text" bind:value={leverage} />
 	</label>
 
 	<div class="my-6 md:max-lg:px-2 px-2">
@@ -57,11 +43,5 @@
 		</div>
 	</div>
 
-	<button
-		on:click={handleSubmit}
-		class="mt-6 block w-full px-3 py-2 bg-slate-700 text-slate-100 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500
-      disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none
-      invalid:border-pink-500 invalid:text-pink-600
-      focus:invalid:border-pink-500 focus:invalid:ring-pink-500 font-bold">Open Position</button
-	>
+	<button on:click={handleSubmit} class="user-button">Open Position</button>
 </div>
