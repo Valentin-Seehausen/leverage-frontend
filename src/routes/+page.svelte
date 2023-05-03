@@ -7,8 +7,8 @@
 	import WalletConnectButton from '$lib/components/WalletConnectButton.svelte';
 </script>
 
-<div class="lg:flex items-center">
-	<div class="flex-1 align-middle items-center justify-end lg:flex">
+<div class="lg:flex">
+	<div class="flex-1 lg:flex">
 		<HouseKeepingButton />
 	</div>
 </div>

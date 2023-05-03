@@ -3,7 +3,7 @@
 </script>
 
 {#if possible}
-	<div class="box w-full lg:flex place-content-between items-center">
+	<div class="box lg:w-full lg:flex place-content-between items-center">
 		<div class="info-label mb-4 lg:mb-0">
 			Lucky you! You can send a house keeping transaction to close other traders position and earn
 			$0.5.
