@@ -8,8 +8,6 @@
 </script>
 
 <div class="lg:flex items-center m-6 mb-12">
-	<a href="/wallet">wallet</a>
-
 	<h1 class="flex-1 justify-center text-3xl font-bold flex-2 mb-4 lg:mb-0 font-heading">
 		Welcome to P2P Leverage
 	</h1>
