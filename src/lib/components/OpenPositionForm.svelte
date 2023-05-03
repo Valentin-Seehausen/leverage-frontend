@@ -15,16 +15,12 @@
 </script>
 
 <div class="box">
-	<label class="block mb-6">
-		<span class="block text-sm font-medium text-slate-700 dark:text-slate-50 info-label"
-			>Collateral</span
-		>
+	<label class="block mb-6 text-sm">
+		<span class="info-label">Collateral</span>
 		<input class="user-input" type="text" bind:value={collateral} />
 	</label>
 	<label class="block">
-		<span class="block text-sm font-medium text-slate-700 dark:text-slate-50 info-label"
-			>Leverage</span
-		>
+		<span class="info-label text-sm">Leverage</span>
 		<input class="user-input" type="text" bind:value={leverage} />
 	</label>
 
