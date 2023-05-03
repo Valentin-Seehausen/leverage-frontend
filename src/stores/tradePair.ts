@@ -2,10 +2,7 @@ import { getContract, getProvider, type Provider, type Signer } from '@wagmi/cor
 import tradePairAbi from './abis/TradePair';
 import { parseUnits } from 'ethers/lib/utils.js';
 import { fetchSigner } from '@wagmi/core';
-
-import { wallet } from './wallet';
-
-let tradePairAddress = '0x7993E8565870CCE53Bd031bA064B228B90DEe57d';
+import { tradePair as tradePairAddress } from '$lib/config/contracts.sepolia.json';
 
 export const openPosition = async (collateral: number, leverage: number, isLong: boolean) => {
 	let signer = await fetchSigner();

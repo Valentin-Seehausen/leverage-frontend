@@ -3,8 +3,7 @@ import priceFeedABI from './abis/AggregatorProxy';
 import aggregatorAbi from './abis/OffChainAggregator';
 import { formatUnits } from 'ethers/lib/utils.js';
 import type { BigNumber } from 'ethers';
-
-const BTC_PRICE_FEED = '0x1b44F3514812d835EB1BDB0acB33d3fA3351Ee43';
+import { CHAINLINK_BTC } from '$lib/config/contracts.sepolia.json';
 
 export const createPriceFeedStore = () => {
 	const subscriptions: Set<(value: any) => void> = new Set();
@@ -17,7 +16,7 @@ export const createPriceFeedStore = () => {
 		if (!typeof aggregator === undefined) return;
 
 		priceFeed = getContract({
-			address: BTC_PRICE_FEED,
+			address: CHAINLINK_BTC,
 			abi: priceFeedABI,
 			signerOrProvider: getProvider()
 		});

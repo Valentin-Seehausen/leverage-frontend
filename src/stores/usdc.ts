@@ -2,10 +2,11 @@ import { getContract, getProvider, type Provider, type Signer } from '@wagmi/cor
 import usdcAbi from './abis/USDC';
 import { parseUnits } from 'ethers/lib/utils.js';
 import { fetchSigner } from '@wagmi/core';
-
-import { wallet } from './wallet';
-
-let usdcAddress = '0xeE7661b284c0423ae99700a894C39Ce600c8d7CC';
+import {
+	usdc as usdcAddress,
+	liquidityPool as liquidityPoolAddress
+} from '$lib/config/contracts.sepolia.json';
+import type { Address } from 'abitype';
 
 export const increaseAllowance = async (amount: number) => {
 	let signer = await fetchSigner();
@@ -16,10 +17,5 @@ export const increaseAllowance = async (amount: number) => {
 		abi: usdcAbi,
 		signerOrProvider: signer
 	});
-	console.log('increasing allowance', parseUnits(amount.toString(), 6));
-	return usdc.increaseAllowance(
-		'0x180d9fa830edb33170470b160C83005e68BA4864',
-		parseUnits(amount.toString(), 6)
-	);
-	console.log('allowance increased');
+	return usdc.increaseAllowance(liquidityPoolAddress as Address, parseUnits(amount.toString(), 6));
 };
