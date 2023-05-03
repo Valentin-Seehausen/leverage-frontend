@@ -7,8 +7,7 @@ import { infuraProvider } from '@wagmi/core/providers/infura';
 import { publicProvider } from '@wagmi/core/providers/public';
 import { MetaMaskConnector } from '@wagmi/core/connectors/metaMask';
 import truncateEthAddress from 'truncate-eth-address';
-
-const INFURA_API_KEY = '54e0e7fc177149b79695f54e8365a056';
+import { INFURA_API_KEY } from '$lib/config/keys.json';
 
 const { provider, webSocketProvider } = configureChains(
 	[sepolia],
