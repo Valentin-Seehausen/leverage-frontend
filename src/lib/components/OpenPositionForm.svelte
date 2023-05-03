@@ -39,5 +39,5 @@
 		</div>
 	</div>
 
-	<button on:click={handleSubmit} class="user-button">Open Position</button>
+	<button on:click={handleSubmit} class="user-button w-full mt-6">Open Position</button>
 </div>
