@@ -1,6 +1,6 @@
 <script>
-	import { openPosition } from '../../stores/tradePair';
-	import { increaseAllowance } from '../../stores/usdc';
+	import { openPosition } from '$lib/stores/tradePair';
+	import { increaseAllowance } from '$lib/stores/usdc';
 
 	let collateral = 100;
 	let leverage = 2;

@@ -1,5 +1,5 @@
 <script>
-	import { wallet } from '../../stores/wallet';
+	import { wallet } from '$lib/stores/wallet';
 
 	let toggleConnection = () => {
 		if ($wallet.isConnected) {

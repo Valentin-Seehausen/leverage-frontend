@@ -1,7 +1,7 @@
 <script>
-	import WalletConnectButton from './../components/WalletConnectButton.svelte';
-	import { wallet } from '../../stores/wallet';
-	import { currentPrice } from '../../stores/priceFeed';
+	import WalletConnectButton from '$lib/components/WalletConnectButton.svelte';
+	import { wallet } from '$lib/stores/wallet';
+	import { currentPrice } from '$lib/stores/priceFeed';
 
 	let open = true;
 </script>

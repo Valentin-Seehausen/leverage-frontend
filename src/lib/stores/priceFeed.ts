@@ -1,9 +1,9 @@
 import { getContract, getProvider, readContract, watchReadContract } from '@wagmi/core';
-import priceFeedABI from './abis/AggregatorProxy';
-import aggregatorAbi from './abis/OffChainAggregator';
+import priceFeedABI from '$lib/abis/AggregatorProxy';
+import aggregatorAbi from '$lib/abis/OffChainAggregator';
 import { formatUnits } from 'ethers/lib/utils.js';
 import type { BigNumber } from 'ethers';
-import { CHAINLINK_BTC } from '$lib/config/contracts.sepolia.json';
+import { CHAINLINK_BTC } from '$lib/addresses/contracts.sepolia.json';
 
 export const createPriceFeedStore = () => {
 	const subscriptions: Set<(value: any) => void> = new Set();

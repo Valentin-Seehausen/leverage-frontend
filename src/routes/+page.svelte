@@ -1,10 +1,10 @@
 <script>
-	import HouseKeepingButton from './components/HouseKeepingButton.svelte';
-	import OpenPositionForm from './components/OpenPositionForm.svelte';
-	import PositionList from './components/PositionList.svelte';
-	import TradingViewWidget from './components/TradingViewWidget.svelte';
-	import PositionBalance from './components/PositionBalance.svelte';
-	import WalletConnectButton from './components/WalletConnectButton.svelte';
+	import HouseKeepingButton from '$lib/components/HouseKeepingButton.svelte';
+	import OpenPositionForm from '$lib/components/OpenPositionForm.svelte';
+	import PositionList from '$lib/components/PositionList.svelte';
+	import TradingViewWidget from '$lib/components/TradingViewWidget.svelte';
+	import PositionBalance from '$lib/components/PositionBalance.svelte';
+	import WalletConnectButton from '$lib/components/WalletConnectButton.svelte';
 </script>
 
 <div class="lg:flex items-center m-6 mb-12">
