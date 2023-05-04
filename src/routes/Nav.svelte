@@ -1,4 +1,6 @@
 <script>
+	import { slide } from 'svelte/transition';
+
 	import { Hamburger } from 'svelte-hamburgers';
 	import WalletConnectButton from '$lib/components/WalletConnectButton.svelte';
 	import { clickOutside } from '$lib/utils/clickOutside';
@@ -19,7 +21,7 @@
 	<WalletConnectButton />
 </nav>
 
-<nav class="lg:hidden dark:bg-slate-800" use:clickOutside on:outclick={toggle}>
+<nav class="lg:hidden dark:bg-slate-800" use:clickOutside on:outclick={() => (open = false)}>
 	<div class="flex lg:hidden place-content-between lg:place-content-end px-6 py-5">
 		<Hamburger
 			bind:open
@@ -32,9 +34,11 @@
 		/>
 		<WalletConnectButton />
 	</div>
-	<div class="flex flex-col p-3" class:flex={open} class:hidden={!open}>
-		<a class="nav-button" on:click={toggle} href="/">Trading</a>
-		<a class="nav-button" on:click={toggle} href="/wallet">Wallet</a>
-		<a class="nav-button" on:click={toggle} href="/liquidity-pool">Liquidity Pool</a>
-	</div>
+	{#if open}
+		<div class="flex flex-col p-3" transition:slide>
+			<a class="nav-button" on:click={toggle} href="/">Trading</a>
+			<a class="nav-button" on:click={toggle} href="/wallet">Wallet</a>
+			<a class="nav-button" on:click={toggle} href="/liquidity-pool">Liquidity Pool</a>
+		</div>
+	{/if}
 </nav>
