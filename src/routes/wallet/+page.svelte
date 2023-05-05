@@ -2,6 +2,8 @@
 	import WalletConnectButton from '$lib/components/WalletConnectButton.svelte';
 	import { wallet } from '$lib/stores/wallet';
 	import { currentPrice } from '$lib/stores/priceFeed';
+	import { priceFeedDecimals } from '$lib/config/constants';
+	import { commify, formatUnits } from 'ethers/lib/utils.js';
 
 	let open = true;
 </script>
@@ -22,6 +24,6 @@
 
 {#if open}
 	<button class="lg:flex items-center m-6 mb-12" on:click={() => (open = false)}>
-		{$currentPrice}
+		{commify(formatUnits($currentPrice, priceFeedDecimals))}
 	</button>
 {/if}
