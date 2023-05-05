@@ -50,7 +50,7 @@ export const tradePairBalance = derived(
 		if (!$isInitialized) return;
 
 		liquidityPoolContract()
-			.balanceOf(/** @type {import('abitype').Address} Address */ (tradePairAddress))
+			.balanceOf(tradePairAddress)
 			.then((tradePairBalance) => {
 				set(tradePairBalance);
 			});
@@ -77,7 +77,7 @@ export const userShares = derived(
 		if (!$account.isConnected) return;
 
 		liquidityPoolContract()
-			.balanceOf(/** @type {import('abitype').Address} Address */ ($account.address))
+			.balanceOf($account.address)
 			.then((userBalance) => {
 				set(userBalance);
 			});

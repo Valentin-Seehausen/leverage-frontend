@@ -10,3 +10,9 @@ declare global {
 }
 
 export {};
+
+declare module 'abitype' {
+	export interface Config {
+		AddressType: string;
+	}
+}

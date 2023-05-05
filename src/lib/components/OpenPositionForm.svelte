@@ -1,6 +1,9 @@
 <script>
+	import { usdcDecimals } from '$lib/config/constants';
 	import { openPosition } from '$lib/stores/tradePair';
 	import { increaseAllowance } from '$lib/stores/usdc';
+	import { userBalance } from '$lib/stores/usdc';
+	import { formatUnits } from 'ethers/lib/utils.js';
 
 	let collateral = 100;
 	let leverage = 2;
@@ -36,7 +39,14 @@
 		</button>
 	</div>
 	<label class="block mb-6 text-sm">
-		<span class="info-label">Collateral</span>
+		<div class="flex content-between">
+			<span class="info-label text-sm grow">Collateral</span>
+			<button
+				class="info-label text-sm opacity-50"
+				on:click={() => (collateral = parseInt(formatUnits($userBalance, usdcDecimals)))}
+				>Max: {formatUnits($userBalance, usdcDecimals)}</button
+			>
+		</div>
 		<input class="user-input" type="text" bind:value={collateral} />
 	</label>
 	<label class="block">
