@@ -49,8 +49,7 @@ export const tradePairBalance = derived(
 		if (!$isInitialized) return;
 
 		liquidityPoolContract()
-			// @ts-ignore
-			.balanceOf(tradePairAddress)
+			.balanceOf(/** @type {import('abitype').Address} Address */ (tradePairAddress))
 			.then((tradePairBalance) => {
 				set(tradePairBalance);
 			});
