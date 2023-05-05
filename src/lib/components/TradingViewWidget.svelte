@@ -7,7 +7,7 @@
 			symbol: 'BINANCE:BTCUSDC',
 			interval: '15',
 			timezone: 'Etc/UTC',
-			theme: 'light',
+			theme: 'dark',
 			style: '1',
 			locale: 'en',
 			toolbar_bg: '#f1f3f6',

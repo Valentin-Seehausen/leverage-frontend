@@ -1,4 +1,3 @@
-<!-- PositionProgressBar.svelte -->
 <script>
 	let longPositions = 65;
 	let shortPositions = 135;

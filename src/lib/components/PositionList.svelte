@@ -57,8 +57,8 @@
 	];
 </script>
 
-<div class="p-6">
-	<h2 class="font-semibold font-heading mb-2">Positions</h2>
+<div class="box">
+	<h2 class="font-semibold font-heading mb-2">Your Positions</h2>
 	<div class="grid grid-cols-1 gap-4">
 		{#each positions as position}
 			<Position {position} />

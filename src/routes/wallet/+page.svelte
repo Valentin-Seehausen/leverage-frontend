@@ -1,13 +1,14 @@
 <script>
-	import WalletConnectButton from './../components/WalletConnectButton.svelte';
-	import { wallet } from '../../stores/wallet';
-	import { currentPrice } from '../../stores/priceFeed';
+	import WalletConnectButton from '$lib/components/WalletConnectButton.svelte';
+	import { wallet } from '$lib/stores/wallet';
+	import { currentPrice } from '$lib/stores/priceFeed';
+	import { priceFeedDecimals } from '$lib/config/constants';
+	import { commify, formatUnits } from 'ethers/lib/utils.js';
 
 	let open = true;
 </script>
 
 <div class="lg:flex items-center m-6 mb-12">
-	<a href="/">back</a>
 	<h1 class="flex-1 justify-center text-3xl font-bold flex-2 mb-4 lg:mb-0 font-heading">
 		Your Wallet
 	</h1>
@@ -23,6 +24,6 @@
 
 {#if open}
 	<button class="lg:flex items-center m-6 mb-12" on:click={() => (open = false)}>
-		{$currentPrice}
+		{commify(formatUnits($currentPrice, priceFeedDecimals))}
 	</button>
 {/if}

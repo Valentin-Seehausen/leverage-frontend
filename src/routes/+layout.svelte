@@ -1,7 +1,10 @@
 <script>
+	import Nav from './Nav.svelte';
 	import '../app.css';
 </script>
 
-<div class="max-w-screen-2xl m-auto">
+<Nav />
+
+<div class="max-w-screen-2xl m-auto xl:p-3">
 	<slot />
 </div>
