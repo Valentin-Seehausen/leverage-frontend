@@ -1,5 +1,7 @@
 <script>
-	let possible = true;
+	import { closeablePositionIds } from '$lib/stores/closeablePositions';
+
+	$: possible = $closeablePositionIds.length > 0;
 </script>
 
 {#if possible}
