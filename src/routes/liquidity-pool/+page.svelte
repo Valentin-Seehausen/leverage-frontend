@@ -1,6 +1,12 @@
 <script>
 	import { slide } from 'svelte/transition';
-	import { totalSupply, totalAssets, tradePairBalance } from '$lib/stores/liquidityPool';
+	import {
+		totalSupply,
+		totalAssets,
+		tradePairBalance,
+		userShares,
+		userAssets
+	} from '$lib/stores/liquidityPool';
 	import { liquidityPoolDecimals, usdcDecimals } from '$lib/config/constants';
 	import { formatUnits } from 'ethers/lib/utils.js';
 
@@ -39,11 +45,11 @@
 
 	<div class="flex">
 		<div class="basis-2/3 info-label">Assets:</div>
-		<div class="basis-1/3 text-right">USDC 123.00</div>
+		<div class="basis-1/3 text-right">USDC {formatUnits($userAssets, usdcDecimals)}</div>
 	</div>
 	<div class="flex">
 		<div class="basis-2/3 info-label">Shares:</div>
-		<div class="basis-1/3 text-right">LP 123.00</div>
+		<div class="basis-1/3 text-right">LP {formatUnits($userShares, liquidityPoolDecimals)}</div>
 	</div>
 </div>
 

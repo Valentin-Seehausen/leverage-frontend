@@ -17,6 +17,7 @@ export const openPosition = async (
 		abi: tradePairAbi,
 		signerOrProvider: signer
 	});
+
 	await tradePair.openPosition(
 		parseUnits(collateral.toString(), 6),
 		parseUnits(leverage.toString(), 6),

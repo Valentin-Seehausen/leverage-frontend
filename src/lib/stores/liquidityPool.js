@@ -7,6 +7,7 @@ import {
 import { derived } from 'svelte/store';
 import { BigNumber } from 'ethers';
 import { isInitialized } from './client';
+import { account } from './wallet';
 
 const liquidityPoolContract = () =>
 	getContract({
@@ -55,4 +56,42 @@ export const tradePairBalance = derived(
 			});
 	},
 	BigNumber.from('0')
+);
+
+export const liquidityPoolRatio = derived(
+	[totalAssets, totalSupply],
+	([$totalAssets, $totalSupply], set) => {
+		if ($totalAssets.isZero() || $totalSupply.isZero()) {
+			set(BigNumber.from('0'));
+			return;
+		}
+
+		set($totalSupply.div($totalAssets));
+	}
+);
+
+export const userShares = derived(
+	[isInitialized, account],
+	([$isInitialized, $account], set) => {
+		if (!$isInitialized) return;
+		if (!$account.isConnected) return;
+
+		liquidityPoolContract()
+			.balanceOf(/** @type {import('abitype').Address} Address */ ($account.address))
+			.then((userBalance) => {
+				set(userBalance);
+			});
+	},
+	BigNumber.from('0')
+);
+
+export const userAssets = derived(
+	[userShares, liquidityPoolRatio],
+	([$userShares, $liquidityPoolRatio], set) => {
+		if ($userShares.isZero() || $liquidityPoolRatio.isZero()) {
+			set(BigNumber.from('0'));
+			return;
+		}
+		set($userShares.mul($liquidityPoolRatio));
+	}
 );
