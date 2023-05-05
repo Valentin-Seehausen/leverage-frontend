@@ -1,5 +1,8 @@
 <script>
 	import { closeablePositionIds } from '$lib/stores/closeablePositions';
+	import { closeCloseablePositions } from '$lib/stores/tradePair';
+
+	$: console.log('closeablePositionIds', $closeablePositionIds);
 
 	$: possible = $closeablePositionIds.length > 0;
 </script>
@@ -11,12 +14,7 @@
 			$0.5.
 		</div>
 		<div>
-			<button
-				on:click={() => {
-					possible = false;
-				}}
-				class="user-button">House Keeping 🧹</button
-			>
+			<button on:click={closeCloseablePositions} class="user-button">House Keeping 🧹</button>
 		</div>
 	</div>
 {/if}

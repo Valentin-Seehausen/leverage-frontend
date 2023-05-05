@@ -3,10 +3,13 @@ import { currentPrice } from '$lib/stores/priceFeed';
 import { graphClient } from './graph';
 import { derived } from 'svelte/store';
 
+/**
+ * @type {import('svelte/store').Readable<string[]>}
+ */
 export const closeablePositionIds = derived(
 	currentPrice,
 	($currentPrice, set) => {
-		if ($currentPrice.isZero()) return [];
+		if ($currentPrice.isZero()) set([]);
 
 		const unsubscribe = queryStore({
 			client: graphClient,
@@ -28,7 +31,7 @@ export const closeablePositionIds = derived(
 			`,
 			variables: { currentPrice: $currentPrice.toString() || '0' }
 		}).subscribe((result) => {
-			set(result?.data?.positions.map((/** @type {{ id: any; }} */ p) => p.id) || []);
+			set(result?.data?.positions.map((/** @type {{ id: string; }} */ p) => p.id) || []);
 		});
 
 		return unsubscribe;
