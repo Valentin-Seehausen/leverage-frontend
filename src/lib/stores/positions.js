@@ -8,7 +8,7 @@ export const openUserPositions = derived(account, ($account, set) => {
 		client: graphClient,
 		query: gql`
 			query ($trader: String!) {
-				positions(where: { trader: $trader }) {
+				positions(where: { and: [{ trader: $trader }, { isOpen: true }] }) {
 					id
 					trader {
 						id
