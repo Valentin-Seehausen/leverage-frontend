@@ -22,8 +22,6 @@ export const openPosition = async (
 
 	const allowance = await getAllowance(await signer.getAddress());
 
-	console.log('allowance', allowance.toString());
-
 	if (parsedCollateral > allowance) {
 		await (await increaseAllowance(collateral * 100)).wait();
 	}

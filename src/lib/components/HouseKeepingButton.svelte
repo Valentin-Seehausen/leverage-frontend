@@ -2,8 +2,6 @@
 	import { closeablePositionIds } from '$lib/stores/closeablePositions';
 	import { closeCloseablePositions } from '$lib/stores/tradePair';
 
-	$: console.log('closeablePositionIds', $closeablePositionIds);
-
 	$: possible = $closeablePositionIds.length > 0;
 </script>
 
