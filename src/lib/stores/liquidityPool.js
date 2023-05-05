@@ -1,4 +1,4 @@
-import { getContract, getProvider } from '@wagmi/core';
+import { fetchSigner, getContract, getProvider } from '@wagmi/core';
 import liquidityPoolAbi from '$lib/abis/LiquidityPool';
 import {
 	liquidityPool as liquidityPoolAddress,
@@ -9,11 +9,13 @@ import { BigNumber } from 'ethers';
 import { isInitialized } from './client';
 import { account } from './wallet';
 
-const liquidityPoolContract = () =>
+const liquidityPoolContract = (
+	/** @type {import('@wagmi/core').Provider | import('@wagmi/core').Signer}  */ signerOrProvider = getProvider()
+) =>
 	getContract({
 		address: liquidityPoolAddress,
 		abi: liquidityPoolAbi,
-		signerOrProvider: getProvider()
+		signerOrProvider
 	});
 
 export const totalSupply = derived(
@@ -92,6 +94,13 @@ export const userAssets = derived(
 			set(BigNumber.from('0'));
 			return;
 		}
-		set($userShares.mul($liquidityPoolRatio));
+		set($userShares.div($liquidityPoolRatio));
 	}
 );
+
+export const redeem = async (/** @type {BigNumber} */ shares) => {
+	const signer = await fetchSigner();
+	if (!signer) throw new Error('no signer');
+
+	await liquidityPoolContract(signer).redeem(shares);
+};

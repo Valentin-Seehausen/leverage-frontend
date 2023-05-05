@@ -1,67 +1,46 @@
 <script>
 	import * as dayjs from 'dayjs';
 	import relativeTime from 'dayjs/plugin/relativeTime';
-	import Position from './Position.svelte';
-
+	import PositionCard from './PositionCard.svelte';
+	import PositionRow from './PositionRow.svelte';
+	import { openUserPositions } from '$lib/stores/positions';
 	dayjs.extend(relativeTime);
-
-	let positions = [
-		{
-			id: 1,
-			isLong: true,
-			collateral: 100,
-			leverage: 10,
-			entryPrice: 20000,
-			liquidationPrice: 18000,
-			takeProfitPrice: 22000,
-			openDate: 1682516394,
-			closeDate: 0,
-			pnl: 0
-		},
-		{
-			id: 2,
-			isLong: false,
-			collateral: 100,
-			leverage: 10,
-			entryPrice: 22000,
-			liquidationPrice: 24200,
-			takeProfitPrice: 19800,
-			openDate: 1682516794,
-			closeDate: 0,
-			pnl: 0
-		},
-		{
-			id: 3,
-			isLong: false,
-			collateral: 100,
-			leverage: 10,
-			entryPrice: 20000,
-			liquidationPrice: 22000,
-			takeProfitPrice: 18000,
-			openDate: 1682516094,
-			closeDate: 1682516794,
-			pnl: 100
-		},
-		{
-			id: 4,
-			isLong: true,
-			collateral: 100,
-			leverage: 10,
-			entryPrice: 20000,
-			liquidationPrice: 18000,
-			takeProfitPrice: 22000,
-			openDate: 1682516094,
-			closeDate: 1682516794,
-			pnl: -100
-		}
-	];
 </script>
 
 <div class="box">
 	<h2 class="font-semibold font-heading mb-2">Your Positions</h2>
-	<div class="grid grid-cols-1 gap-4">
-		{#each positions as position}
-			<Position {position} />
-		{/each}
-	</div>
+	{#if $openUserPositions.fetching}
+		<p>Loading your positions.</p>
+	{:else if $openUserPositions.error}
+		<p>Error: {$openUserPositions.error.message}</p>
+	{:else}
+		<div class="lg:hidden">
+			<div class="grid grid-cols-1 gap-4">
+				{#each $openUserPositions.data.positions as position}
+					<PositionCard {position} />
+				{/each}
+			</div>
+		</div>
+		<div class="hidden lg:block">
+			<div>
+				<table class="min-w-full table-auto">
+					<thead>
+						<tr>
+							<th class=" pl-2 py-2 text-left">Type</th>
+							<th class=" px-0 py-2 text-right">Leverage</th>
+							<th class=" px-2 py-2 text-right">Collateral</th>
+							<th class=" px-2 py-2 text-right">Entry Price</th>
+							<th class=" px-2 py-2 text-right">Liquidation Price</th>
+							<th class=" px-2 py-2 text-right">Take Profit Price</th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each $openUserPositions.data.positions as position, i}
+							<PositionRow {position} index={i} />
+						{/each}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	{/if}
 </div>

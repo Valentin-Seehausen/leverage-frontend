@@ -34,6 +34,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@urql/svelte": "^4.0.1",
 		"@wagmi/core": "^0.10.10",
 		"chart.js": "^4.2.1",
 		"chartjs-plugin-datalabels": "^2.2.0",

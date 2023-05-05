@@ -5,15 +5,23 @@
 		totalAssets,
 		tradePairBalance,
 		userShares,
-		userAssets
+		userAssets,
+		liquidityPoolRatio,
+		redeem
 	} from '$lib/stores/liquidityPool';
 	import { liquidityPoolDecimals, usdcDecimals } from '$lib/config/constants';
-	import { formatUnits } from 'ethers/lib/utils.js';
+	import { formatValue } from '$lib/utils/format';
+	import { formatUnits, parseUnits } from 'ethers/lib/utils.js';
+	import { BigNumber } from 'ethers';
 
-	let withdrawAmount = 0;
+	let withdrawAssets = 0;
 
-	let chooseMax = () => {
-		withdrawAmount = 123;
+	// It is called withdraw at the UI, but we use the redeem function
+	const callRedeem = () => {
+		const redeemShares = BigNumber.from(parseUnits(withdrawAssets.toString(), usdcDecimals)).mul(
+			$liquidityPoolRatio
+		);
+		redeem(redeemShares);
 	};
 </script>
 
@@ -26,16 +34,18 @@
 
 	<div class="flex flex-row">
 		<div class="basis-2/3 info-label">Assets:</div>
-		<div class="basis-1/3 text-right">USDC {formatUnits($totalAssets, usdcDecimals)}</div>
+		<div class="basis-1/3 text-right">{formatValue($totalAssets, usdcDecimals)}</div>
 	</div>
 	<div class="flex flex-row">
 		<div class="basis-2/3 info-label">Shares:</div>
-		<div class="basis-1/3 text-right">LP {formatUnits($totalSupply, liquidityPoolDecimals)}</div>
+		<div class="basis-1/3 text-right">
+			{formatValue($totalSupply, liquidityPoolDecimals, 2, { showSymbol: false })}
+		</div>
 	</div>
 	<div class="flex flex-row">
 		<div class="basis-2/3 info-label">Outstanding:</div>
 		<div class="basis-1/3 text-right">
-			LP {formatUnits($tradePairBalance, liquidityPoolDecimals)}
+			{formatValue($tradePairBalance, liquidityPoolDecimals)}
 		</div>
 	</div>
 </div>
@@ -45,11 +55,13 @@
 
 	<div class="flex">
 		<div class="basis-2/3 info-label">Assets:</div>
-		<div class="basis-1/3 text-right">USDC {formatUnits($userAssets, usdcDecimals)}</div>
+		<div class="basis-1/3 text-right">{formatValue($userAssets, usdcDecimals)}</div>
 	</div>
 	<div class="flex">
 		<div class="basis-2/3 info-label">Shares:</div>
-		<div class="basis-1/3 text-right">LP {formatUnits($userShares, liquidityPoolDecimals)}</div>
+		<div class="basis-1/3 text-right">
+			{formatValue($userShares, liquidityPoolDecimals, 2, { showSymbol: false })}
+		</div>
 	</div>
 </div>
 
@@ -64,18 +76,15 @@
 <div class="box">
 	<label class="block">
 		<div class="flex content-between">
-			<span class="info-label text-sm grow">LP Amount</span>
-			<button class="info-label text-sm opacity-50" on:click={chooseMax}>Max: 123.00</button>
+			<span class="info-label text-sm grow">Withdraw USDC</span>
+			<button
+				class="info-label text-sm opacity-50"
+				on:click={() => (withdrawAssets = parseInt(formatUnits($userAssets, usdcDecimals)))}
+				>Max: {formatValue($userAssets, usdcDecimals)}</button
+			>
 		</div>
-		<input class="user-input" type="text" bind:value={withdrawAmount} />
+		<input class="user-input" type="text" bind:value={withdrawAssets} />
 	</label>
 
-	{#if withdrawAmount > 0}
-		<div class="flex my-3" transition:slide>
-			<div class="basis-2/3 info-label">Out:</div>
-			<div class="basis-1/3 text-right">USDC {withdrawAmount}</div>
-		</div>
-	{/if}
-
-	<button class="w-full user-button mt-6">Withdraw</button>
+	<button class="w-full user-button mt-6" on:click={callRedeem}>Withdraw</button>
 </div>
