@@ -32,8 +32,8 @@
 </script>
 
 <button
-	class={`relative w-full p-4 rounded shadow-md transition-shadow duration-200 cursor-pointer lg:hover:shadow-lg ${
-		expanded ? 'bg-white dark:bg-slate-800' : 'bg-gray-100 dark:bg-slate-900'
+	class={`relative w-full p-4 rounded shadow-lg transition-shadow duration-200 cursor-pointer ${
+		expanded ? 'bg-white dark:bg-slate-800' : 'bg-gray-100 dark:bg-slate-800'
 	}`}
 	on:click={toggleExpanded}
 >
@@ -67,7 +67,7 @@
 				<div>TP: {formatValue(position.takeProfitPrice, priceFeedDecimals, 2)}</div>
 			</div>
 			<div class="mt-2 text-sm info-label">
-				Open: {new Date(position.openDate * 1000).toLocaleString()} ({dayjs
+				Opened: {new Date(position.openDate * 1000).toLocaleString()} ({dayjs
 					.unix(position.openDate)
 					.fromNow()})
 			</div>
