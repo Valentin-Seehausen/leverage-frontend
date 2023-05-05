@@ -31,6 +31,12 @@ export const increaseAllowance = async (/** @type {number} */ amount) => {
 	return usdc.increaseAllowance(liquidityPoolAddress, parseUnits(amount.toString(), 6));
 };
 
+export const getAllowance = (/** @type {string} */ address) => {
+	return usdcContract().then((usdc) => {
+		return usdc.allowance(address, liquidityPoolAddress);
+	});
+};
+
 export const userBalance = derived(
 	account,
 	($account, set) => {

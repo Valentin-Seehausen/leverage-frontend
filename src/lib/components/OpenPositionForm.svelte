@@ -1,20 +1,18 @@
 <script>
 	import { usdcDecimals } from '$lib/config/constants';
 	import { openPosition } from '$lib/stores/tradePair';
-	import { increaseAllowance } from '$lib/stores/usdc';
 	import { userBalance } from '$lib/stores/usdc';
 	import { formatUnits } from 'ethers/lib/utils.js';
 
 	let collateral = 100;
-	let leverage = 2;
+	let leverage = 10;
 	let isLong = true;
 
 	let currentPrice = 20000;
 	$: takeProfitPrice = currentPrice * (1 + 1 / leverage);
 	$: liquidationPrice = currentPrice * (1 - 1 / leverage);
-	const handleSubmit = async () => {
-		await (await increaseAllowance(collateral)).wait();
-		await openPosition(collateral, leverage, isLong);
+	const handleSubmit = () => {
+		openPosition(collateral, leverage, isLong);
 	};
 </script>
 
