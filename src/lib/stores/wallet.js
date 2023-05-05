@@ -1,32 +1,20 @@
-import { writable } from 'svelte/store';
-import { connect, watchAccount, disconnect } from '@wagmi/core';
-
-import { configureChains, createClient } from '@wagmi/core';
-import { sepolia } from '@wagmi/core/chains';
-import { infuraProvider } from '@wagmi/core/providers/infura';
-import { publicProvider } from '@wagmi/core/providers/public';
-import { MetaMaskConnector } from '@wagmi/core/connectors/metaMask';
+import { derived, writable } from 'svelte/store';
+import { connect, watchAccount, disconnect, fetchSigner } from '@wagmi/core';
 import truncateEthAddress from 'truncate-eth-address';
-import { INFURA_API_KEY } from '$lib/config/keys.json';
+import { isInitialized } from './client';
+import { MetaMaskConnector } from '@wagmi/core/connectors/metaMask';
 
-const { provider, webSocketProvider } = configureChains(
-	[sepolia],
-	[
-		infuraProvider({ apiKey: INFURA_API_KEY, priority: 0, stallTimeout: 1000 }),
-		publicProvider({ priority: 1 })
-	]
-);
-
-const metaMaskConnector = new MetaMaskConnector({
+// import { metaMaskConnector } from './client';
+export const metaMaskConnector = new MetaMaskConnector({
 	options: { shimDisconnect: true }
 });
 
-createClient({
-	autoConnect: true,
-	provider,
-	webSocketProvider,
-	connectors: [metaMaskConnector]
-});
+export const connectWallet = async () => {
+	if (await fetchSigner()) return;
+	connect({
+		connector: metaMaskConnector
+	});
+};
 
 function createWallet() {
 	const { subscribe, set } = writable({
@@ -38,7 +26,9 @@ function createWallet() {
 	return {
 		subscribe,
 		connect: async () => {
-			const result = await connect({ connector: metaMaskConnector });
+			const result = await connect({
+				connector: metaMaskConnector
+			});
 
 			set({
 				isConnected: !!result.account,
@@ -54,12 +44,40 @@ function createWallet() {
 	};
 }
 
+// export const walletStore = derived(isInitialized, ($isInitialized, set) => {
+// 	if ($isInitialized) {
+// 		set(createWallet());
+// 	}
+// });
+
 export const wallet = createWallet();
 
-watchAccount(async (account) => {
-	wallet.set({
-		address: account.address || '',
-		isConnected: account.isConnected,
-		shortAddress: truncateEthAddress(account.address || '')
-	});
-});
+export const account = derived(
+	isInitialized,
+	($isInitialized, set) => {
+		if (!$isInitialized) return;
+
+		const unwatch = watchAccount(async (account) => {
+			set({
+				address: account.address || '',
+				isConnected: account.isConnected,
+				shortAddress: truncateEthAddress(account.address || '')
+			});
+		});
+
+		return () => unwatch();
+	},
+	{
+		isConnected: false,
+		address: '',
+		shortAddress: ''
+	}
+);
+
+// watchAccount(async (account) => {
+// 	wallet.set({
+// 		address: account.address || '',
+// 		isConnected: account.isConnected,
+// 		shortAddress: truncateEthAddress(account.address || '')
+// 	});
+// });

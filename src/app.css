@@ -30,4 +30,7 @@
 		@apply block px-3 py-2 rounded-md dark:hover:bg-slate-800 dark:focus:bg-slate-50 font-bold focus:outline-none focus:ring-1
 		 dark:focus:ring-sky-700 dark:focus:border-sky-700;
 	}
+	.headline {
+		@apply text-2xl font-bold text-slate-900 dark:text-white;
+	}
 }

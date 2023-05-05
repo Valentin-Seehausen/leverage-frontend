@@ -1,18 +1,10 @@
 <script>
-	import { wallet } from '$lib/stores/wallet';
-
-	let toggleConnection = () => {
-		if ($wallet.isConnected) {
-			wallet.disconnect();
-		} else {
-			wallet.connect();
-		}
-	};
+	import { account, connectWallet } from '$lib/stores/wallet';
 </script>
 
-<button class="user-button" on:click={toggleConnection}>
-	{#if $wallet.isConnected}
-		{$wallet.shortAddress}
+<button class="user-button" on:click={connectWallet}>
+	{#if $account.isConnected}
+		{$account.shortAddress}
 	{:else}
 		Connect Wallet
 	{/if}

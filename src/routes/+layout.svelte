@@ -1,5 +1,4 @@
 <script>
-	import WalletConnectButton from '$lib/components/WalletConnectButton.svelte';
 	import Nav from './Nav.svelte';
 	import '../app.css';
 </script>
