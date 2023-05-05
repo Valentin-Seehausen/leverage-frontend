@@ -1,6 +1,5 @@
 <script>
 	import { slide } from 'svelte/transition';
-	import { flip } from 'svelte/animate';
 	import * as dayjs from 'dayjs';
 	import relativeTime from 'dayjs/plugin/relativeTime';
 

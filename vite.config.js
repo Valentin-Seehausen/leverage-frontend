@@ -5,5 +5,9 @@ export default defineConfig({
 	plugins: [sveltekit()],
 	test: {
 		include: ['src/**/*.{test,spec}.{js,ts}']
+	},
+	// Needed for @urql/svelte
+	optimizeDeps: {
+		exclude: ['@urql/svelte']
 	}
 });
