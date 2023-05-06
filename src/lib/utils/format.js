@@ -57,7 +57,8 @@ export const formatPercentage = (value) => {
 		return prefix + value.toFixed(2) + '%';
 	} else if (typeof value === 'string') {
 		const prefix = value.startsWith('-') ? '+' : '';
-		return prefix + value + '%';
+		const fixedValue = parseFloat(value).toFixed(2);
+		return prefix + fixedValue + '%';
 	}
 	return value;
 };

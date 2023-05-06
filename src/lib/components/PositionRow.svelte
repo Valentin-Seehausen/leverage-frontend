@@ -79,13 +79,26 @@
 			<span class="info-label">Opened:</span>
 			{new Date(position.openDate * 1000).toLocaleString()}
 		</td>
-		<td
-			colspan="3"
-			class={`pr-2 py-2 mb-6 text-right font-extrabold ${
-				position.pnlSharesPercentage >= 0 ? 'dark:text-green-600' : 'dark:text-red-700'
-			}`}
-		>
-			{formatPercentage(position.pnlSharesPercentage)}
-		</td>
+		{#if position.isOpen}
+			<td
+				colspan="3"
+				class={`pr-2 py-2 mb-6 text-right font-extrabold ${
+					position.pnlSharesPercentage >= 0 ? 'dark:text-green-600' : 'dark:text-red-700'
+				}`}
+			>
+				{formatPercentage(position.pnlSharesPercentage)}
+			</td>
+		{:else}
+			<td colspan="3" class="pr-2 py-2 mb-6 text-right">
+				<span class="info-label">Asset PnL:</span>
+				<span
+					class={`font-extrabold ${
+						position.pnlAssetsPercentage >= 0 ? 'dark:text-green-600' : 'dark:text-red-700'
+					}`}
+				>
+					{formatPercentage(position.pnlAssetsPercentage)}
+				</span>
+			</td>
+		{/if}
 	</tr>
 {/if}
