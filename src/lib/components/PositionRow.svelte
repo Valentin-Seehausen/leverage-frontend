@@ -32,7 +32,7 @@
 	/** @type {number} */
 	export let index;
 
-	let expanded = true;
+	let expanded = false;
 	function toggleExpanded() {
 		expanded = !expanded;
 	}
