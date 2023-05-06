@@ -17,7 +17,8 @@
 	$: minClosePrice = $currentPrice
 		.mul(parseUnits('1', leverageDecimals))
 		.div(parseUnits(leverage.toString(), leverageDecimals))
-		.sub($currentPrice);
+		.sub($currentPrice)
+		.mul(-1);
 	$: takeProfitPrice = isLong ? maxClosePrice : minClosePrice;
 	$: liquidationPrice = isLong ? minClosePrice : maxClosePrice;
 
