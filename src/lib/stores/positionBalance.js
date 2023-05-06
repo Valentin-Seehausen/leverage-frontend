@@ -16,6 +16,8 @@ const initValue = {
 	shortPositionCount: 0,
 	shortShares: 0,
 	shortSharesPercentage: 0,
+	totalShares: 0,
+	totalCollateral: 0,
 	loading: true,
 	/** @type {import("@urql/svelte").CombinedError | null} */ error: null
 };
@@ -82,8 +84,10 @@ export const positionBalance = readable(initValue, (set) => {
 				...tradePair,
 				longSharesPercentage,
 				shortSharesPercentage,
+				totalShares,
 				longCollateralPercentage,
 				shortCollateralPercentage,
+				totalCollateral,
 				loading: false
 			});
 		} else if (result.fetching) {
