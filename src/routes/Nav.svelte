@@ -16,7 +16,6 @@
 		P2P Leverage
 	</h1>
 	<a class="nav-button" href="/">Trading</a>
-	<a class="nav-button" href="/wallet">Wallet</a>
 	<a class="nav-button" href="/liquidity-pool">Liquidity Pool</a>
 	<WalletConnectButton />
 </nav>
@@ -37,7 +36,6 @@
 	{#if open}
 		<div class="flex flex-col p-3" transition:slide>
 			<a class="nav-button" on:click={toggle} href="/">Trading</a>
-			<a class="nav-button" on:click={toggle} href="/wallet">Wallet</a>
 			<a class="nav-button" on:click={toggle} href="/liquidity-pool">Liquidity Pool</a>
 		</div>
 	{/if}
