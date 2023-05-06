@@ -9,11 +9,13 @@ import { closeablePositionIds } from './closeablePositions';
 import { BigNumber } from 'ethers';
 import { get } from 'svelte/store';
 
-export const openPosition = async (
-	/** @type {number} */ collateral,
-	/** @type {number} */ leverage,
-	/** @type {boolean} */ isLong
-) => {
+/**
+ * Opens a position at TradePair via Signer
+ * @param {number} collateral
+ * @param {number} leverage
+ * @param {boolean} isLong
+ */
+export const openPosition = async (collateral, leverage, isLong) => {
 	const parsedCollateral = parseUnits(collateral.toString(), usdcDecimals);
 	const parsedLeverage = parseUnits(leverage.toString(), leverageDecimals);
 

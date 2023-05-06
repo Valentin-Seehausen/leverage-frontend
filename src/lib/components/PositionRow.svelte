@@ -3,27 +3,19 @@
 	import * as dayjs from 'dayjs';
 	import relativeTime from 'dayjs/plugin/relativeTime';
 	import { formatUnits } from 'ethers/lib/utils.js';
-	import { leverageDecimals, priceFeedDecimals, usdcDecimals } from '$lib/config/constants';
-	import { formatValue } from '$lib/utils/format';
+	import {
+		leverageDecimals,
+		percentageDecimals,
+		priceFeedDecimals,
+		usdcDecimals
+	} from '$lib/config/constants';
+	import { formatPercentage, formatValue } from '$lib/utils/format';
 
 	dayjs.extend(relativeTime);
 
-	/**
-	 * @typedef {Object} Position
-	 * @property {number} id - The position ID.
-	 * @property {boolean} isLong - Whether the position is long (true) or short (false).
-	 * @property {number} collateral - The amount of collateral for the position.
-	 * @property {string} leverage - The leverage used for the position.
-	 * @property {number} entryPrice - The entry price for the position.
-	 * @property {number} liquidationPrice - The liquidation price for the position.
-	 * @property {number} takeProfitPrice - The take profit price for the position.
-	 * @property {number} openDate - The timestamp of the position's open date.
-	 * @property {number} closeDate - The timestamp of the position's close date.
-	 * @property {number} pnl - The profit and loss percentage for the position.
-	 */
-
-	/** @type {Position} */
+	/** @type {import("$lib/stores/positions.js").Position} */
 	export let position;
+
 	/** @type {number} */
 	export let index;
 
@@ -55,12 +47,26 @@
 	<td class=" px-2 py-2 text-right">
 		<span class="font-mono">{formatValue(position.entryPrice, priceFeedDecimals, 2)}</span>
 	</td>
-	<td class=" px-2 py-2 text-right">
-		<span class="font-mono">{formatValue(position.liquidationPrice, priceFeedDecimals, 2)}</span>
-	</td>
-	<td class=" px-2 py-2 text-right">
-		<span class="font-mono">{formatValue(position.takeProfitPrice, priceFeedDecimals, 2)}</span>
-	</td>
+	{#if position.isOpen}
+		<td class=" px-2 py-2 text-right">
+			<span class="font-mono">{formatValue(position.liquidationPrice, priceFeedDecimals, 2)}</span>
+		</td>
+		<td class=" px-2 py-2 text-right">
+			<span class="font-mono">{formatValue(position.takeProfitPrice, priceFeedDecimals, 2)}</span>
+		</td>
+	{:else}
+		<td class=" px-2 py-2 text-right">
+			<span class="font-mono">{formatValue(position.closePrice, priceFeedDecimals, 2)}</span>
+		</td>
+		<td
+			colspan="3"
+			class={`px-2 py-2 text-right font-extrabold ${
+				position.pnlSharesPercentage >= 0 ? 'dark:text-green-600' : 'dark:text-red-700'
+			}`}
+		>
+			{formatPercentage(position.pnlSharesPercentage)}
+		</td>
+	{/if}
 </tr>
 
 {#if expanded}
@@ -73,9 +79,26 @@
 			<span class="info-label">Opened:</span>
 			{new Date(position.openDate * 1000).toLocaleString()}
 		</td>
-		<td colspan="3" class="pr-2 py-2 mb-6 text-right">
-			<span class="info-label">Current PnL:</span>
-			{position.pnl}%
-		</td>
+		{#if position.isOpen}
+			<td
+				colspan="3"
+				class={`pr-2 py-2 mb-6 text-right font-extrabold ${
+					position.pnlSharesPercentage >= 0 ? 'dark:text-green-600' : 'dark:text-red-700'
+				}`}
+			>
+				{formatPercentage(position.pnlSharesPercentage)}
+			</td>
+		{:else}
+			<td colspan="3" class="pr-2 py-2 mb-6 text-right">
+				<span class="info-label">Asset PnL:</span>
+				<span
+					class={`font-extrabold ${
+						position.pnlAssetsPercentage >= 0 ? 'dark:text-green-600' : 'dark:text-red-700'
+					}`}
+				>
+					{formatPercentage(position.pnlAssetsPercentage)}
+				</span>
+			</td>
+		{/if}
 	</tr>
 {/if}

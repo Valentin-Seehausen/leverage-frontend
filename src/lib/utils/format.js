@@ -4,6 +4,7 @@ import { formatUnits } from 'ethers/lib/utils.js';
 /**
  * @typedef {Object} FormatValueOptions
  * @property {boolean} [showSymbol]
+ * @property {boolean} [showPlus]
  * @property {string} [symbol]
  */
 
@@ -17,6 +18,7 @@ import { formatUnits } from 'ethers/lib/utils.js';
 export const formatValue = (value, decimals, precision = 2, options) => {
 	const defaultOptions = {
 		showSymbol: true,
+		showPlus: false,
 		locale: 'en-US',
 		currency: 'USD'
 	};
@@ -35,5 +37,28 @@ export const formatValue = (value, decimals, precision = 2, options) => {
 		Math.abs(+formattedValue)
 	);
 
-	return BigNumber.from(value).isNegative() ? '-' + formattedNumber : formattedNumber;
+	const prefix =
+		mergedOptions.showPlus && !BigNumber.from(value).isNegative()
+			? '+'
+			: BigNumber.from(value).isNegative()
+			? '-'
+			: '';
+
+	return prefix + formattedNumber;
+};
+
+/**
+ * @param {number | string} value
+ * @returns
+ */
+export const formatPercentage = (value) => {
+	if (typeof value === 'number') {
+		const prefix = value >= 0 ? '+' : '';
+		return prefix + value.toFixed(2) + '%';
+	} else if (typeof value === 'string') {
+		const prefix = value.startsWith('-') ? '+' : '';
+		const fixedValue = parseFloat(value).toFixed(2);
+		return prefix + fixedValue + '%';
+	}
+	return value;
 };
