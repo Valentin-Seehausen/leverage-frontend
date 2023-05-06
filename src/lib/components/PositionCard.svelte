@@ -3,7 +3,12 @@
 	import * as dayjs from 'dayjs';
 	import relativeTime from 'dayjs/plugin/relativeTime';
 	import { formatUnits } from 'ethers/lib/utils.js';
-	import { leverageDecimals, priceFeedDecimals, usdcDecimals } from '$lib/config/constants';
+	import {
+		leverageDecimals,
+		percentageDecimals,
+		priceFeedDecimals,
+		usdcDecimals
+	} from '$lib/config/constants';
 	import { formatValue } from '$lib/utils/format';
 
 	dayjs.extend(relativeTime);
@@ -50,7 +55,7 @@
 	</div>
 	<div class="flex items-center justify-between mt-2">
 		<div class={`font-bold ${position.pnl >= 0 ? 'text-green-600' : 'text-red-700'}`}>
-			PnL: {position.pnl}%
+			{formatValue(position.pnl, percentageDecimals, 2, { showSymbol: false, showPlus: true })}%
 		</div>
 		{#if !expanded}
 			<div class="font-mono">

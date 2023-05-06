@@ -3,7 +3,12 @@
 	import * as dayjs from 'dayjs';
 	import relativeTime from 'dayjs/plugin/relativeTime';
 	import { formatUnits } from 'ethers/lib/utils.js';
-	import { leverageDecimals, priceFeedDecimals, usdcDecimals } from '$lib/config/constants';
+	import {
+		leverageDecimals,
+		percentageDecimals,
+		priceFeedDecimals,
+		usdcDecimals
+	} from '$lib/config/constants';
 	import { formatValue } from '$lib/utils/format';
 
 	dayjs.extend(relativeTime);
@@ -27,7 +32,7 @@
 	/** @type {number} */
 	export let index;
 
-	let expanded = false;
+	let expanded = true;
 	function toggleExpanded() {
 		expanded = !expanded;
 	}
@@ -73,9 +78,13 @@
 			<span class="info-label">Opened:</span>
 			{new Date(position.openDate * 1000).toLocaleString()}
 		</td>
-		<td colspan="3" class="pr-2 py-2 mb-6 text-right">
-			<span class="info-label">Current PnL:</span>
-			{position.pnl}%
+		<td
+			colspan="3"
+			class={`pr-2 py-2 mb-6 text-right font-extrabold ${
+				position.pnl >= 0 ? 'dark:text-green-600' : 'dark:text-red-700'
+			}`}
+		>
+			{formatValue(position.pnl, percentageDecimals, 2, { showSymbol: false, showPlus: true })}%
 		</td>
 	</tr>
 {/if}
