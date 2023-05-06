@@ -44,7 +44,7 @@
 			</div>
 		</div>
 
-		<h2 class="font-semibold info-label font-heading mb-3 mt-9">USDC Distribution:</h2>
+		<h2 class="font-semibold info-label font-heading mb-3 mt-9">Collateral (USDC) Distribution:</h2>
 		<div class="relative bg-gray-200 rounded h-8">
 			<div
 				class="absolute font-semibold left-0 h-full bg-green-600 text-white text-xs text-left leading-8 px-2"
@@ -64,13 +64,13 @@
 		<div class="flex flex-row mt-3">
 			<div class="info-label">Long:</div>
 			<div class="grow text-right">
-				{formatUnits($positionBalance.longCollateral, usdcDecimals)}
+				{formatValue($positionBalance.longCollateral, usdcDecimals)}
 			</div>
 		</div>
 		<div class="flex flex-row">
 			<div class="info-label">Short:</div>
 			<div class="grow text-right">
-				{formatUnits($positionBalance.shortCollateral, usdcDecimals)}
+				{formatValue($positionBalance.shortCollateral, usdcDecimals)}
 			</div>
 		</div>
 	{/if}
