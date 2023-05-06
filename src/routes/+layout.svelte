@@ -35,14 +35,14 @@
 	}
 	:global(.log.info) {
 		--toastBackground: theme(colors.amber.700);
-		--toastBarBackground: theme(colors.amber.300);
+		--toastBarBackground: theme(colors.amber.600);
 	}
-	:global(.log.warn) {
-		--toastBackground: theme(colors.red.700);
-		--toastBarBackground: theme(colors.red.300);
+	:global(.log.error) {
+		--toastBackground: theme(colors.red.800);
+		--toastBarBackground: theme(colors.red.700);
 	}
 	:global(.log.success) {
 		--toastBackground: theme(colors.green.600);
-		--toastBarBackground: theme(colors.green.300);
+		--toastBarBackground: theme(colors.green.500);
 	}
 </style>

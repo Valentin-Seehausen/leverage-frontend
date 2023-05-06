@@ -101,7 +101,13 @@ export const userAssets = derived(
 
 export const redeem = async (/** @type {BigNumber} */ shares) => {
 	const signer = await fetchSigner();
-	if (!signer) throw new Error('no signer');
+	if (!signer) {
+		toast.push('Please connect MetaMask', {
+			duration: 2000,
+			classes: ['error']
+		});
+		return;
+	}
 
 	const tx = await liquidityPoolContract(signer).redeem(shares);
 

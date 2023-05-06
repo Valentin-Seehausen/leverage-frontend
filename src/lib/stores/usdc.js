@@ -10,6 +10,7 @@ import usdcAbi from '$lib/abis/USDC';
 import { account } from './wallet';
 import { derived } from 'svelte/store';
 import { BigNumber } from 'ethers';
+import { toast } from '@zerodevx/svelte-toast';
 
 const usdcContract = async () =>
 	getContract({
@@ -28,7 +29,23 @@ export const increaseAllowance = async (/** @type {number} */ amount) => {
 		signerOrProvider: signer
 	});
 
-	return usdc.increaseAllowance(liquidityPoolAddress, parseUnits(amount.toString(), 6));
+	const tx = await usdc.increaseAllowance(liquidityPoolAddress, parseUnits(amount.toString(), 6));
+
+	const txToast = toast.push('Waiting for USDC Allowance Transaction...', {
+		initial: 0,
+		classes: ['info']
+	});
+
+	await tx.wait();
+
+	toast.pop(txToast);
+
+	toast.push('Allowance Successful', {
+		duration: 2000,
+		classes: ['success']
+	});
+
+	return;
 };
 
 export const getAllowance = (/** @type {string} */ address) => {
