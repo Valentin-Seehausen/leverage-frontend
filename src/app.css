@@ -4,7 +4,7 @@
 
 @layer components {
 	.info-label {
-		opacity: 0.7;
+		@apply dark:text-slate-400;
 	}
 	.box {
 		@apply p-3 m-2 border rounded dark:border-slate-800 dark:bg-slate-900;

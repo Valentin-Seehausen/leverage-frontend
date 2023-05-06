@@ -9,25 +9,11 @@
 		priceFeedDecimals,
 		usdcDecimals
 	} from '$lib/config/constants';
-	import { formatValue } from '$lib/utils/format';
+	import { formatPercentage, formatValue } from '$lib/utils/format';
 
 	dayjs.extend(relativeTime);
 
-	/**
-	 * @typedef {Object} Position
-	 * @property {number} id - The position ID.
-	 * @property {boolean} isLong - Whether the position is long (true) or short (false).
-	 * @property {number} collateral - The amount of collateral for the position.
-	 * @property {string} leverage - The leverage used for the position.
-	 * @property {number} entryPrice - The entry price for the position.
-	 * @property {number} liquidationPrice - The liquidation price for the position.
-	 * @property {number} takeProfitPrice - The take profit price for the position.
-	 * @property {number} openDate - The timestamp of the position's open date.
-	 * @property {number} closeDate - The timestamp of the position's close date.
-	 * @property {number} pnl - The profit and loss percentage for the position.
-	 */
-
-	/** @type {Position} */
+	/** @type {import("$lib/stores/positions.js").Position} */
 	export let position;
 
 	let expanded = false;
@@ -54,8 +40,10 @@
 		<div class="font-mono">{formatValue(position.collateral, usdcDecimals, 2)}</div>
 	</div>
 	<div class="flex items-center justify-between mt-2">
-		<div class={`font-bold ${position.pnl >= 0 ? 'text-green-600' : 'text-red-700'}`}>
-			{formatValue(position.pnl, percentageDecimals, 2, { showSymbol: false, showPlus: true })}%
+		<div
+			class={`font-bold ${position.pnlSharesPercentage >= 0 ? 'text-green-600' : 'text-red-700'}`}
+		>
+			{formatPercentage(position.pnlSharesPercentage)}
 		</div>
 		{#if !expanded}
 			<div class="font-mono">
@@ -72,15 +60,11 @@
 				<div>TP: {formatValue(position.takeProfitPrice, priceFeedDecimals, 2)}</div>
 			</div>
 			<div class="mt-2 text-sm info-label">
-				Opened: {new Date(position.openDate * 1000).toLocaleString()} ({dayjs
-					.unix(position.openDate)
-					.fromNow()})
+				Opened: {new Date(position.openDate * 1000).toLocaleString()}
 			</div>
-			{#if position.closeDate && position.pnl !== null}
+			{#if !position.isOpen}
 				<div class="mt-2 text-sm info-label">
-					Close: {new Date(position.closeDate * 1000).toLocaleString()} ({dayjs
-						.unix(position.closeDate)
-						.fromNow()})
+					Closed: {new Date(position.closeDate * 1000).toLocaleString()}
 				</div>
 			{/if}
 		</div>

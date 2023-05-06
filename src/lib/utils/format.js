@@ -46,3 +46,18 @@ export const formatValue = (value, decimals, precision = 2, options) => {
 
 	return prefix + formattedNumber;
 };
+
+/**
+ * @param {number | string} value
+ * @returns
+ */
+export const formatPercentage = (value) => {
+	if (typeof value === 'number') {
+		const prefix = value >= 0 ? '+' : '';
+		return prefix + value.toFixed(2) + '%';
+	} else if (typeof value === 'string') {
+		const prefix = value.startsWith('-') ? '+' : '';
+		return prefix + value + '%';
+	}
+	return value;
+};
