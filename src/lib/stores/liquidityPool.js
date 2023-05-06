@@ -8,6 +8,7 @@ import { derived } from 'svelte/store';
 import { BigNumber } from 'ethers';
 import { isInitialized } from './client';
 import { account } from './wallet';
+import { toast } from '@zerodevx/svelte-toast';
 
 const liquidityPoolContract = (
 	/** @type {import('@wagmi/core').Provider | import('@wagmi/core').Signer}  */ signerOrProvider = getProvider()
@@ -100,7 +101,31 @@ export const userAssets = derived(
 
 export const redeem = async (/** @type {BigNumber} */ shares) => {
 	const signer = await fetchSigner();
-	if (!signer) throw new Error('no signer');
+	if (!signer) {
+		toast.push('Please connect MetaMask', {
+			duration: 2000,
+			classes: ['error']
+		});
+		return;
+	}
 
-	await liquidityPoolContract(signer).redeem(shares);
+	const tx = await liquidityPoolContract(signer).redeem(shares);
+
+	const txToast = toast.push('Waiting for Withdraw Transaction...', {
+		initial: 0,
+		classes: ['info']
+	});
+
+	await tx.wait();
+
+	toast.pop(txToast);
+
+	toast.push('Withdraw Successful', {
+		duration: 2000,
+		classes: ['success']
+	});
+
+	// await new Promise((r) => setTimeout(r, 200000));
+
+	// // await tx.wait();
 };
