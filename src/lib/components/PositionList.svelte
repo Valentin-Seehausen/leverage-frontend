@@ -3,11 +3,13 @@
 	import relativeTime from 'dayjs/plugin/relativeTime';
 	import PositionCard from './PositionCard.svelte';
 	import PositionRow from './PositionRow.svelte';
-	import { openUserPositions, closedUserPositions } from '$lib/stores/positions';
+	import { openUserPositions } from '$lib/stores/openUserPositions';
+	// import { closedUserPositions } from '$lib/stores/closedUserPositions';
 	dayjs.extend(relativeTime);
 
 	let activeTab = 'open';
-	$: positions = activeTab === 'open' ? $openUserPositions : $closedUserPositions;
+	// $: positions = activeTab === 'open' ? $openUserPositions : $closedUserPositions;
+	$: positions = $openUserPositions;
 </script>
 
 <div class="box">
@@ -24,14 +26,14 @@
 			activeTab == 'closed' ? 'underline' : 'dark:text-slate-400'
 		}`}>Closed</button
 	>
-	{#if positions.fetching}
+	{#if positions.loading}
 		<p>Loading your positions.</p>
 	{:else if positions.error}
 		<p>Error: {positions.error.message}</p>
 	{:else}
 		<div class="lg:hidden">
 			<div class="grid grid-cols-1 gap-4">
-				{#each positions.data.positions as position}
+				{#each positions.positions as position}
 					<PositionCard {position} />
 				{/each}
 			</div>
@@ -55,7 +57,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						{#each positions.data.positions as position, i}
+						{#each positions.positions as position, i}
 							<PositionRow {position} index={i} />
 						{/each}
 					</tbody>

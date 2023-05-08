@@ -6,7 +6,7 @@
 
 	dayjs.extend(relativeTime);
 
-	/** @type {import("$lib/stores/positions.js").Position} */
+	/** @type {import("$lib/utils/position").Position} */
 	export let position;
 
 	/** @type {number} */
