@@ -78,6 +78,11 @@
 		<td colspan="3" class="pl-2 py-2 mb-6">
 			<span class="info-label">Opened:</span>
 			{new Date(position.openDate * 1000).toLocaleString()}
+			{#if !position.isOpen}
+				<br />
+				<span class="info-label">Closed:</span>
+				{new Date(position.closeDate * 1000).toLocaleString()}
+			{/if}
 		</td>
 		{#if position.isOpen}
 			<td
