@@ -1,6 +1,7 @@
 <script>
 	const initTradingView = () => {
 		// @ts-ignore
+		// eslint-disable-next-line no-undef
 		new TradingView.widget({
 			width: '100%',
 			height: '100%',

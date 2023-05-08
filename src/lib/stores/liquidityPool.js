@@ -1,30 +1,44 @@
-import { fetchSigner, getContract, getProvider } from '@wagmi/core';
-import liquidityPoolAbi from '$lib/abis/LiquidityPool';
-import {
-	liquidityPool as liquidityPoolAddress,
-	tradePair as tradePairAddress
-} from '$lib/addresses/contracts.sepolia.json';
+import { fetchSigner } from '@wagmi/core';
+import { tradePair as tradePairAddress } from '$lib/addresses/contracts.sepolia.json';
 import { derived } from 'svelte/store';
 import { BigNumber } from 'ethers';
 import { isInitialized } from './client';
 import { account } from './wallet';
 import { toast } from '@zerodevx/svelte-toast';
+import { getLiquidityPoolContract } from '$lib/utils/contracts';
 
-const liquidityPoolContract = (
-	/** @type {import('@wagmi/core').Provider | import('@wagmi/core').Signer}  */ signerOrProvider = getProvider()
-) =>
-	getContract({
-		address: liquidityPoolAddress,
-		abi: liquidityPoolAbi,
-		signerOrProvider
-	});
-
-export const totalSupply = derived(
+/**
+ * This store is used to run the other contract reading stores after a liquidity pool update
+ * It also makes sure the wagmi client is initialized by returning 0 before
+ * I updates max once per block
+ */
+export const liquitityPoolLastUpdate = derived(
 	isInitialized,
 	($isInitialized, set) => {
 		if (!$isInitialized) return;
 
-		liquidityPoolContract()
+		const liquidityPoolInstance = getLiquidityPoolContract();
+
+		liquidityPoolInstance.on('Transfer', (_from, _to, _amount, event) => {
+			set(event.blockNumber);
+		});
+
+		// set to 1 to trigger the first update
+		set(1);
+
+		return () => {
+			liquidityPoolInstance.removeAllListeners();
+		};
+	},
+	0
+);
+
+export const totalSupply = derived(
+	liquitityPoolLastUpdate,
+	($liquitityPoolLastUpdate, set) => {
+		if ($liquitityPoolLastUpdate == 0) return;
+
+		getLiquidityPoolContract()
 			.totalSupply()
 			.then((totalSupply) => {
 				set(totalSupply);
@@ -34,11 +48,11 @@ export const totalSupply = derived(
 );
 
 export const totalAssets = derived(
-	isInitialized,
-	($isInitialized, set) => {
-		if (!$isInitialized) return;
+	liquitityPoolLastUpdate,
+	($liquitityPoolLastUpdate, set) => {
+		if ($liquitityPoolLastUpdate == 0) return;
 
-		liquidityPoolContract()
+		getLiquidityPoolContract()
 			.totalAssets()
 			.then((totalAssets) => {
 				set(totalAssets);
@@ -48,14 +62,29 @@ export const totalAssets = derived(
 );
 
 export const tradePairBalance = derived(
-	isInitialized,
-	($isInitialized, set) => {
-		if (!$isInitialized) return;
+	liquitityPoolLastUpdate,
+	($liquitityPoolLastUpdate, set) => {
+		if ($liquitityPoolLastUpdate == 0) return;
 
-		liquidityPoolContract()
+		getLiquidityPoolContract()
 			.balanceOf(tradePairAddress)
 			.then((tradePairBalance) => {
 				set(tradePairBalance);
+			});
+	},
+	BigNumber.from('0')
+);
+
+export const userShares = derived(
+	[liquitityPoolLastUpdate, account],
+	([$liquitityPoolLastUpdate, $account], set) => {
+		if ($liquitityPoolLastUpdate == 0) return;
+		if (!$account.isConnected) return;
+
+		getLiquidityPoolContract()
+			.balanceOf($account.address)
+			.then((userBalance) => {
+				set(userBalance);
 			});
 	},
 	BigNumber.from('0')
@@ -73,21 +102,6 @@ export const liquidityPoolRatio = derived(
 	}
 );
 
-export const userShares = derived(
-	[isInitialized, account],
-	([$isInitialized, $account], set) => {
-		if (!$isInitialized) return;
-		if (!$account.isConnected) return;
-
-		liquidityPoolContract()
-			.balanceOf($account.address)
-			.then((userBalance) => {
-				set(userBalance);
-			});
-	},
-	BigNumber.from('0')
-);
-
 export const userAssets = derived(
 	[userShares, liquidityPoolRatio],
 	([$userShares, $liquidityPoolRatio], set) => {
@@ -96,7 +110,8 @@ export const userAssets = derived(
 			return;
 		}
 		set($userShares.div($liquidityPoolRatio));
-	}
+	},
+	BigNumber.from('0')
 );
 
 export const redeem = async (/** @type {BigNumber} */ shares) => {
@@ -109,7 +124,7 @@ export const redeem = async (/** @type {BigNumber} */ shares) => {
 		return;
 	}
 
-	const tx = await liquidityPoolContract(signer).redeem(shares);
+	const tx = await getLiquidityPoolContract(signer).redeem(shares);
 
 	const txToast = toast.push('Waiting for Withdraw Transaction...', {
 		initial: 0,
@@ -124,8 +139,4 @@ export const redeem = async (/** @type {BigNumber} */ shares) => {
 		duration: 2000,
 		classes: ['success']
 	});
-
-	// await new Promise((r) => setTimeout(r, 200000));
-
-	// // await tx.wait();
 };

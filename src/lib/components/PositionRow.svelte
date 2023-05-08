@@ -1,19 +1,12 @@
 <script>
-	import { slide } from 'svelte/transition';
 	import * as dayjs from 'dayjs';
 	import relativeTime from 'dayjs/plugin/relativeTime';
-	import { formatUnits } from 'ethers/lib/utils.js';
-	import {
-		leverageDecimals,
-		percentageDecimals,
-		priceFeedDecimals,
-		usdcDecimals
-	} from '$lib/config/constants';
+	import { leverageDecimals, priceFeedDecimals, usdcDecimals } from '$lib/config/constants';
 	import { formatPercentage, formatValue } from '$lib/utils/format';
 
 	dayjs.extend(relativeTime);
 
-	/** @type {import("$lib/stores/positions.js").Position} */
+	/** @type {import("$lib/utils/position").Position} */
 	export let position;
 
 	/** @type {number} */
@@ -78,6 +71,11 @@
 		<td colspan="3" class="pl-2 py-2 mb-6">
 			<span class="info-label">Opened:</span>
 			{new Date(position.openDate * 1000).toLocaleString()}
+			{#if !position.isOpen}
+				<br />
+				<span class="info-label">Closed:</span>
+				{new Date(position.closeDate * 1000).toLocaleString()}
+			{/if}
 		</td>
 		{#if position.isOpen}
 			<td

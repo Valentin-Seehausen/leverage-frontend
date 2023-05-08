@@ -2,18 +2,12 @@
 	import { slide } from 'svelte/transition';
 	import * as dayjs from 'dayjs';
 	import relativeTime from 'dayjs/plugin/relativeTime';
-	import { formatUnits } from 'ethers/lib/utils.js';
-	import {
-		leverageDecimals,
-		percentageDecimals,
-		priceFeedDecimals,
-		usdcDecimals
-	} from '$lib/config/constants';
+	import { leverageDecimals, priceFeedDecimals, usdcDecimals } from '$lib/config/constants';
 	import { formatPercentage, formatValue } from '$lib/utils/format';
 
 	dayjs.extend(relativeTime);
 
-	/** @type {import("$lib/stores/positions.js").Position} */
+	/** @type {import("$lib/utils/position").Position} */
 	export let position;
 
 	let expanded = false;

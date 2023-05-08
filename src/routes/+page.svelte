@@ -4,7 +4,6 @@
 	import PositionList from '$lib/components/PositionList.svelte';
 	import TradingViewWidget from '$lib/components/TradingViewWidget.svelte';
 	import PositionBalance from '$lib/components/PositionBalance.svelte';
-	import WalletConnectButton from '$lib/components/WalletConnectButton.svelte';
 </script>
 
 <div class="lg:flex">
