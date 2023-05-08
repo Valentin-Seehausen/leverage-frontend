@@ -4,7 +4,6 @@ import truncateEthAddress from 'truncate-eth-address';
 import { isInitialized } from './client';
 import { MetaMaskConnector } from '@wagmi/core/connectors/metaMask';
 
-// import { metaMaskConnector } from './client';
 export const metaMaskConnector = new MetaMaskConnector({
 	options: { shimDisconnect: true }
 });
@@ -44,12 +43,6 @@ function createWallet() {
 	};
 }
 
-// export const walletStore = derived(isInitialized, ($isInitialized, set) => {
-// 	if ($isInitialized) {
-// 		set(createWallet());
-// 	}
-// });
-
 export const wallet = createWallet();
 
 export const account = derived(
@@ -73,11 +66,3 @@ export const account = derived(
 		shortAddress: ''
 	}
 );
-
-// watchAccount(async (account) => {
-// 	wallet.set({
-// 		address: account.address || '',
-// 		isConnected: account.isConnected,
-// 		shortAddress: truncateEthAddress(account.address || '')
-// 	});
-// });
