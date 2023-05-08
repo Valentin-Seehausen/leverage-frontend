@@ -3,8 +3,6 @@
 	import { positionBalance } from '$lib/stores/positionBalance';
 	import { formatPercentage, formatValue } from '$lib/utils/format';
 	import { formatUnits } from 'ethers/lib/utils.js';
-
-	$: console.log($positionBalance);
 </script>
 
 <div class="p-6">
