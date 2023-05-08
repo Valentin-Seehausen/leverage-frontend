@@ -1,8 +1,7 @@
 <script>
 	import { liquidityPoolDecimals, usdcDecimals } from '$lib/config/constants';
 	import { positionBalance } from '$lib/stores/positionBalance';
-	import { formatPercentage, formatValue } from '$lib/utils/format';
-	import { formatUnits } from 'ethers/lib/utils.js';
+	import { formatValue } from '$lib/utils/format';
 </script>
 
 <div class="p-6">

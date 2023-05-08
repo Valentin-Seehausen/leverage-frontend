@@ -1,14 +1,7 @@
 <script>
-	import { slide } from 'svelte/transition';
 	import * as dayjs from 'dayjs';
 	import relativeTime from 'dayjs/plugin/relativeTime';
-	import { formatUnits } from 'ethers/lib/utils.js';
-	import {
-		leverageDecimals,
-		percentageDecimals,
-		priceFeedDecimals,
-		usdcDecimals
-	} from '$lib/config/constants';
+	import { leverageDecimals, priceFeedDecimals, usdcDecimals } from '$lib/config/constants';
 	import { formatPercentage, formatValue } from '$lib/utils/format';
 
 	dayjs.extend(relativeTime);
