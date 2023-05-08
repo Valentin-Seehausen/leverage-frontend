@@ -1,5 +1,5 @@
-import { derived, writable } from 'svelte/store';
-import { connect, watchAccount, disconnect, fetchSigner } from '@wagmi/core';
+import { derived } from 'svelte/store';
+import { connect, watchAccount, fetchSigner } from '@wagmi/core';
 import truncateEthAddress from 'truncate-eth-address';
 import { isInitialized } from './client';
 import { MetaMaskConnector } from '@wagmi/core/connectors/metaMask';
@@ -14,36 +14,6 @@ export const connectWallet = async () => {
 		connector: metaMaskConnector
 	});
 };
-
-function createWallet() {
-	const { subscribe, set } = writable({
-		isConnected: false,
-		address: '',
-		shortAddress: ''
-	});
-
-	return {
-		subscribe,
-		connect: async () => {
-			const result = await connect({
-				connector: metaMaskConnector
-			});
-
-			set({
-				isConnected: !!result.account,
-				address: result.account,
-				shortAddress: truncateEthAddress(result.account)
-			});
-		},
-		disconnect: async () => {
-			await disconnect();
-			set({ isConnected: false, address: '', shortAddress: '' });
-		},
-		set
-	};
-}
-
-export const wallet = createWallet();
 
 export const account = derived(
 	isInitialized,
