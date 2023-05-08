@@ -1,14 +1,12 @@
-import { getContract } from '@wagmi/core';
 import { fetchSigner } from '@wagmi/core';
 import { parseUnits } from 'ethers/lib/utils.js';
-import tradePairAbi from '$lib/abis/TradePair';
-import { tradePair as tradePairAddress } from '$lib/addresses/contracts.sepolia.json';
 import { getAllowance, increaseAllowance } from './usdc';
 import { leverageDecimals, usdcDecimals } from '$lib/config/constants';
 import { closeablePositionIds } from './closeablePositions';
 import { BigNumber } from 'ethers';
 import { get } from 'svelte/store';
 import { toast } from '@zerodevx/svelte-toast';
+import { getTradePairContract } from '$lib/utils/contracts';
 
 /**
  * Opens a position at TradePair via Signer
@@ -35,11 +33,7 @@ export const openPosition = async (collateral, leverage, isLong) => {
 		await increaseAllowance(collateral * 100);
 	}
 
-	let tradePair = getContract({
-		address: tradePairAddress,
-		abi: tradePairAbi,
-		signerOrProvider: signer
-	});
+	let tradePair = getTradePairContract(signer);
 
 	const tx = await tradePair.openPosition(parsedCollateral, parsedLeverage, isLong);
 
@@ -70,11 +64,7 @@ export const closeCloseablePositions = async () => {
 
 	const ids = get(closeablePositionIds);
 
-	let tradePair = getContract({
-		address: tradePairAddress,
-		abi: tradePairAbi,
-		signerOrProvider: signer
-	});
+	let tradePair = getTradePairContract(signer);
 
 	await tradePair.closePositions(ids.map((id) => BigNumber.from(id)));
 };

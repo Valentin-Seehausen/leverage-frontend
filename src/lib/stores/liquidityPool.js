@@ -1,26 +1,11 @@
-import { fetchSigner, getContract, getProvider } from '@wagmi/core';
-import liquidityPoolAbi from '$lib/abis/LiquidityPool';
-import {
-	liquidityPool as liquidityPoolAddress,
-	tradePair as tradePairAddress
-} from '$lib/addresses/contracts.sepolia.json';
+import { fetchSigner } from '@wagmi/core';
+import { tradePair as tradePairAddress } from '$lib/addresses/contracts.sepolia.json';
 import { derived } from 'svelte/store';
 import { BigNumber } from 'ethers';
 import { isInitialized } from './client';
 import { account } from './wallet';
 import { toast } from '@zerodevx/svelte-toast';
-
-/**
- *
- * @param {import('@wagmi/core').Provider | import('@wagmi/core').Signer} signerOrProvider
- * @returns
- */
-const liquidityPoolContract = (signerOrProvider = getProvider()) =>
-	getContract({
-		address: liquidityPoolAddress,
-		abi: liquidityPoolAbi,
-		signerOrProvider
-	});
+import { getLiquidityPoolContract } from '$lib/utils/contracts';
 
 /**
  * This store is used to run the other contract reading stores after a liquidity pool update
@@ -32,7 +17,7 @@ export const liquitityPoolLastUpdate = derived(
 	($isInitialized, set) => {
 		if (!$isInitialized) return;
 
-		const liquidityPoolInstance = liquidityPoolContract();
+		const liquidityPoolInstance = getLiquidityPoolContract();
 
 		liquidityPoolInstance.on('Transfer', (_from, _to, _amount, event) => {
 			set(event.blockNumber);
@@ -53,7 +38,7 @@ export const totalSupply = derived(
 	($liquitityPoolLastUpdate, set) => {
 		if ($liquitityPoolLastUpdate == 0) return;
 
-		liquidityPoolContract()
+		getLiquidityPoolContract()
 			.totalSupply()
 			.then((totalSupply) => {
 				set(totalSupply);
@@ -67,7 +52,7 @@ export const totalAssets = derived(
 	($liquitityPoolLastUpdate, set) => {
 		if ($liquitityPoolLastUpdate == 0) return;
 
-		liquidityPoolContract()
+		getLiquidityPoolContract()
 			.totalAssets()
 			.then((totalAssets) => {
 				set(totalAssets);
@@ -81,7 +66,7 @@ export const tradePairBalance = derived(
 	($liquitityPoolLastUpdate, set) => {
 		if ($liquitityPoolLastUpdate == 0) return;
 
-		liquidityPoolContract()
+		getLiquidityPoolContract()
 			.balanceOf(tradePairAddress)
 			.then((tradePairBalance) => {
 				set(tradePairBalance);
@@ -96,7 +81,7 @@ export const userShares = derived(
 		if ($liquitityPoolLastUpdate == 0) return;
 		if (!$account.isConnected) return;
 
-		liquidityPoolContract()
+		getLiquidityPoolContract()
 			.balanceOf($account.address)
 			.then((userBalance) => {
 				set(userBalance);
@@ -139,7 +124,7 @@ export const redeem = async (/** @type {BigNumber} */ shares) => {
 		return;
 	}
 
-	const tx = await liquidityPoolContract(signer).redeem(shares);
+	const tx = await getLiquidityPoolContract(signer).redeem(shares);
 
 	const txToast = toast.push('Waiting for Withdraw Transaction...', {
 		initial: 0,
