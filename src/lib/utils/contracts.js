@@ -5,9 +5,9 @@ import usdcAbi from '$lib/abis/USDC';
 
 import {
 	liquidityPool as liquidityPoolAddress,
-	usdc as tradePairAddress,
+	tradePair as tradePairAddress,
 	usdc as usdcAddress
-} from '$lib/addresses/contracts.sepolia.json';
+} from '$lib/addresses/contracts.mumbai.json';
 
 /**
  *

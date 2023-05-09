@@ -1,6 +1,6 @@
 import { gql, queryStore } from '@urql/svelte';
 import { graphClient } from './graph';
-import { tradePair as tradePairAddress } from '$lib/addresses/contracts.sepolia.json';
+import { tradePair as tradePairAddress } from '$lib/addresses/contracts.mumbai.json';
 import { readable } from 'svelte/store';
 import { BigNumber } from 'ethers';
 import { formatUnits } from 'ethers/lib/utils.js';
@@ -44,41 +44,49 @@ export const positionBalance = readable(initValue, (set) => {
 			const totalShares = BigNumber.from(tradePair.longShares).add(
 				BigNumber.from(tradePair.shortShares)
 			);
-			const longSharesPercentage = parseFloat(
-				formatUnits(
-					BigNumber.from(tradePair.longShares)
-						.mul(BigNumber.from('1000000000000')) // add 12 decimals
-						.div(totalShares),
-					10
-				)
-			);
-			const shortSharesPercentage = parseFloat(
-				formatUnits(
-					BigNumber.from(tradePair.shortShares)
-						.mul(BigNumber.from('1000000000000')) // add 12 decimals
-						.div(totalShares),
-					10
-				)
-			);
+			let longSharesPercentage = 0;
+			let shortSharesPercentage = 0;
+			if (!totalShares.isZero()) {
+				longSharesPercentage = parseFloat(
+					formatUnits(
+						BigNumber.from(tradePair.longShares)
+							.mul(BigNumber.from('1000000000000')) // add 12 decimals
+							.div(totalShares),
+						10
+					)
+				);
+				shortSharesPercentage = parseFloat(
+					formatUnits(
+						BigNumber.from(tradePair.shortShares)
+							.mul(BigNumber.from('1000000000000')) // add 12 decimals
+							.div(totalShares),
+						10
+					)
+				);
+			}
 			const totalCollateral = BigNumber.from(tradePair.longCollateral).add(
 				BigNumber.from(tradePair.shortCollateral)
 			);
-			const longCollateralPercentage = parseFloat(
-				formatUnits(
-					BigNumber.from(tradePair.longCollateral)
-						.mul(BigNumber.from('1000000000000')) // add 12 decimals
-						.div(totalCollateral),
-					10
-				)
-			);
-			const shortCollateralPercentage = parseFloat(
-				formatUnits(
-					BigNumber.from(tradePair.shortCollateral)
-						.mul(BigNumber.from('1000000000000')) // add 12 decimals
-						.div(totalCollateral),
-					10
-				)
-			);
+			let longCollateralPercentage = 0;
+			let shortCollateralPercentage = 0;
+			if (!totalCollateral.isZero()) {
+				longCollateralPercentage = parseFloat(
+					formatUnits(
+						BigNumber.from(tradePair.longCollateral)
+							.mul(BigNumber.from('1000000000000')) // add 12 decimals
+							.div(totalCollateral),
+						10
+					)
+				);
+				shortCollateralPercentage = parseFloat(
+					formatUnits(
+						BigNumber.from(tradePair.shortCollateral)
+							.mul(BigNumber.from('1000000000000')) // add 12 decimals
+							.div(totalCollateral),
+						10
+					)
+				);
+			}
 
 			set({
 				...tradePair,

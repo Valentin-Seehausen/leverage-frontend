@@ -1,7 +1,7 @@
 import { parseUnits } from 'ethers/lib/utils.js';
 import { fetchSigner } from '@wagmi/core';
 
-import { liquidityPool as liquidityPoolAddress } from '$lib/addresses/contracts.sepolia.json';
+import { liquidityPool as liquidityPoolAddress } from '$lib/addresses/contracts.mumbai.json';
 import { account } from './wallet';
 import { derived } from 'svelte/store';
 import { BigNumber } from 'ethers';

@@ -78,7 +78,7 @@ export default narrow([
 			{
 				indexed: false,
 				internalType: 'int256',
-				name: 'pnl',
+				name: 'pnlShares',
 				type: 'int256'
 			}
 		],
@@ -275,14 +275,14 @@ export default narrow([
 				type: 'address'
 			},
 			{
-				internalType: 'uint256',
+				internalType: 'uint128',
 				name: 'shares',
-				type: 'uint256'
+				type: 'uint128'
 			},
 			{
-				internalType: 'uint256',
+				internalType: 'uint32',
 				name: 'leverage',
-				type: 'uint256'
+				type: 'uint32'
 			},
 			{
 				internalType: 'bool',
@@ -292,21 +292,6 @@ export default narrow([
 			{
 				internalType: 'uint256',
 				name: 'entryPrice',
-				type: 'uint256'
-			},
-			{
-				internalType: 'uint256',
-				name: 'liquidationPrice',
-				type: 'uint256'
-			},
-			{
-				internalType: 'uint256',
-				name: 'takeProfitPrice',
-				type: 'uint256'
-			},
-			{
-				internalType: 'uint256',
-				name: 'openDate',
 				type: 'uint256'
 			}
 		],

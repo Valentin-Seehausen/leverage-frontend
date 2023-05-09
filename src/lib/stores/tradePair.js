@@ -34,7 +34,7 @@ export const openPosition = async (collateral, leverage, isLong) => {
 	}
 
 	let tradePair = getTradePairContract(signer);
-
+	console.log('openPosition', parsedCollateral, parsedLeverage, isLong);
 	const tx = await tradePair.openPosition(parsedCollateral, parsedLeverage, isLong);
 
 	const txToast = toast.push('Waiting for Open Position Transaction...', {

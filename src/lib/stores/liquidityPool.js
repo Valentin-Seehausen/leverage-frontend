@@ -1,5 +1,5 @@
 import { fetchSigner } from '@wagmi/core';
-import { tradePair as tradePairAddress } from '$lib/addresses/contracts.sepolia.json';
+import { tradePair as tradePairAddress } from '$lib/addresses/contracts.mumbai.json';
 import { derived } from 'svelte/store';
 import { BigNumber } from 'ethers';
 import { isInitialized } from './client';
