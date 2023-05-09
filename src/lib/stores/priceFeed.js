@@ -10,6 +10,8 @@ import { BigNumber } from 'ethers';
 export const currentPrice = derived(
 	isInitialized,
 	($isInitialized, set) => {
+		if (!$isInitialized) return;
+
 		let close = () => {};
 		const getAggregator = async () => {
 			const priceFeed = getContract({

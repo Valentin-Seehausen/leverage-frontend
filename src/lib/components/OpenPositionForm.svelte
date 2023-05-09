@@ -53,7 +53,7 @@
 			<button
 				class="info-label text-sm opacity-50"
 				on:click={() => (collateral = parseInt(formatUnits($userBalance, usdcDecimals)))}
-				>Max: {formatUnits($userBalance, usdcDecimals)}</button
+				>Max: {formatValue($userBalance, usdcDecimals)}</button
 			>
 		</div>
 		<input class="user-input" type="text" bind:value={collateral} />
