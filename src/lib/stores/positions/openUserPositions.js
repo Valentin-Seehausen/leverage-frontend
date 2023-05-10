@@ -100,7 +100,7 @@ export const openUserPositionsFromEvents = derived(
 					entryPrice: entryPrice?.toString() || '0',
 					liquidationPrice: liquidationPrice?.toString() || '0',
 					takeProfitPrice: takeProfitPrice?.toString() || '0',
-					openDate: openDate?.toNumber() || 0,
+					openDate: parseInt(openDate?.toString() || '0') || 0,
 					isOpen: true,
 					closeDate: 0,
 					closePrice: '0',

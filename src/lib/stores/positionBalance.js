@@ -157,6 +157,7 @@ export const positionBalance = readable(initValue, (set) => {
 	);
 
 	tradePairContract.on('PositionClosed', (_trader, _positionId, isLong, shares) => {
+		console.log('PositionClosed', _trader, _positionId, isLong, shares.toString());
 		if (isLong) {
 			state = {
 				...state,
@@ -170,6 +171,8 @@ export const positionBalance = readable(initValue, (set) => {
 				shortShares: BigNumber.from(state.shortShares).sub(shares.mul(2)).toString()
 			};
 		}
+		updatePercentages();
+		set(state);
 	});
 
 	return () => Promise.all([unsubscribeSubgraph(), tradePairContract.removeAllListeners()]);

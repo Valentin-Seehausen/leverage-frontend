@@ -38,17 +38,30 @@ export const closedUserPositionsEvents = derived(
 			null
 		);
 
-		tradePair.on(positionClosedFilter, (_trader, positionId, closePrice, closeDate, pnlShares) => {
-			const newClosedPosition = {
-				id: positionId?.toString() || '',
-				closePrice: closePrice?.toString() || '0',
-				closeDate: closeDate?.toNumber() || 0,
-				pnlShares: pnlShares?.toString() || '0'
-			};
+		tradePair.on(
+			positionClosedFilter,
+			(
+				_trader,
+				positionId,
+				_isLong,
+				_shares,
+				_entryPrice,
+				_leverage,
+				pnlShares,
+				closePrice,
+				closeDate
+			) => {
+				const newClosedPosition = {
+					id: positionId?.toString() || '',
+					closePrice: closePrice?.toString() || '0',
+					closeDate: closeDate?.toNumber() || 0,
+					pnlShares: pnlShares?.toString() || '0'
+				};
 
-			positions = [...positions, newClosedPosition];
-			set(positions);
-		});
+				positions = [...positions, newClosedPosition];
+				set(positions);
+			}
+		);
 
 		return () => tradePair.removeAllListeners();
 	},
