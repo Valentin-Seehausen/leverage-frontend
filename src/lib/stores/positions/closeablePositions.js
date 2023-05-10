@@ -1,6 +1,6 @@
 import { queryStore, gql } from '@urql/svelte';
 import { currentPrice } from '$lib/stores/priceFeed';
-import { graphClient } from './graph';
+import { graphClient } from '../graph';
 import { derived } from 'svelte/store';
 
 /**

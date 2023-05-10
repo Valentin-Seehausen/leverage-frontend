@@ -1,8 +1,8 @@
 import { queryStore, gql } from '@urql/svelte';
-import { account } from './wallet';
-import { graphClient } from './graph';
+import { account } from '$lib/stores/wallet';
+import { graphClient } from '$lib/stores/graph';
 import { derived } from 'svelte/store';
-import { currentPrice } from './priceFeed';
+import { currentPrice } from '$lib/stores/priceFeed';
 import { getTradePairContract } from '$lib/utils/contracts';
 import { calculateSharesPnlPercentage } from '$lib/utils/position';
 import { closedUserPositionsEvents } from './closedUserPositionsEvents';

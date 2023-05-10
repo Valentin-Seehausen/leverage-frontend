@@ -3,9 +3,9 @@
 	import relativeTime from 'dayjs/plugin/relativeTime';
 	import PositionCard from './PositionCard.svelte';
 
-	import { openUserPositions } from '$lib/stores/openUserPositions';
+	import { openUserPositions } from '$lib/stores/positions/openUserPositions';
 	import PositionTable from './PositionTable.svelte';
-	import { closedUserPositions } from '$lib/stores/closedUserPositions';
+	import { closedUserPositions } from '$lib/stores/positions/closedUserPositions';
 
 	dayjs.extend(relativeTime);
 

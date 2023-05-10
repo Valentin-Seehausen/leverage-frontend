@@ -2,7 +2,7 @@ import { fetchSigner } from '@wagmi/core';
 import { parseUnits } from 'ethers/lib/utils.js';
 import { getAllowance, increaseAllowance } from './usdc';
 import { leverageDecimals, usdcDecimals } from '$lib/config/constants';
-import { closeablePositionIds } from './closeablePositions';
+import { closeablePositionIds } from './positions/closeablePositions';
 import { BigNumber } from 'ethers';
 import { get } from 'svelte/store';
 import { toast } from '@zerodevx/svelte-toast';

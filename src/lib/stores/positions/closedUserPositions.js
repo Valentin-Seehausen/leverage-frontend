@@ -1,9 +1,9 @@
 import { queryStore, gql } from '@urql/svelte';
-import { account } from './wallet';
-import { graphClient } from './graph';
+import { account } from '$lib/stores/wallet';
+import { graphClient } from '$lib/stores/graph';
 import { derived } from 'svelte/store';
 import { BigNumber } from 'ethers';
-import { liquidityPoolRatio } from './liquidityPool';
+import { liquidityPoolRatio } from '$lib/stores/liquidityPool';
 import { openUserPositionsCombined } from './openUserPositions';
 import { closedUserPositionsEvents } from './closedUserPositionsEvents';
 

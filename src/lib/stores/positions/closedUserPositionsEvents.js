@@ -1,4 +1,4 @@
-import { account } from './wallet';
+import { account } from '$lib/stores/wallet';
 import { derived } from 'svelte/store';
 import { getTradePairContract } from '$lib/utils/contracts';
 
