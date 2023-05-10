@@ -1,10 +1,17 @@
 import { queryStore, gql } from '@urql/svelte';
-import { account } from './wallet';
-import { graphClient } from './graph';
+import { account } from '$lib/stores/wallet';
+import { graphClient } from '$lib/stores/graph';
 import { derived } from 'svelte/store';
-import { currentPrice } from './priceFeed';
+import { currentPrice } from '$lib/stores/priceFeed';
 import { getTradePairContract } from '$lib/utils/contracts';
 import { calculateSharesPnlPercentage } from '$lib/utils/position';
+import { closedUserPositionsEvents } from './closedUserPositionsEvents';
+
+// This file contains four stores:
+// - openUserPositionsFromEvents
+// - openUserPositionsFromSubgraph
+// - openUserPositionsCombined (where both sources of positions are combined)
+// - openUserPositions (where closed positions are filtered out)
 
 /**
  * @typedef {Object} Position
@@ -47,8 +54,8 @@ const initialPositionStoreState = {
  * @type {import('svelte/store').Readable<Position[]>}
  */
 export const openUserPositionsFromEvents = derived(
-	[account, currentPrice],
-	([$account, $currentPrice], set) => {
+	account,
+	($account, set) => {
 		if (!$account.isConnected) return;
 
 		/** @type {Position[]} */
@@ -93,7 +100,7 @@ export const openUserPositionsFromEvents = derived(
 					entryPrice: entryPrice?.toString() || '0',
 					liquidationPrice: liquidationPrice?.toString() || '0',
 					takeProfitPrice: takeProfitPrice?.toString() || '0',
-					openDate: openDate?.toNumber() || 0,
+					openDate: parseInt(openDate?.toString() || '0') || 0,
 					isOpen: true,
 					closeDate: 0,
 					closePrice: '0',
@@ -102,8 +109,6 @@ export const openUserPositionsFromEvents = derived(
 					pnlAssets: '0',
 					pnlAssetsPercentage: 0
 				};
-
-				newPosition.pnlSharesPercentage = calculateSharesPnlPercentage(newPosition, $currentPrice);
 
 				positions = [...positions, newPosition];
 				set(positions);
@@ -115,48 +120,44 @@ export const openUserPositionsFromEvents = derived(
 	initialPositions
 );
 
-export const openUserPositionsFromSubgraph = derived(
-	[account, currentPrice],
-	([$account, $currentPrice], set) => {
-		const unsubscribe = queryStore({
-			client: graphClient,
-			query: gql`
-				query ($trader: String!) {
-					positions(
-						where: { and: [{ trader: $trader }, { isOpen: true }] }
-						orderBy: openDate
-						orderDirection: desc
-					) {
-						id
-						collateral
-						shares
-						isOpen
-						isLong
-						liquidationPrice
-						takeProfitPrice
-						entryPrice
-						isLong
-						leverage
-						openDate
-					}
+export const openUserPositionsFromSubgraph = derived(account, ($account, set) => {
+	const unsubscribe = queryStore({
+		client: graphClient,
+		query: gql`
+			query ($trader: String!) {
+				positions(
+					where: { and: [{ trader: $trader }, { isOpen: true }] }
+					orderBy: openDate
+					orderDirection: desc
+				) {
+					id
+					collateral
+					shares
+					isOpen
+					isLong
+					liquidationPrice
+					takeProfitPrice
+					entryPrice
+					isLong
+					leverage
+					openDate
 				}
-			`,
-			variables: { trader: $account.address.toLowerCase() || '' }
-		}).subscribe((result) => {
-			if (result.data) {
-				result.data.position = result.data.positions.map((/** @type {Position} */ position) => {
-					position.pnlSharesPercentage = calculateSharesPnlPercentage(position, $currentPrice);
-					return position;
-				});
 			}
-			set(result);
-		});
+		`,
+		variables: { trader: $account.address.toLowerCase() || '' }
+	}).subscribe((result) => {
+		if (result.data) {
+			result.data.position = result.data.positions.map((/** @type {Position} */ position) => {
+				return position;
+			});
+		}
+		set(result);
+	});
 
-		return unsubscribe;
-	}
-);
+	return unsubscribe;
+});
 
-export const openUserPositions = derived(
+export const openUserPositionsCombined = derived(
 	[openUserPositionsFromEvents, openUserPositionsFromSubgraph],
 	([$openUserPositionsFromEvents, $openUserPositionsFromSubgraph], set) => {
 		// First fill positions from subgraph
@@ -180,13 +181,35 @@ export const openUserPositions = derived(
 
 		// Then check if new positions from events are not already in the list
 		// and add them to the top if missing
-
 		$openUserPositionsFromEvents.forEach((position) => {
 			if (!positions.find((p) => p.id === position.id)) {
 				positions = [position, ...positions];
 				set({ positions, loading: false, error: null });
 			}
 		});
+
+		set({ positions, loading: false, error: null });
+	},
+	initialPositionStoreState
+);
+
+// Filter out closed positions
+export const openUserPositions = derived(
+	[openUserPositionsCombined, closedUserPositionsEvents, currentPrice],
+	([$openUserPositionsCombined, $closedUserPositionsEvents, $currentPrice], set) => {
+		let positions = $openUserPositionsCombined.positions;
+
+		// Finally filter out closed positions
+		$closedUserPositionsEvents.forEach((position) => {
+			positions = positions.filter((p) => p.id !== position.id);
+		});
+
+		// Set pnlSharesPercentage
+		positions.map((position) => {
+			position.pnlSharesPercentage = calculateSharesPnlPercentage(position, $currentPrice);
+			return position;
+		});
+
 		set({ positions, loading: false, error: null });
 	},
 	initialPositionStoreState

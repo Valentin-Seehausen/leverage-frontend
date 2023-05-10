@@ -30,7 +30,7 @@ export const formatValue = (value, decimals, precision = 2, options) => {
 		style: mergedOptions.showSymbol ? 'currency' : 'decimal',
 		currency: mergedOptions.currency,
 		minimumFractionDigits: precision,
-		maximumFractionDigits: precision
+		maximumFractionDigits: 2
 	};
 
 	const formattedNumber = new Intl.NumberFormat(mergedOptions.locale, numberFormatOptions).format(

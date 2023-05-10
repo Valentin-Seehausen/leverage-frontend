@@ -1,9 +1,9 @@
 import { configureChains, createClient } from '@wagmi/core';
-import { sepolia } from '@wagmi/core/chains';
-import { infuraProvider } from '@wagmi/core/providers/infura';
+import { polygonMumbai } from '@wagmi/core/chains';
+import { alchemyProvider } from '@wagmi/core/providers/alchemy';
 import { publicProvider } from '@wagmi/core/providers/public';
 import { MetaMaskConnector } from '@wagmi/core/connectors/metaMask';
-import { INFURA_API_KEY } from '$lib/config/keys.json';
+import { ALCHEMY_MUMBAI_KEY } from '$lib/config/keys.json';
 import { readable } from 'svelte/store';
 
 export const isInitialized = readable(false, (set) => {
@@ -17,8 +17,8 @@ const metaMaskConnector = new MetaMaskConnector({
 
 const connectClient = () => {
 	const { provider, webSocketProvider } = configureChains(
-		[sepolia],
-		[infuraProvider({ apiKey: INFURA_API_KEY, priority: 0 }), publicProvider({ priority: 1 })]
+		[polygonMumbai],
+		[alchemyProvider({ apiKey: ALCHEMY_MUMBAI_KEY, priority: 0 }), publicProvider({ priority: 1 })]
 	);
 
 	const client = createClient({

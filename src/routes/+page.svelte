@@ -1,9 +1,9 @@
 <script>
 	import HouseKeepingButton from '$lib/components/HouseKeepingButton.svelte';
 	import OpenPositionForm from '$lib/components/OpenPositionForm.svelte';
-	import PositionList from '$lib/components/PositionList.svelte';
+	import PositionList from '$lib/components/positions/PositionList.svelte';
 	import TradingViewWidget from '$lib/components/TradingViewWidget.svelte';
-	import PositionBalance from '$lib/components/PositionBalance.svelte';
+	import PositionBalance from '$lib/components/positions/PositionBalance.svelte';
 </script>
 
 <div class="lg:flex">

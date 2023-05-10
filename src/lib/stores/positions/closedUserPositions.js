@@ -1,22 +1,11 @@
 import { queryStore, gql } from '@urql/svelte';
-import { account } from './wallet';
-import { graphClient } from './graph';
+import { account } from '$lib/stores/wallet';
+import { graphClient } from '$lib/stores/graph';
 import { derived } from 'svelte/store';
 import { BigNumber } from 'ethers';
-import { getTradePairContract } from '$lib/utils/contracts';
-import { liquidityPoolRatio } from './liquidityPool';
-import { openUserPositions } from './openUserPositions';
-
-/**
- * @typedef {Object} PositionClosedEvent
- * @property {string} id
- * @property {string} closePrice
- * @property {number} closeDate
- * @property {string} pnlShares
- */
-
-/** @type {PositionClosedEvent[]} */
-const initialPositionClosedEvents = [];
+import { liquidityPoolRatio } from '$lib/stores/liquidityPool';
+import { openUserPositionsCombined } from './openUserPositions';
+import { closedUserPositionsEvents } from './closedUserPositionsEvents';
 
 /**
  * @typedef {import('$lib/utils/position').Position} Position
@@ -63,55 +52,23 @@ export const closedUserPositionsSubgraph = derived(account, ($account, set) => {
 	return unsubscribe;
 });
 
-/**
- * @type {import('svelte/store').Readable<PositionClosedEvent[]>}
- */
-export const closedUserPositionsEvents = derived(
-	account,
-	($account, set) => {
-		if (!$account.isConnected) return;
-
-		/** @type {PositionClosedEvent[]} */
-		let positions = [];
-
-		const tradePair = getTradePairContract();
-
-		const positionClosedFilter = tradePair.filters.PositionClosed(
-			$account.address,
-			null,
-			null,
-			null,
-			null
-		);
-
-		tradePair.on(positionClosedFilter, (_trader, positionId, closePrice, closeDate, pnlShares) => {
-			const newClosedPosition = {
-				id: positionId?.toString() || '',
-				closePrice: closePrice?.toString() || '0',
-				closeDate: closeDate?.toNumber() || 0,
-				pnlShares: pnlShares?.toString() || '0'
-			};
-
-			positions = [...positions, newClosedPosition];
-			set(positions);
-		});
-
-		return () => tradePair.removeAllListeners();
-	},
-	initialPositionClosedEvents
-);
-
 export const closedUserPositions = derived(
-	[closedUserPositionsSubgraph, closedUserPositionsEvents, openUserPositions, liquidityPoolRatio],
+	[
+		closedUserPositionsSubgraph,
+		closedUserPositionsEvents,
+		openUserPositionsCombined,
+		liquidityPoolRatio
+	],
 	(
 		[
 			$closedUserPositionsSubgraph,
 			$closedUserPositionsEvents,
-			$openUserPositions,
+			$openUserPositionsCombined,
 			$liquidityPoolRatio
 		],
 		set
 	) => {
+		if (!$openUserPositionsCombined) return;
 		// First fill positions from subgraph
 
 		/** @type {Position[]} */
@@ -128,12 +85,19 @@ export const closedUserPositions = derived(
 		}
 
 		if ($closedUserPositionsSubgraph.data) {
-			positions = $closedUserPositionsSubgraph.data.positions;
+			positions = $closedUserPositionsSubgraph.data.positions.map(
+				(/** @type {Position} */ position) => {
+					position.pnlSharesPercentage = parseFloat(position.pnlSharesPercentage.toString()) || 0;
+					position.pnlAssetsPercentage =
+						Math.max(parseFloat(position.pnlAssetsPercentage.toString()), -100) || 0;
+					return position;
+				}
+			);
 		}
 
-		// Check if new closed positions are in open positions
+		// Check if new closed positions are in open positions and thus have to be added to the list
 		$closedUserPositionsEvents.forEach((closedPositionEvent) => {
-			const matchingOpenPosition = $openUserPositions.positions.find(
+			const matchingOpenPosition = $openUserPositionsCombined.positions.find(
 				(p) => p.id === closedPositionEvent.id
 			);
 
@@ -153,16 +117,20 @@ export const closedUserPositions = derived(
 			if ($liquidityPoolRatio > 0) {
 				newClosedPosition.pnlAssets =
 					BigNumber.from(closedPositionEvent.pnlShares).div($liquidityPoolRatio).toString() || '0';
-				newClosedPosition.pnlAssetsPercentage = BigNumber.from(newClosedPosition.pnlAssets)
-					.mul(10000)
-					.div(newClosedPosition.collateral)
-					.div(100)
-					.toNumber();
+				newClosedPosition.pnlAssetsPercentage = Math.max(
+					BigNumber.from(newClosedPosition.pnlAssets)
+						.mul(10000)
+						.div(newClosedPosition.collateral)
+						.div(100)
+						.toNumber(),
+					-100
+				);
 			}
 
 			positions = [...positions, newClosedPosition];
-			set({ positions, loading: false, error: null });
 		});
+		console.log(positions);
+		set({ positions, loading: false, error: null });
 	},
 	initialPositionStoreState
 );

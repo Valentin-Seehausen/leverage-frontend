@@ -1,12 +1,16 @@
 <script>
 	import { leverageDecimals, priceFeedDecimals, usdcDecimals } from '$lib/config/constants';
 	import { openPosition } from '$lib/stores/tradePair';
-	import { userBalance } from '$lib/stores/usdc';
-	import { formatUnits, parseUnits } from 'ethers/lib/utils.js';
+	import { userUsdc } from '$lib/stores/usdc';
+	import { parseUnits } from 'ethers/lib/utils.js';
 	import { currentPrice } from '$lib/stores/priceFeed';
 	import { formatValue } from '$lib/utils/format';
+	import { BigNumber } from 'ethers';
 
-	let collateral = 100;
+	let inputCollateral = '100';
+	$: inputCollateral = inputCollateral.replace(/[^0-9]/g, '');
+	$: collateral =
+		BigNumber.from(parseUnits(inputCollateral.toString(), usdcDecimals)) || BigNumber.from(0);
 	let leverage = 5;
 	let isLong = true;
 
@@ -25,6 +29,9 @@
 	const handleSubmit = () => {
 		openPosition(collateral, leverage, isLong);
 	};
+
+	$: allowanceIsSufficient = $userUsdc.allowance.gte(collateral);
+	$: balanceIsSufficient = $userUsdc.balance.gte(collateral);
 </script>
 
 <div class="box">
@@ -47,17 +54,20 @@
 			Short
 		</button>
 	</div>
+
 	<label class="block mb-6 text-sm">
 		<div class="flex content-between">
 			<span class="info-label text-sm grow">Collateral</span>
 			<button
 				class="info-label text-sm opacity-50"
-				on:click={() => (collateral = parseInt(formatUnits($userBalance, usdcDecimals)))}
-				>Max: {formatUnits($userBalance, usdcDecimals)}</button
+				on:click={() => (inputCollateral = $userUsdc.balance.div(10 ** usdcDecimals).toString())}
 			>
+				Max: {formatValue($userUsdc.balance, usdcDecimals)}
+			</button>
 		</div>
-		<input class="user-input" type="text" bind:value={collateral} />
+		<input class="user-input" type="text" bind:value={inputCollateral} />
 	</label>
+
 	<label class="block">
 		<span class="info-label text-sm">Leverage {leverage}x {leverage === 100 ? '🦍' : ''}</span>
 		<input
@@ -84,5 +94,26 @@
 		</div>
 	</div>
 
-	<button on:click={handleSubmit} class="user-button w-full mt-6">Open Position</button>
+	<button on:click={handleSubmit} class="user-button w-full mt-6" disabled={!balanceIsSufficient}>
+		{#if !balanceIsSufficient}
+			Not enough USDC
+		{:else if !allowanceIsSufficient}
+			Increase Allowance
+		{:else}
+			Open Position
+		{/if}
+	</button>
+
+	{#if !balanceIsSufficient}
+		<div class="text-sm info-label text-center mt-6 mb-3">
+			You need {formatValue(collateral, usdcDecimals, 0)} USDC to open this position. Currently you only
+			have {formatValue($userUsdc.balance, usdcDecimals, 0, {
+				showSymbol: false
+			})} USDC.
+		</div>
+	{:else if !allowanceIsSufficient}
+		<div class="text-sm info-label text-center mt-6 mb-3">
+			You need to increase your allowance to open this position.
+		</div>
+	{/if}
 </div>

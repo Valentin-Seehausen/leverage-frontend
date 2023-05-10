@@ -1,8 +1,8 @@
-import { fetchSigner } from '@wagmi/core';
+import { fetchSigner, waitForTransaction } from '@wagmi/core';
 import { parseUnits } from 'ethers/lib/utils.js';
-import { getAllowance, increaseAllowance } from './usdc';
-import { leverageDecimals, usdcDecimals } from '$lib/config/constants';
-import { closeablePositionIds } from './closeablePositions';
+import { userUsdc, getAllowance, increaseAllowance } from './usdc';
+import { leverageDecimals } from '$lib/config/constants';
+import { closeablePositionIds } from './positions/closeablePositions';
 import { BigNumber } from 'ethers';
 import { get } from 'svelte/store';
 import { toast } from '@zerodevx/svelte-toast';
@@ -10,12 +10,11 @@ import { getTradePairContract } from '$lib/utils/contracts';
 
 /**
  * Opens a position at TradePair via Signer
- * @param {number} collateral
+ * @param {BigNumber} collateral
  * @param {number} leverage
  * @param {boolean} isLong
  */
 export const openPosition = async (collateral, leverage, isLong) => {
-	const parsedCollateral = parseUnits(collateral.toString(), usdcDecimals);
 	const parsedLeverage = parseUnits(leverage.toString(), leverageDecimals);
 
 	const signer = await fetchSigner();
@@ -29,20 +28,21 @@ export const openPosition = async (collateral, leverage, isLong) => {
 
 	const allowance = await getAllowance(await signer.getAddress());
 
-	if (parsedCollateral > allowance) {
-		await increaseAllowance(collateral * 100);
+	if (collateral.gt(allowance)) {
+		await increaseAllowance(collateral.mul(100));
 	}
 
 	let tradePair = getTradePairContract(signer);
 
-	const tx = await tradePair.openPosition(parsedCollateral, parsedLeverage, isLong);
+	const tx = await tradePair.openPosition(collateral, parsedLeverage, isLong);
 
 	const txToast = toast.push('Waiting for Open Position Transaction...', {
 		initial: 0,
 		classes: ['info']
 	});
 
-	await tx.wait();
+	// @ts-ignore
+	await waitForTransaction({ hash: tx.hash });
 
 	toast.pop(txToast);
 
@@ -50,6 +50,8 @@ export const openPosition = async (collateral, leverage, isLong) => {
 		duration: 2000,
 		classes: ['success']
 	});
+
+	userUsdc.requestUpdate();
 };
 
 export const closeCloseablePositions = async () => {
@@ -66,5 +68,20 @@ export const closeCloseablePositions = async () => {
 
 	let tradePair = getTradePairContract(signer);
 
-	await tradePair.closePositions(ids.map((id) => BigNumber.from(id)));
+	const tx = await tradePair.closePositions(ids.map((id) => BigNumber.from(id)));
+
+	const txToast = toast.push('Waiting for House Keeping Transaction...', {
+		initial: 0,
+		classes: ['info']
+	});
+
+	// @ts-ignore
+	await waitForTransaction({ hash: tx.hash });
+
+	toast.pop(txToast);
+
+	toast.push('House Keeping successful', {
+		duration: 2000,
+		classes: ['success']
+	});
 };

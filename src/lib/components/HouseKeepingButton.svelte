@@ -1,5 +1,5 @@
 <script>
-	import { closeablePositionIds } from '$lib/stores/closeablePositions';
+	import { closeablePositionIds } from '$lib/stores/positions/closeablePositions';
 	import { closeCloseablePositions } from '$lib/stores/tradePair';
 
 	$: possible = $closeablePositionIds.length > 0;

@@ -1,42 +1,75 @@
-import { getContract, getProvider } from '@wagmi/core';
-import { parseUnits } from 'ethers/lib/utils.js';
-import { fetchSigner } from '@wagmi/core';
+import { fetchSigner, waitForTransaction } from '@wagmi/core';
 
-import {
-	usdc as usdcAddress,
-	liquidityPool as liquidityPoolAddress
-} from '$lib/addresses/contracts.sepolia.json';
-import usdcAbi from '$lib/abis/USDC';
+import { liquidityPool as liquidityPoolAddress } from '$lib/addresses/contracts.mumbai.json';
 import { account } from './wallet';
-import { derived } from 'svelte/store';
+import { writable } from 'svelte/store';
 import { BigNumber } from 'ethers';
 import { toast } from '@zerodevx/svelte-toast';
+import { getUsdcContract } from '$lib/utils/contracts';
 
-const usdcContract = async () =>
-	getContract({
-		address: usdcAddress,
-		abi: usdcAbi,
-		signerOrProvider: (await fetchSigner()) || getProvider()
+const createUserUsdcStore = () => {
+	const initialState = {
+		balance: BigNumber.from('0'),
+		allowance: BigNumber.from('0')
+	};
+	let state = initialState;
+	/** @type{string | null} */
+	let address = null;
+	const { subscribe, set } = writable(state);
+
+	account.subscribe(($account) => {
+		address = null;
+		if (!$account.isConnected) return;
+		address = $account.address;
+		fetchValues();
 	});
 
-export const increaseAllowance = async (/** @type {number} */ amount) => {
+	const fetchValues = () => {
+		if (!address) return;
+		getUsdcContract()
+			.balanceOf(address)
+			.then((balance) => {
+				state.balance = balance;
+				set(state);
+			});
+
+		getUsdcContract()
+			.allowance(address, liquidityPoolAddress)
+			.then((allowance) => {
+				state.allowance = allowance;
+				set(state);
+			});
+	};
+
+	return {
+		subscribe,
+		requestUpdate: () => {
+			fetchValues();
+		}
+	};
+};
+
+export const userUsdc = createUserUsdcStore();
+
+export const getAllowance = (/** @type {string} */ address) => {
+	return getUsdcContract().allowance(address, liquidityPoolAddress);
+};
+
+export const increaseAllowance = async (/** @type {BigNumber} */ amount) => {
 	let signer = await fetchSigner();
 	if (!signer) throw new Error('no signer');
 
-	let usdc = getContract({
-		address: usdcAddress,
-		abi: usdcAbi,
-		signerOrProvider: signer
-	});
+	let usdc = getUsdcContract(signer);
 
-	const tx = await usdc.increaseAllowance(liquidityPoolAddress, parseUnits(amount.toString(), 6));
+	const tx = await usdc.increaseAllowance(liquidityPoolAddress, amount);
 
 	const txToast = toast.push('Waiting for USDC Allowance Transaction...', {
 		initial: 0,
 		classes: ['info']
 	});
 
-	await tx.wait();
+	// @ts-ignore
+	await waitForTransaction({ hash: tx.hash });
 
 	toast.pop(txToast);
 
@@ -45,27 +78,7 @@ export const increaseAllowance = async (/** @type {number} */ amount) => {
 		classes: ['success']
 	});
 
+	userUsdc.requestUpdate();
+
 	return;
 };
-
-export const getAllowance = (/** @type {string} */ address) => {
-	return usdcContract().then((usdc) => {
-		return usdc.allowance(address, liquidityPoolAddress);
-	});
-};
-
-export const userBalance = derived(
-	account,
-	($account, set) => {
-		if (!$account.isConnected) return;
-
-		const fetchBalance = async () => {
-			(await usdcContract()).balanceOf($account.address).then((balance) => {
-				set(balance);
-			});
-		};
-
-		fetchBalance();
-	},
-	BigNumber.from('0')
-);
