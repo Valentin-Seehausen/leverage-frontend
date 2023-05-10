@@ -2,9 +2,11 @@
 	import * as dayjs from 'dayjs';
 	import relativeTime from 'dayjs/plugin/relativeTime';
 	import PositionCard from './PositionCard.svelte';
-	import PositionRow from './PositionRow.svelte';
+
 	import { openUserPositions } from '$lib/stores/openUserPositions';
+	import PositionTable from './PositionTable.svelte';
 	// import { closedUserPositions } from '$lib/stores/closedUserPositions';
+
 	dayjs.extend(relativeTime);
 
 	let activeTab = 'open';
@@ -39,30 +41,7 @@
 			</div>
 		</div>
 		<div class="hidden lg:block">
-			<div>
-				<table class="min-w-full table-auto">
-					<thead>
-						<tr>
-							<th class=" pl-2 py-2 text-left">Type</th>
-							<th class=" px-0 py-2 text-right">Leverage</th>
-							<th class=" px-2 py-2 text-right">Collateral</th>
-							<th class=" px-2 py-2 text-right">Entry Price</th>
-							{#if activeTab === 'open'}
-								<th class=" px-2 py-2 text-right">Liquidation Price</th>
-								<th class=" px-2 py-2 text-right">Take Profit Price</th>
-							{:else if activeTab === 'closed'}
-								<th class=" px-2 py-2 text-right">Close Price</th>
-								<th class=" px-2 py-2 text-right">PnL</th>
-							{/if}
-						</tr>
-					</thead>
-					<tbody>
-						{#each positions.positions as position, i}
-							<PositionRow {position} index={i} />
-						{/each}
-					</tbody>
-				</table>
-			</div>
+			<PositionTable positions={positions.positions} show={activeTab} />
 		</div>
 	{/if}
 </div>
