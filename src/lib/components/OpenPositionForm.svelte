@@ -1,10 +1,11 @@
 <script>
 	import { leverageDecimals, priceFeedDecimals, usdcDecimals } from '$lib/config/constants';
 	import { openPosition } from '$lib/stores/tradePair';
-	import { userBalance } from '$lib/stores/usdc';
+	import { userUsdc } from '$lib/stores/usdc';
 	import { formatUnits, parseUnits } from 'ethers/lib/utils.js';
 	import { currentPrice } from '$lib/stores/priceFeed';
 	import { formatValue } from '$lib/utils/format';
+	import { BigNumber } from 'ethers';
 
 	let collateral = 100;
 	let leverage = 5;
@@ -25,6 +26,11 @@
 	const handleSubmit = () => {
 		openPosition(collateral, leverage, isLong);
 	};
+
+	$: allowanceIsSufficient = $userUsdc.allowance.gte(
+		parseUnits(collateral.toString(), usdcDecimals)
+	);
+	$: balanceIsSufficient = $userUsdc.balance.gte(parseUnits(collateral.toString(), usdcDecimals));
 </script>
 
 <div class="box">
@@ -52,9 +58,10 @@
 			<span class="info-label text-sm grow">Collateral</span>
 			<button
 				class="info-label text-sm opacity-50"
-				on:click={() => (collateral = parseInt(formatUnits($userBalance, usdcDecimals)))}
-				>Max: {formatValue($userBalance, usdcDecimals)}</button
+				on:click={() => (collateral = parseInt(formatUnits($userUsdc.balance, usdcDecimals)))}
 			>
+				Max: {formatValue($userUsdc.balance, usdcDecimals)}
+			</button>
 		</div>
 		<input class="user-input" type="text" bind:value={collateral} />
 	</label>
@@ -84,5 +91,24 @@
 		</div>
 	</div>
 
-	<button on:click={handleSubmit} class="user-button w-full mt-6">Open Position</button>
+	<button on:click={handleSubmit} class="user-button w-full mt-6" disabled={!balanceIsSufficient}>
+		{#if !balanceIsSufficient}
+			Not enough USDC
+		{:else if !allowanceIsSufficient}
+			Increase Allowance
+		{:else}
+			Open Position
+		{/if}
+	</button>
+
+	{#if !balanceIsSufficient}
+		<div class="text-sm info-label text-center mt-6 mb-3">
+			You need {formatValue(collateral, usdcDecimals)} USDC to open this position. Currently you only
+			have {formatValue($userUsdc.balance, usdcDecimals)} USDC.
+		</div>
+	{:else if !allowanceIsSufficient}
+		<div class="text-sm info-label text-center mt-6 mb-3">
+			You need to increase your allowance to open this position.
+		</div>
+	{/if}
 </div>

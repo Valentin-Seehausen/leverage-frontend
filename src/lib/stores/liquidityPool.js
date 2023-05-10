@@ -6,6 +6,7 @@ import { isInitialized } from './client';
 import { account } from './wallet';
 import { toast } from '@zerodevx/svelte-toast';
 import { getLiquidityPoolContract } from '$lib/utils/contracts';
+import { userUsdc } from './usdc';
 
 /**
  * This store is used to run the other contract reading stores after a liquidity pool update
@@ -140,4 +141,6 @@ export const redeem = async (/** @type {BigNumber} */ shares) => {
 		duration: 2000,
 		classes: ['success']
 	});
+
+	userUsdc.requestUpdate();
 };

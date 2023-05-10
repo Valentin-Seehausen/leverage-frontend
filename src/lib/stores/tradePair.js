@@ -1,6 +1,6 @@
 import { fetchSigner, waitForTransaction } from '@wagmi/core';
 import { parseUnits } from 'ethers/lib/utils.js';
-import { getAllowance, increaseAllowance } from './usdc';
+import { userUsdc, getAllowance, increaseAllowance } from './usdc';
 import { leverageDecimals, usdcDecimals } from '$lib/config/constants';
 import { closeablePositionIds } from './positions/closeablePositions';
 import { BigNumber } from 'ethers';
@@ -29,7 +29,10 @@ export const openPosition = async (collateral, leverage, isLong) => {
 
 	const allowance = await getAllowance(await signer.getAddress());
 
-	if (parsedCollateral > allowance) {
+	console.log('allowance', allowance.toString());
+	console.log('parsedCollateral', parsedCollateral.toString());
+
+	if (parsedCollateral.gt(allowance)) {
 		await increaseAllowance(collateral * 100);
 	}
 
@@ -51,6 +54,8 @@ export const openPosition = async (collateral, leverage, isLong) => {
 		duration: 2000,
 		classes: ['success']
 	});
+
+	userUsdc.requestUpdate();
 };
 
 export const closeCloseablePositions = async () => {
