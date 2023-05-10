@@ -5,7 +5,7 @@ import { derived } from 'svelte/store';
 import { currentPrice } from './priceFeed';
 import { getTradePairContract } from '$lib/utils/contracts';
 import { calculateSharesPnlPercentage } from '$lib/utils/position';
-
+import { closedUserPositionsEvents } from './closedUserPositionsEvents';
 /**
  * @typedef {Object} Position
  * @property {string} id
@@ -157,8 +157,11 @@ export const openUserPositionsFromSubgraph = derived(
 );
 
 export const openUserPositions = derived(
-	[openUserPositionsFromEvents, openUserPositionsFromSubgraph],
-	([$openUserPositionsFromEvents, $openUserPositionsFromSubgraph], set) => {
+	[openUserPositionsFromEvents, openUserPositionsFromSubgraph, closedUserPositionsEvents],
+	(
+		[$openUserPositionsFromEvents, $openUserPositionsFromSubgraph, $closedUserPositionsEvents],
+		set
+	) => {
 		// First fill positions from subgraph
 
 		/** @type {Position[]} */
@@ -187,6 +190,12 @@ export const openUserPositions = derived(
 				set({ positions, loading: false, error: null });
 			}
 		});
+
+		// Finally filter out closed positions
+		$closedUserPositionsEvents.forEach((position) => {
+			positions = positions.filter((p) => p.id !== position.id);
+		});
+
 		set({ positions, loading: false, error: null });
 	},
 	initialPositionStoreState

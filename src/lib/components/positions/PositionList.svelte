@@ -5,13 +5,12 @@
 
 	import { openUserPositions } from '$lib/stores/openUserPositions';
 	import PositionTable from './PositionTable.svelte';
-	// import { closedUserPositions } from '$lib/stores/closedUserPositions';
+	import { closedUserPositions } from '$lib/stores/closedUserPositions';
 
 	dayjs.extend(relativeTime);
 
 	let activeTab = 'open';
-	// $: positions = activeTab === 'open' ? $openUserPositions : $closedUserPositions;
-	$: positions = $openUserPositions;
+	$: positions = activeTab === 'open' ? $openUserPositions : $closedUserPositions;
 </script>
 
 <div class="box">

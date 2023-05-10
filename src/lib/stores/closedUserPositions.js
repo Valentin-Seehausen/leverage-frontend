@@ -3,20 +3,9 @@ import { account } from './wallet';
 import { graphClient } from './graph';
 import { derived } from 'svelte/store';
 import { BigNumber } from 'ethers';
-import { getTradePairContract } from '$lib/utils/contracts';
 import { liquidityPoolRatio } from './liquidityPool';
 import { openUserPositions } from './openUserPositions';
-
-/**
- * @typedef {Object} PositionClosedEvent
- * @property {string} id
- * @property {string} closePrice
- * @property {number} closeDate
- * @property {string} pnlShares
- */
-
-/** @type {PositionClosedEvent[]} */
-const initialPositionClosedEvents = [];
+import { closedUserPositionsEvents } from './closedUserPositionsEvents';
 
 /**
  * @typedef {import('$lib/utils/position').Position} Position
@@ -63,44 +52,6 @@ export const closedUserPositionsSubgraph = derived(account, ($account, set) => {
 	return unsubscribe;
 });
 
-/**
- * @type {import('svelte/store').Readable<PositionClosedEvent[]>}
- */
-export const closedUserPositionsEvents = derived(
-	account,
-	($account, set) => {
-		if (!$account.isConnected) return;
-
-		/** @type {PositionClosedEvent[]} */
-		let positions = [];
-
-		const tradePair = getTradePairContract();
-
-		const positionClosedFilter = tradePair.filters.PositionClosed(
-			$account.address,
-			null,
-			null,
-			null,
-			null
-		);
-
-		tradePair.on(positionClosedFilter, (_trader, positionId, closePrice, closeDate, pnlShares) => {
-			const newClosedPosition = {
-				id: positionId?.toString() || '',
-				closePrice: closePrice?.toString() || '0',
-				closeDate: closeDate?.toNumber() || 0,
-				pnlShares: pnlShares?.toString() || '0'
-			};
-
-			positions = [...positions, newClosedPosition];
-			set(positions);
-		});
-
-		return () => tradePair.removeAllListeners();
-	},
-	initialPositionClosedEvents
-);
-
 export const closedUserPositions = derived(
 	[closedUserPositionsSubgraph, closedUserPositionsEvents, openUserPositions, liquidityPoolRatio],
 	(
@@ -112,6 +63,7 @@ export const closedUserPositions = derived(
 		],
 		set
 	) => {
+		if (!$openUserPositions) return;
 		// First fill positions from subgraph
 
 		/** @type {Position[]} */
@@ -131,7 +83,7 @@ export const closedUserPositions = derived(
 			positions = $closedUserPositionsSubgraph.data.positions;
 		}
 
-		// Check if new closed positions are in open positions
+		// Check if new closed positions are in open positions and thus have to be added to the list
 		$closedUserPositionsEvents.forEach((closedPositionEvent) => {
 			const matchingOpenPosition = $openUserPositions.positions.find(
 				(p) => p.id === closedPositionEvent.id
@@ -161,8 +113,8 @@ export const closedUserPositions = derived(
 			}
 
 			positions = [...positions, newClosedPosition];
-			set({ positions, loading: false, error: null });
 		});
+		set({ positions, loading: false, error: null });
 	},
 	initialPositionStoreState
 );
