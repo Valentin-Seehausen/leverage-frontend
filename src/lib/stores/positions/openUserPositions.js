@@ -54,8 +54,8 @@ const initialPositionStoreState = {
  * @type {import('svelte/store').Readable<Position[]>}
  */
 export const openUserPositionsFromEvents = derived(
-	[account, currentPrice],
-	([$account, $currentPrice], set) => {
+	account,
+	($account, set) => {
 		if (!$account.isConnected) return;
 
 		/** @type {Position[]} */
@@ -110,8 +110,6 @@ export const openUserPositionsFromEvents = derived(
 					pnlAssetsPercentage: 0
 				};
 
-				newPosition.pnlSharesPercentage = calculateSharesPnlPercentage(newPosition, $currentPrice);
-
 				positions = [...positions, newPosition];
 				set(positions);
 			}
@@ -122,46 +120,42 @@ export const openUserPositionsFromEvents = derived(
 	initialPositions
 );
 
-export const openUserPositionsFromSubgraph = derived(
-	[account, currentPrice],
-	([$account, $currentPrice], set) => {
-		const unsubscribe = queryStore({
-			client: graphClient,
-			query: gql`
-				query ($trader: String!) {
-					positions(
-						where: { and: [{ trader: $trader }, { isOpen: true }] }
-						orderBy: openDate
-						orderDirection: desc
-					) {
-						id
-						collateral
-						shares
-						isOpen
-						isLong
-						liquidationPrice
-						takeProfitPrice
-						entryPrice
-						isLong
-						leverage
-						openDate
-					}
+export const openUserPositionsFromSubgraph = derived(account, ($account, set) => {
+	const unsubscribe = queryStore({
+		client: graphClient,
+		query: gql`
+			query ($trader: String!) {
+				positions(
+					where: { and: [{ trader: $trader }, { isOpen: true }] }
+					orderBy: openDate
+					orderDirection: desc
+				) {
+					id
+					collateral
+					shares
+					isOpen
+					isLong
+					liquidationPrice
+					takeProfitPrice
+					entryPrice
+					isLong
+					leverage
+					openDate
 				}
-			`,
-			variables: { trader: $account.address.toLowerCase() || '' }
-		}).subscribe((result) => {
-			if (result.data) {
-				result.data.position = result.data.positions.map((/** @type {Position} */ position) => {
-					position.pnlSharesPercentage = calculateSharesPnlPercentage(position, $currentPrice);
-					return position;
-				});
 			}
-			set(result);
-		});
+		`,
+		variables: { trader: $account.address.toLowerCase() || '' }
+	}).subscribe((result) => {
+		if (result.data) {
+			result.data.position = result.data.positions.map((/** @type {Position} */ position) => {
+				return position;
+			});
+		}
+		set(result);
+	});
 
-		return unsubscribe;
-	}
-);
+	return unsubscribe;
+});
 
 export const openUserPositionsCombined = derived(
 	[openUserPositionsFromEvents, openUserPositionsFromSubgraph],
@@ -201,13 +195,19 @@ export const openUserPositionsCombined = derived(
 
 // Filter out closed positions
 export const openUserPositions = derived(
-	[openUserPositionsCombined, closedUserPositionsEvents],
-	([$openUserPositionsCombined, $closedUserPositionsEvents], set) => {
+	[openUserPositionsCombined, closedUserPositionsEvents, currentPrice],
+	([$openUserPositionsCombined, $closedUserPositionsEvents, $currentPrice], set) => {
 		let positions = $openUserPositionsCombined.positions;
 
 		// Finally filter out closed positions
 		$closedUserPositionsEvents.forEach((position) => {
 			positions = positions.filter((p) => p.id !== position.id);
+		});
+
+		// Set pnlSharesPercentage
+		positions.map((position) => {
+			position.pnlSharesPercentage = calculateSharesPnlPercentage(position, $currentPrice);
+			return position;
 		});
 
 		set({ positions, loading: false, error: null });

@@ -4,10 +4,13 @@ import aggregatorAbi from '$lib/abis/OffChainAggregator';
 
 import { CHAINLINK_BTC } from '$lib/addresses/contracts.mumbai.json';
 import { isInitialized } from './client';
-import { derived } from 'svelte/store';
+import { derived, readable } from 'svelte/store';
 import { BigNumber } from 'ethers';
+import { tweened } from 'svelte/motion';
+import { sineInOut } from 'svelte/easing';
+import { interpolateBigNumbers } from '$lib/utils/interpolateBigNumbers';
 
-export const currentPrice = derived(
+export const currentPriceUpdate = derived(
 	isInitialized,
 	($isInitialized, set) => {
 		if (!$isInitialized) return;
@@ -48,3 +51,27 @@ export const currentPrice = derived(
 	},
 	BigNumber.from(0)
 );
+
+export const currentPrice = readable(BigNumber.from(0), (set) => {
+	let lastPrice = BigNumber.from(0);
+	let tween = tweened(lastPrice, {
+		duration: 200,
+		easing: sineInOut,
+		interpolate: interpolateBigNumbers
+	});
+	const unsubscribeTween = tween.subscribe((value) => {
+		set(value);
+	});
+	const unsubscribe = currentPriceUpdate.subscribe((newCurrentPrice) => {
+		console.log('newCurrentPrice', newCurrentPrice.toString());
+		console.log('lastPrice', lastPrice.toString());
+		if (!newCurrentPrice.eq(lastPrice)) {
+			lastPrice = newCurrentPrice;
+			tween.set(newCurrentPrice);
+		}
+	});
+	return () => {
+		unsubscribeTween();
+		unsubscribe();
+	};
+});
