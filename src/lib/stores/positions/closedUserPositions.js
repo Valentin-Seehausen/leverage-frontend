@@ -85,7 +85,14 @@ export const closedUserPositions = derived(
 		}
 
 		if ($closedUserPositionsSubgraph.data) {
-			positions = $closedUserPositionsSubgraph.data.positions;
+			positions = $closedUserPositionsSubgraph.data.positions.map(
+				(/** @type {Position} */ position) => {
+					position.pnlSharesPercentage = parseFloat(position.pnlSharesPercentage.toString()) || 0;
+					position.pnlAssetsPercentage =
+						Math.max(parseFloat(position.pnlAssetsPercentage.toString()), -100) || 0;
+					return position;
+				}
+			);
 		}
 
 		// Check if new closed positions are in open positions and thus have to be added to the list
@@ -110,15 +117,19 @@ export const closedUserPositions = derived(
 			if ($liquidityPoolRatio > 0) {
 				newClosedPosition.pnlAssets =
 					BigNumber.from(closedPositionEvent.pnlShares).div($liquidityPoolRatio).toString() || '0';
-				newClosedPosition.pnlAssetsPercentage = BigNumber.from(newClosedPosition.pnlAssets)
-					.mul(10000)
-					.div(newClosedPosition.collateral)
-					.div(100)
-					.toNumber();
+				newClosedPosition.pnlAssetsPercentage = Math.max(
+					BigNumber.from(newClosedPosition.pnlAssets)
+						.mul(10000)
+						.div(newClosedPosition.collateral)
+						.div(100)
+						.toNumber(),
+					-100
+				);
 			}
 
 			positions = [...positions, newClosedPosition];
 		});
+		console.log(positions);
 		set({ positions, loading: false, error: null });
 	},
 	initialPositionStoreState
