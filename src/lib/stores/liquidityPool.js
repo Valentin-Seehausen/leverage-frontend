@@ -1,4 +1,4 @@
-import { fetchSigner } from '@wagmi/core';
+import { fetchSigner, waitForTransaction } from '@wagmi/core';
 import { tradePair as tradePairAddress } from '$lib/addresses/contracts.mumbai.json';
 import { derived } from 'svelte/store';
 import { BigNumber } from 'ethers';
@@ -131,7 +131,8 @@ export const redeem = async (/** @type {BigNumber} */ shares) => {
 		classes: ['info']
 	});
 
-	await tx.wait();
+	// @ts-ignore
+	await waitForTransaction({ hash: tx.hash });
 
 	toast.pop(txToast);
 

@@ -1,4 +1,4 @@
-import { fetchSigner } from '@wagmi/core';
+import { fetchSigner, waitForTransaction } from '@wagmi/core';
 import { parseUnits } from 'ethers/lib/utils.js';
 import { getAllowance, increaseAllowance } from './usdc';
 import { leverageDecimals, usdcDecimals } from '$lib/config/constants';
@@ -34,7 +34,7 @@ export const openPosition = async (collateral, leverage, isLong) => {
 	}
 
 	let tradePair = getTradePairContract(signer);
-	console.log('openPosition', parsedCollateral, parsedLeverage, isLong);
+
 	const tx = await tradePair.openPosition(parsedCollateral, parsedLeverage, isLong);
 
 	const txToast = toast.push('Waiting for Open Position Transaction...', {
@@ -42,7 +42,8 @@ export const openPosition = async (collateral, leverage, isLong) => {
 		classes: ['info']
 	});
 
-	await tx.wait();
+	// @ts-ignore
+	await waitForTransaction({ hash: tx.hash });
 
 	toast.pop(txToast);
 
@@ -66,5 +67,20 @@ export const closeCloseablePositions = async () => {
 
 	let tradePair = getTradePairContract(signer);
 
-	await tradePair.closePositions(ids.map((id) => BigNumber.from(id)));
+	const tx = await tradePair.closePositions(ids.map((id) => BigNumber.from(id)));
+
+	const txToast = toast.push('Waiting for House Keeping Transaction...', {
+		initial: 0,
+		classes: ['info']
+	});
+
+	// @ts-ignore
+	await waitForTransaction({ hash: tx.hash });
+
+	toast.pop(txToast);
+
+	toast.push('House Keeping successful', {
+		duration: 2000,
+		classes: ['success']
+	});
 };

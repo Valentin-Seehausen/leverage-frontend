@@ -1,5 +1,5 @@
 import { parseUnits } from 'ethers/lib/utils.js';
-import { fetchSigner } from '@wagmi/core';
+import { fetchSigner, waitForTransaction } from '@wagmi/core';
 
 import { liquidityPool as liquidityPoolAddress } from '$lib/addresses/contracts.mumbai.json';
 import { account } from './wallet';
@@ -21,7 +21,8 @@ export const increaseAllowance = async (/** @type {number} */ amount) => {
 		classes: ['info']
 	});
 
-	await tx.wait();
+	// @ts-ignore
+	await waitForTransaction({ hash: tx.hash });
 
 	toast.pop(txToast);
 
