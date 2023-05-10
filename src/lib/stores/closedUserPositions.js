@@ -4,7 +4,7 @@ import { graphClient } from './graph';
 import { derived } from 'svelte/store';
 import { BigNumber } from 'ethers';
 import { liquidityPoolRatio } from './liquidityPool';
-import { openUserPositions } from './openUserPositions';
+import { openUserPositionsCombined } from './openUserPositions';
 import { closedUserPositionsEvents } from './closedUserPositionsEvents';
 
 /**
@@ -53,17 +53,22 @@ export const closedUserPositionsSubgraph = derived(account, ($account, set) => {
 });
 
 export const closedUserPositions = derived(
-	[closedUserPositionsSubgraph, closedUserPositionsEvents, openUserPositions, liquidityPoolRatio],
+	[
+		closedUserPositionsSubgraph,
+		closedUserPositionsEvents,
+		openUserPositionsCombined,
+		liquidityPoolRatio
+	],
 	(
 		[
 			$closedUserPositionsSubgraph,
 			$closedUserPositionsEvents,
-			$openUserPositions,
+			$openUserPositionsCombined,
 			$liquidityPoolRatio
 		],
 		set
 	) => {
-		if (!$openUserPositions) return;
+		if (!$openUserPositionsCombined) return;
 		// First fill positions from subgraph
 
 		/** @type {Position[]} */
@@ -85,7 +90,7 @@ export const closedUserPositions = derived(
 
 		// Check if new closed positions are in open positions and thus have to be added to the list
 		$closedUserPositionsEvents.forEach((closedPositionEvent) => {
-			const matchingOpenPosition = $openUserPositions.positions.find(
+			const matchingOpenPosition = $openUserPositionsCombined.positions.find(
 				(p) => p.id === closedPositionEvent.id
 			);
 

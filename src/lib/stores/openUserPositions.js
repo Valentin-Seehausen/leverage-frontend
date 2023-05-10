@@ -6,6 +6,13 @@ import { currentPrice } from './priceFeed';
 import { getTradePairContract } from '$lib/utils/contracts';
 import { calculateSharesPnlPercentage } from '$lib/utils/position';
 import { closedUserPositionsEvents } from './closedUserPositionsEvents';
+
+// This file contains four stores:
+// - openUserPositionsFromEvents
+// - openUserPositionsFromSubgraph
+// - openUserPositionsCombined (where both sources of positions are combined)
+// - openUserPositions (where closed positions are filtered out)
+
 /**
  * @typedef {Object} Position
  * @property {string} id
@@ -156,12 +163,9 @@ export const openUserPositionsFromSubgraph = derived(
 	}
 );
 
-export const openUserPositions = derived(
-	[openUserPositionsFromEvents, openUserPositionsFromSubgraph, closedUserPositionsEvents],
-	(
-		[$openUserPositionsFromEvents, $openUserPositionsFromSubgraph, $closedUserPositionsEvents],
-		set
-	) => {
+export const openUserPositionsCombined = derived(
+	[openUserPositionsFromEvents, openUserPositionsFromSubgraph],
+	([$openUserPositionsFromEvents, $openUserPositionsFromSubgraph], set) => {
 		// First fill positions from subgraph
 
 		/** @type {Position[]} */
@@ -183,13 +187,23 @@ export const openUserPositions = derived(
 
 		// Then check if new positions from events are not already in the list
 		// and add them to the top if missing
-
 		$openUserPositionsFromEvents.forEach((position) => {
 			if (!positions.find((p) => p.id === position.id)) {
 				positions = [position, ...positions];
 				set({ positions, loading: false, error: null });
 			}
 		});
+
+		set({ positions, loading: false, error: null });
+	},
+	initialPositionStoreState
+);
+
+// Filter out closed positions
+export const openUserPositions = derived(
+	[openUserPositionsCombined, closedUserPositionsEvents],
+	([$openUserPositionsCombined, $closedUserPositionsEvents], set) => {
+		let positions = $openUserPositionsCombined.positions;
 
 		// Finally filter out closed positions
 		$closedUserPositionsEvents.forEach((position) => {
