@@ -31,6 +31,10 @@ export const closedUserPositionsEvents = derived(
 			null,
 			null,
 			null,
+			null,
+			null,
+			null,
+			null,
 			null
 		);
 

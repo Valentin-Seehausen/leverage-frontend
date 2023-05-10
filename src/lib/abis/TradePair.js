@@ -65,6 +65,36 @@ export default narrow([
 			},
 			{
 				indexed: false,
+				internalType: 'bool',
+				name: 'isLong',
+				type: 'bool'
+			},
+			{
+				indexed: false,
+				internalType: 'uint256',
+				name: 'shares',
+				type: 'uint256'
+			},
+			{
+				indexed: false,
+				internalType: 'uint256',
+				name: 'entryPrice',
+				type: 'uint256'
+			},
+			{
+				indexed: false,
+				internalType: 'uint256',
+				name: 'leverage',
+				type: 'uint256'
+			},
+			{
+				indexed: false,
+				internalType: 'int256',
+				name: 'pnlShares',
+				type: 'int256'
+			},
+			{
+				indexed: false,
 				internalType: 'uint256',
 				name: 'closePrice',
 				type: 'uint256'
@@ -74,12 +104,6 @@ export default narrow([
 				internalType: 'uint256',
 				name: 'closeDate',
 				type: 'uint256'
-			},
-			{
-				indexed: false,
-				internalType: 'int256',
-				name: 'pnlShares',
-				type: 'int256'
 			}
 		],
 		name: 'PositionClosed',
