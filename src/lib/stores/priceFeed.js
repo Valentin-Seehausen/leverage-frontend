@@ -63,8 +63,6 @@ export const currentPrice = readable(BigNumber.from(0), (set) => {
 		set(value);
 	});
 	const unsubscribe = currentPriceUpdate.subscribe((newCurrentPrice) => {
-		console.log('newCurrentPrice', newCurrentPrice.toString());
-		console.log('lastPrice', lastPrice.toString());
 		if (!newCurrentPrice.eq(lastPrice)) {
 			lastPrice = newCurrentPrice;
 			tween.set(newCurrentPrice);

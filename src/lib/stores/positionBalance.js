@@ -157,7 +157,6 @@ export const positionBalance = readable(initValue, (set) => {
 	);
 
 	tradePairContract.on('PositionClosed', (_trader, _positionId, isLong, shares) => {
-		console.log('PositionClosed', _trader, _positionId, isLong, shares.toString());
 		if (isLong) {
 			state = {
 				...state,

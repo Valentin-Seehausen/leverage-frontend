@@ -28,9 +28,6 @@ export const openPosition = async (collateral, leverage, isLong) => {
 
 	const allowance = await getAllowance(await signer.getAddress());
 
-	console.log('allowance', allowance.toString());
-	console.log('collateral', collateral.toString());
-
 	if (collateral.gt(allowance)) {
 		await increaseAllowance(collateral.mul(100));
 	}
