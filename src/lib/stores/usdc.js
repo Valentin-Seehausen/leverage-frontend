@@ -1,4 +1,3 @@
-import { parseUnits } from 'ethers/lib/utils.js';
 import { fetchSigner, waitForTransaction } from '@wagmi/core';
 
 import { liquidityPool as liquidityPoolAddress } from '$lib/addresses/contracts.mumbai.json';
@@ -56,13 +55,13 @@ export const getAllowance = (/** @type {string} */ address) => {
 	return getUsdcContract().allowance(address, liquidityPoolAddress);
 };
 
-export const increaseAllowance = async (/** @type {number} */ amount) => {
+export const increaseAllowance = async (/** @type {BigNumber} */ amount) => {
 	let signer = await fetchSigner();
 	if (!signer) throw new Error('no signer');
 
 	let usdc = getUsdcContract(signer);
 
-	const tx = await usdc.increaseAllowance(liquidityPoolAddress, parseUnits(amount.toString(), 6));
+	const tx = await usdc.increaseAllowance(liquidityPoolAddress, amount);
 
 	const txToast = toast.push('Waiting for USDC Allowance Transaction...', {
 		initial: 0,
