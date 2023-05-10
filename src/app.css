@@ -7,7 +7,7 @@
 		@apply dark:text-slate-400;
 	}
 	.box {
-		@apply p-3 m-2 border rounded dark:border-slate-800 dark:bg-slate-900;
+		@apply p-3 mx-3 my-6 border rounded dark:border-slate-800 dark:bg-slate-900;
 	}
 	.user-input {
 		@apply dark:bg-slate-800 dark:hover:bg-slate-700 dark:focus:bg-slate-700 dark:border-slate-600 
