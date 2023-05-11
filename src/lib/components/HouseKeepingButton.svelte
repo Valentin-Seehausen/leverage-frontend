@@ -1,8 +1,8 @@
 <script>
-	import { closeablePositionIds } from '$lib/stores/positions/closeablePositions';
+	import { closeablePositions } from '$lib/stores/positions/closeablePositions';
 	import { closeCloseablePositions } from '$lib/stores/tradePair';
 
-	$: possible = $closeablePositionIds.length > 0;
+	$: possible = $closeablePositions.length > 0;
 </script>
 
 {#if possible}

@@ -1,10 +1,9 @@
 import { gql, queryStore } from '@urql/svelte';
-import { graphClient } from './graph';
-import { tradePair as tradePairAddress } from '$lib/addresses/contracts.mumbai.json';
-import { readable } from 'svelte/store';
+import { graphClientStore } from './graph';
+import { get, readable } from 'svelte/store';
 import { BigNumber } from 'ethers';
 import { formatUnits } from 'ethers/lib/utils.js';
-import { getTradePairContract } from '$lib/utils/contracts';
+import { tradePairContract } from '$lib/stores/contracts';
 
 const initValue = {
 	longCollateral: '0',
@@ -25,6 +24,7 @@ const initValue = {
 
 export const positionBalance = readable(initValue, (set) => {
 	let state = initValue;
+	let unsubscribeSubgraph = () => {};
 
 	const updatePercentages = () => {
 		const totalShares = BigNumber.from(state.longShares).add(BigNumber.from(state.shortShares));
@@ -91,88 +91,100 @@ export const positionBalance = readable(initValue, (set) => {
 		};
 	};
 
-	const unsubscribeSubgraph = queryStore({
-		client: graphClient,
-		query: gql`
-			query TradePair($id: ID!) {
-				tradePair(id: $id) {
-					longPositionCount
-					longCollateral
-					longShares
-					shortCollateral
-					shortPositionCount
-					shortShares
+	let tradePair = get(tradePairContract);
+	tradePairContract.subscribe((newTradePair) => {
+		tradePair.removeAllListeners();
+
+		tradePair = newTradePair;
+
+		tradePair.on(
+			'PositionOpened',
+			(_trader, _positionId, collateral, shares, _leverage, isLong) => {
+				if (isLong) {
+					state = {
+						...state,
+						longPositionCount: state.longPositionCount + 1,
+						longShares: BigNumber.from(state.longShares).add(shares.mul(2)).toString(),
+						longCollateral: BigNumber.from(state.longCollateral).add(collateral).toString()
+					};
+				} else {
+					state = {
+						...state,
+						shortPositionCount: state.shortPositionCount + 1,
+						shortShares: BigNumber.from(state.shortShares).add(shares.mul(2)).toString(),
+						shortCollateral: BigNumber.from(state.shortCollateral).add(collateral).toString()
+					};
 				}
-				_meta {
-					block {
-						number
-					}
-				}
+				updatePercentages();
+				set(state);
 			}
-		`,
-		variables: { id: tradePairAddress.toLowerCase() }
-	}).subscribe((result) => {
-		if (result.data) {
-			const tradePair = result.data.tradePair;
-			state = {
-				...state,
-				loading: false,
-				...tradePair
-			};
-			updatePercentages();
+		);
 
-			set(state);
-		} else if (result.fetching) {
-			set({ ...initValue, loading: true });
-		} else if (result.error) {
-			set({ ...initValue, error: result.error });
-		} else {
-			set({ ...initValue, loading: false });
-		}
-	});
-
-	const tradePairContract = getTradePairContract();
-
-	tradePairContract.on(
-		'PositionOpened',
-		(_trader, _positionId, collateral, shares, _leverage, isLong) => {
+		tradePair.on('PositionClosed', (_trader, _positionId, isLong, shares) => {
 			if (isLong) {
 				state = {
 					...state,
-					longPositionCount: state.longPositionCount + 1,
-					longShares: BigNumber.from(state.longShares).add(shares.mul(2)).toString(),
-					longCollateral: BigNumber.from(state.longCollateral).add(collateral).toString()
+					longPositionCount: state.longPositionCount - 1,
+					longShares: BigNumber.from(state.longShares).sub(shares.mul(2)).toString()
 				};
 			} else {
 				state = {
 					...state,
-					shortPositionCount: state.shortPositionCount + 1,
-					shortShares: BigNumber.from(state.shortShares).add(shares.mul(2)).toString(),
-					shortCollateral: BigNumber.from(state.shortCollateral).add(collateral).toString()
+					shortPositionCount: state.shortPositionCount - 1,
+					shortShares: BigNumber.from(state.shortShares).sub(shares.mul(2)).toString()
 				};
 			}
 			updatePercentages();
 			set(state);
-		}
-	);
-
-	tradePairContract.on('PositionClosed', (_trader, _positionId, isLong, shares) => {
-		if (isLong) {
-			state = {
-				...state,
-				longPositionCount: state.longPositionCount - 1,
-				longShares: BigNumber.from(state.longShares).sub(shares.mul(2)).toString()
-			};
-		} else {
-			state = {
-				...state,
-				shortPositionCount: state.shortPositionCount - 1,
-				shortShares: BigNumber.from(state.shortShares).sub(shares.mul(2)).toString()
-			};
-		}
-		updatePercentages();
-		set(state);
+		});
 	});
 
-	return () => Promise.all([unsubscribeSubgraph(), tradePairContract.removeAllListeners()]);
+	graphClientStore.subscribe(($graphClient) => {
+		if (!$graphClient) {
+			unsubscribeSubgraph = () => {};
+			return;
+		}
+
+		unsubscribeSubgraph = queryStore({
+			client: $graphClient,
+			query: gql`
+				query TradePair($id: ID!) {
+					tradePair(id: $id) {
+						longPositionCount
+						longCollateral
+						longShares
+						shortCollateral
+						shortPositionCount
+						shortShares
+					}
+					_meta {
+						block {
+							number
+						}
+					}
+				}
+			`,
+			variables: { id: tradePair.address.toLowerCase() }
+		}).subscribe((result) => {
+			if (result.data) {
+				const tradePair = result.data.tradePair;
+				state = {
+					...state,
+					loading: false,
+					...tradePair
+				};
+				updatePercentages();
+
+				set(state);
+			} else if (result.fetching) {
+				set({ ...initValue, loading: true });
+			} else if (result.error) {
+				set({ ...initValue, error: result.error });
+			} else {
+				set({ ...initValue, loading: false });
+			}
+		});
+	});
+
+	return () => Promise.all([unsubscribeSubgraph(), tradePair.removeAllListeners()]);
 });

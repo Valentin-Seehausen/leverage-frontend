@@ -1,56 +1,49 @@
-import { getContract, getProvider } from '@wagmi/core';
-import priceFeedABI from '$lib/abis/AggregatorProxy';
-import aggregatorAbi from '$lib/abis/OffChainAggregator';
-
-import { CHAINLINK_BTC } from '$lib/addresses/contracts.mumbai.json';
-import { isInitialized } from './client';
-import { derived, readable } from 'svelte/store';
+import { get, readable, writable } from 'svelte/store';
 import { BigNumber } from 'ethers';
 import { tweened } from 'svelte/motion';
 import { sineInOut } from 'svelte/easing';
 import { interpolateBigNumbers } from '$lib/utils/interpolateBigNumbers';
+import { priceFeedContract, priceFeedAggregatorContract } from './contracts';
+import { waitForTransaction } from '@wagmi/core';
+import { toast } from '@zerodevx/svelte-toast';
+import { parseUnits } from 'ethers/lib/utils.js';
+import { fetchSignerOrWarn } from '$lib/utils/signer';
 
-export const currentPriceUpdate = derived(
-	isInitialized,
-	($isInitialized, set) => {
-		if (!$isInitialized) return;
+const createCurrentPriceStore = () => {
+	const { subscribe, set } = writable(BigNumber.from(0));
 
-		const priceFeed = getContract({
-			address: CHAINLINK_BTC,
-			abi: priceFeedABI,
-			signerOrProvider: getProvider()
-		});
+	let priceFeed = get(priceFeedContract);
 
-		// Set initial Value
+	/**
+	 * @type {{ removeAllListeners: () => void; on: (arg0: string, arg1: (answer: any) => void) => void; }}
+	 */
+	let priceFeedAggregator;
+
+	priceFeedContract.subscribe(($priceFeedContract) => {
+		priceFeed.removeAllListeners();
+		priceFeed = $priceFeedContract;
+
 		priceFeed.latestRoundData().then((data) => {
 			set(data.answer);
 		});
+	});
 
-		let close = () => {};
+	priceFeedAggregatorContract.subscribe(($priceFeedAggregator) => {
+		if (priceFeedAggregator) priceFeedAggregator.removeAllListeners();
+		if (!$priceFeedAggregator) return;
 
-		// SetUp listener and add subscription to close
-		priceFeed.aggregator().then((aggregatorAddress) => {
-			const aggregator = getContract({
-				address: aggregatorAddress,
-				abi: aggregatorAbi,
-				signerOrProvider: getProvider()
-			});
-
-			aggregator.on('AnswerUpdated', (answer) => {
-				set(answer);
-			});
-
-			close = () => {
-				aggregator.removeAllListeners();
-			};
+		priceFeedAggregator = $priceFeedAggregator;
+		priceFeedAggregator.on('AnswerUpdated', (answer) => {
+			set(answer);
 		});
+	});
 
-		return () => {
-			close();
-		};
-	},
-	BigNumber.from(0)
-);
+	return {
+		subscribe
+	};
+};
+
+export const currentPriceUpdate = createCurrentPriceStore();
 
 export const currentPrice = readable(BigNumber.from(0), (set) => {
 	let lastPrice = BigNumber.from(0);
@@ -73,3 +66,38 @@ export const currentPrice = readable(BigNumber.from(0), (set) => {
 		unsubscribe();
 	};
 });
+
+export const toggleDevPrice = async () => {
+	const signer = await fetchSignerOrWarn();
+	if (!signer) return;
+
+	if (!signer) {
+		toast.push('Please connect MetaMask', {
+			duration: 2000,
+			classes: ['error']
+		});
+		return;
+	}
+
+	const price1 = parseUnits('60000', 8);
+	const price2 = parseUnits('61000', 8);
+
+	const newPrice = get(currentPriceUpdate).eq(price1) ? price2 : price1;
+
+	const tx = await get(priceFeedAggregatorContract).connect(signer).setNewPrice(newPrice);
+
+	const txToast = toast.push('Waiting for Price Update Transaction...', {
+		initial: 0,
+		classes: ['info']
+	});
+
+	// @ts-ignore
+	await waitForTransaction({ hash: tx.hash });
+
+	toast.pop(txToast);
+
+	toast.push('Price Updated', {
+		duration: 2000,
+		classes: ['success']
+	});
+};

@@ -1,5 +1,7 @@
 <script>
 	import { SvelteToast } from '@zerodevx/svelte-toast';
+	import HouseKeepingButton from '$lib/components/HouseKeepingButton.svelte';
+
 	import Nav from './Nav.svelte';
 	import '../app.css';
 	import { Client, setContextClient, cacheExchange, fetchExchange } from '@urql/svelte';
@@ -21,6 +23,12 @@
 <Nav />
 
 <div class="max-w-screen-2xl m-auto xl:p-3">
+	<div class="lg:flex">
+		<div class="flex-1 lg:flex">
+			<HouseKeepingButton />
+		</div>
+	</div>
+
 	<slot />
 </div>
 

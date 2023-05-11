@@ -1,6 +1,6 @@
 import { queryStore, gql } from '@urql/svelte';
 import { account } from '$lib/stores/wallet';
-import { graphClient } from '$lib/stores/graph';
+import { graphClientStore } from '$lib/stores/graph';
 import { derived } from 'svelte/store';
 import { BigNumber } from 'ethers';
 import { liquidityPoolRatio } from '$lib/stores/liquidityPool';
@@ -20,37 +20,40 @@ const initialPositionStoreState = {
 	error: null
 };
 
-export const closedUserPositionsSubgraph = derived(account, ($account, set) => {
-	const unsubscribe = queryStore({
-		client: graphClient,
-		query: gql`
-			query ($trader: String!) {
-				positions(where: { and: [{ trader: $trader }, { isOpen: false }] }) {
-					id
-					collateral
-					shares
-					isLong
-					isOpen
-					liquidationPrice
-					takeProfitPrice
-					closePrice
-					entryPrice
-					isLong
-					leverage
-					openDate
-					closeDate
-					pnlShares
-					pnlSharesPercentage
-					pnlAssets
-					pnlAssetsPercentage
+export const closedUserPositionsSubgraph = derived(
+	[account, graphClientStore],
+	([$account, $graphClientStore], set) => {
+		const unsubscribe = queryStore({
+			client: $graphClientStore,
+			query: gql`
+				query ($trader: String!) {
+					positions(where: { and: [{ trader: $trader }, { isOpen: false }] }) {
+						id
+						collateral
+						shares
+						isLong
+						isOpen
+						liquidationPrice
+						takeProfitPrice
+						closePrice
+						entryPrice
+						isLong
+						leverage
+						openDate
+						closeDate
+						pnlShares
+						pnlSharesPercentage
+						pnlAssets
+						pnlAssetsPercentage
+					}
 				}
-			}
-		`,
-		variables: { trader: $account.address.toLowerCase() || '' }
-	}).subscribe(set);
+			`,
+			variables: { trader: $account.address.toLowerCase() || '' }
+		}).subscribe(set);
 
-	return unsubscribe;
-});
+		return unsubscribe;
+	}
+);
 
 export const closedUserPositions = derived(
 	[
@@ -129,7 +132,6 @@ export const closedUserPositions = derived(
 
 			positions = [...positions, newClosedPosition];
 		});
-		console.log(positions);
 		set({ positions, loading: false, error: null });
 	},
 	initialPositionStoreState

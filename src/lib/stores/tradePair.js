@@ -1,12 +1,13 @@
-import { fetchSigner, waitForTransaction } from '@wagmi/core';
+import { waitForTransaction } from '@wagmi/core';
 import { parseUnits } from 'ethers/lib/utils.js';
 import { userUsdc, getAllowance, increaseAllowance } from './usdc';
 import { leverageDecimals } from '$lib/config/constants';
-import { closeablePositionIds } from './positions/closeablePositions';
+import { closeablePositions } from './positions/closeablePositions';
 import { BigNumber } from 'ethers';
 import { get } from 'svelte/store';
 import { toast } from '@zerodevx/svelte-toast';
-import { getTradePairContract } from '$lib/utils/contracts';
+import { contracts } from '$lib/stores/contracts';
+import { fetchSignerOrWarn } from '$lib/utils/signer';
 
 /**
  * Opens a position at TradePair via Signer
@@ -17,14 +18,8 @@ import { getTradePairContract } from '$lib/utils/contracts';
 export const openPosition = async (collateral, leverage, isLong) => {
 	const parsedLeverage = parseUnits(leverage.toString(), leverageDecimals);
 
-	const signer = await fetchSigner();
-	if (!signer) {
-		toast.push('Please connect MetaMask', {
-			duration: 2000,
-			classes: ['error']
-		});
-		return;
-	}
+	const signer = await fetchSignerOrWarn();
+	if (!signer) return;
 
 	const allowance = await getAllowance(await signer.getAddress());
 
@@ -32,7 +27,7 @@ export const openPosition = async (collateral, leverage, isLong) => {
 		await increaseAllowance(collateral.mul(100));
 	}
 
-	let tradePair = getTradePairContract(signer);
+	let tradePair = get(contracts).getTradePairContract(signer);
 
 	const tx = await tradePair.openPosition(collateral, parsedLeverage, isLong);
 
@@ -55,18 +50,12 @@ export const openPosition = async (collateral, leverage, isLong) => {
 };
 
 export const closeCloseablePositions = async () => {
-	const signer = await fetchSigner();
-	if (!signer) {
-		toast.push('Please connect MetaMask', {
-			duration: 2000,
-			classes: ['error']
-		});
-		return;
-	}
+	const signer = await fetchSignerOrWarn();
+	if (!signer) return;
 
-	const ids = get(closeablePositionIds);
+	const ids = get(closeablePositions);
 
-	let tradePair = getTradePairContract(signer);
+	let tradePair = get(contracts).getTradePairContract(signer);
 
 	const tx = await tradePair.closePositions(ids.map((id) => BigNumber.from(id)));
 
@@ -84,4 +73,6 @@ export const closeCloseablePositions = async () => {
 		duration: 2000,
 		classes: ['success']
 	});
+
+	closeablePositions.reset();
 };

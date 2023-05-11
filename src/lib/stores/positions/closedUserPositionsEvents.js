@@ -1,6 +1,6 @@
 import { account } from '$lib/stores/wallet';
 import { derived } from 'svelte/store';
-import { getTradePairContract } from '$lib/utils/contracts';
+import { contracts } from '$lib/stores/contracts';
 
 /**
  * @typedef {Object} PositionClosedEvent
@@ -17,14 +17,15 @@ const initialPositionClosedEvents = [];
  * @type {import('svelte/store').Readable<PositionClosedEvent[]>}
  */
 export const closedUserPositionsEvents = derived(
-	account,
-	($account, set) => {
+	[account, contracts],
+	([$account, $contracts], set) => {
 		if (!$account.isConnected) return;
+		if (!$contracts) return;
 
 		/** @type {PositionClosedEvent[]} */
 		let positions = [];
 
-		const tradePair = getTradePairContract();
+		const tradePair = $contracts.getTradePairContract();
 
 		const positionClosedFilter = tradePair.filters.PositionClosed(
 			$account.address,
@@ -62,8 +63,7 @@ export const closedUserPositionsEvents = derived(
 				set(positions);
 			}
 		);
-
-		return () => tradePair.removeAllListeners();
+		return tradePair.removeAllListeners;
 	},
 	initialPositionClosedEvents
 );
