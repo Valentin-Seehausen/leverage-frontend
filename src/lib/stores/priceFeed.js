@@ -4,6 +4,9 @@ import { tweened } from 'svelte/motion';
 import { sineInOut } from 'svelte/easing';
 import { interpolateBigNumbers } from '$lib/utils/interpolateBigNumbers';
 import { priceFeedContract, priceFeedAggregatorContract } from './contracts';
+import { fetchSigner, waitForTransaction } from '@wagmi/core';
+import { toast } from '@zerodevx/svelte-toast';
+import { parseUnits } from 'ethers/lib/utils.js';
 
 const createCurrentPriceStore = () => {
 	const { subscribe, set } = writable(BigNumber.from(0));
@@ -62,3 +65,36 @@ export const currentPrice = readable(BigNumber.from(0), (set) => {
 		unsubscribe();
 	};
 });
+
+export const toggleDevPrice = async () => {
+	const signer = await fetchSigner();
+	if (!signer) {
+		toast.push('Please connect MetaMask', {
+			duration: 2000,
+			classes: ['error']
+		});
+		return;
+	}
+
+	const price1 = parseUnits('60000', 8);
+	const price2 = parseUnits('61000', 8);
+
+	const newPrice = get(currentPriceUpdate).eq(price1) ? price2 : price1;
+
+	const tx = await get(priceFeedAggregatorContract).connect(signer).setNewPrice(newPrice);
+
+	const txToast = toast.push('Waiting for Price Update Transaction...', {
+		initial: 0,
+		classes: ['info']
+	});
+
+	// @ts-ignore
+	await waitForTransaction({ hash: tx.hash });
+
+	toast.pop(txToast);
+
+	toast.push('Price Updated', {
+		duration: 2000,
+		classes: ['success']
+	});
+};

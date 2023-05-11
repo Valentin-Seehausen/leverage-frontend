@@ -9,3 +9,5 @@ export const graphEndpointArbitrumGoerli =
 	'https://api.studio.thegraph.com/query/46177/hyperbolic-finance/v0.2.0';
 export const graphEndpointArbitrumGoerliDev =
 	'https://api.studio.thegraph.com/query/46177/hyperbolic-finance-dev/v0.2.0';
+
+export const dev = new URLSearchParams(window.location.search).has('dev');

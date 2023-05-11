@@ -130,7 +130,6 @@ export const openUserPositionsFromSubgraph = derived(
 		if (!$account.isConnected) return;
 		if (!graphClientStore) return;
 
-		console.log('openUserPositionsFromSubgraph', $account.address.toLowerCase());
 		const unsubscribe = queryStore({
 			client: $graphClientStore,
 			query: gql`
@@ -156,8 +155,6 @@ export const openUserPositionsFromSubgraph = derived(
 			`,
 			variables: { trader: $account.address.toLowerCase() || '' }
 		}).subscribe((result) => {
-			console.log('result', result);
-			console.log('data', result.data);
 			if (result.error) {
 				set({ loading: false, error: result.error, positions: [] });
 			} else if (result.data) {

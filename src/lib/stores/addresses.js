@@ -1,6 +1,10 @@
 import arbitrumGoerliAddresses from '$lib/addresses/contracts.arbitrum-goerli.json';
 import arbitrumGoerliDevAddresses from '$lib/addresses/dev.contracts.arbitrum-goerli.json';
-import { graphEndpointArbitrumGoerli, graphEndpointArbitrumGoerliDev } from '$lib/config/constants';
+import {
+	dev,
+	graphEndpointArbitrumGoerli,
+	graphEndpointArbitrumGoerliDev
+} from '$lib/config/constants';
 
 import { watchNetwork } from '@wagmi/core';
 import { writable } from 'svelte/store';
@@ -13,8 +17,6 @@ const createAddressStore = () => {
 	};
 	let state = initState;
 
-	// When dev is set once (by adding "?dev" to the url) it will stay set until the page is refreshed
-	let dev = new URLSearchParams(window.location.search).has('dev');
 	let chainId = 421613;
 	const { subscribe, set } = writable(state);
 

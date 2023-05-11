@@ -3,9 +3,11 @@ import { addresses } from './addresses';
 import { getProvider, getContract } from '@wagmi/core';
 import priceFeedABI from '$lib/abis/AggregatorProxy';
 import aggregatorAbi from '$lib/abis/OffChainAggregator';
+import mockPriceFeedAggregatorAbi from '$lib/abis/MockPriceFeedAggregator';
 import liquidityPoolAbi from '$lib/abis/LiquidityPool';
 import tradePairAbi from '$lib/abis/TradePair';
 import usdcAbi from '$lib/abis/USDC';
+import { dev } from '$app/environment';
 
 const createState = (
 	/** @type {{ liquidityPool: any; network?: string; priceFeed: any; proxyAdmin?: string; startBlock?: number; tradePair: any; usdc: any; }} */ addresses
@@ -88,12 +90,20 @@ export const priceFeedContract = derived(contracts, ($contracts) => {
 
 export const priceFeedAggregatorContract = derived(priceFeedContract, ($priceFeed, set) => {
 	$priceFeed.aggregator().then((aggregatorAddress) => {
-		const aggregator = getContract({
-			address: aggregatorAddress,
-			abi: aggregatorAbi,
-			signerOrProvider: getProvider()
-		});
-		set(aggregator);
-		return aggregator;
+		if (dev) {
+			const aggregator = getContract({
+				address: aggregatorAddress,
+				abi: mockPriceFeedAggregatorAbi,
+				signerOrProvider: getProvider()
+			});
+			set(aggregator);
+		} else {
+			const aggregator = getContract({
+				address: aggregatorAddress,
+				abi: aggregatorAbi,
+				signerOrProvider: getProvider()
+			});
+			set(aggregator);
+		}
 	});
 });

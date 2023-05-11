@@ -1,5 +1,6 @@
 <script>
 	import OpenPositionForm from '$lib/components/OpenPositionForm.svelte';
+	import DevPanel from '$lib/components/DevPanel.svelte';
 	import PositionList from '$lib/components/positions/PositionList.svelte';
 	import TradingViewWidget from '$lib/components/TradingViewWidget.svelte';
 	import PositionBalance from '$lib/components/positions/PositionBalance.svelte';
@@ -16,6 +17,7 @@
 	</div>
 	<div class="basis-1/3 xl:basis-1/4">
 		<OpenPositionForm />
+		<DevPanel />
 	</div>
 </div>
 
