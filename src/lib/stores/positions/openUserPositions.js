@@ -119,7 +119,7 @@ export const openUserPositionsFromEvents = derived(
 			);
 		});
 
-		return () => tradePair.removeAllListeners();
+		return tradePair.removeAllListeners;
 	},
 	initialPositions
 );
