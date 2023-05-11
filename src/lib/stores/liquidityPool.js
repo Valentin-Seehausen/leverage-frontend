@@ -1,4 +1,4 @@
-import { fetchSigner, waitForTransaction } from '@wagmi/core';
+import { waitForTransaction } from '@wagmi/core';
 import { derived, get } from 'svelte/store';
 import { BigNumber } from 'ethers';
 import { isInitialized } from './client';
@@ -7,6 +7,7 @@ import { toast } from '@zerodevx/svelte-toast';
 import { contracts } from '$lib/stores/contracts';
 import { userUsdc } from '$lib/stores/usdc';
 import { addresses } from './addresses';
+import { fetchSignerOrWarn } from '$lib/utils/signer';
 
 /**
  * This store is used to run the other contract reading stores after a liquidity pool update
@@ -120,14 +121,8 @@ export const userAssets = derived(
 );
 
 export const redeem = async (/** @type {BigNumber} */ shares) => {
-	const signer = await fetchSigner();
-	if (!signer) {
-		toast.push('Please connect MetaMask', {
-			duration: 2000,
-			classes: ['error']
-		});
-		return;
-	}
+	const signer = await fetchSignerOrWarn();
+	if (!signer) return;
 
 	const tx = await get(contracts).getLiquidityPoolContract(signer).redeem(shares);
 

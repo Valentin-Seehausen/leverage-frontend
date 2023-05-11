@@ -1,4 +1,4 @@
-import { fetchSigner, waitForTransaction } from '@wagmi/core';
+import { waitForTransaction } from '@wagmi/core';
 
 import { account } from './wallet';
 import { get, writable } from 'svelte/store';
@@ -6,6 +6,7 @@ import { BigNumber } from 'ethers';
 import { toast } from '@zerodevx/svelte-toast';
 import { contracts, usdcContract } from '$lib/stores/contracts';
 import { addresses } from './addresses';
+import { fetchSignerOrWarn } from '$lib/utils/signer';
 
 const createUserUsdcStore = () => {
 	const initialState = {
@@ -62,8 +63,8 @@ export const getAllowance = (/** @type {string} */ address) => {
 };
 
 export const increaseAllowance = async (/** @type {BigNumber} */ amount) => {
-	let signer = await fetchSigner();
-	if (!signer) throw new Error('no signer');
+	const signer = await fetchSignerOrWarn();
+	if (!signer) return;
 
 	let usdc = get(contracts).getUsdcContract(signer);
 

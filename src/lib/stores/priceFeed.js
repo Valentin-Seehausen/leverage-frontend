@@ -4,9 +4,10 @@ import { tweened } from 'svelte/motion';
 import { sineInOut } from 'svelte/easing';
 import { interpolateBigNumbers } from '$lib/utils/interpolateBigNumbers';
 import { priceFeedContract, priceFeedAggregatorContract } from './contracts';
-import { fetchSigner, waitForTransaction } from '@wagmi/core';
+import { waitForTransaction } from '@wagmi/core';
 import { toast } from '@zerodevx/svelte-toast';
 import { parseUnits } from 'ethers/lib/utils.js';
+import { fetchSignerOrWarn } from '$lib/utils/signer';
 
 const createCurrentPriceStore = () => {
 	const { subscribe, set } = writable(BigNumber.from(0));
@@ -67,7 +68,9 @@ export const currentPrice = readable(BigNumber.from(0), (set) => {
 });
 
 export const toggleDevPrice = async () => {
-	const signer = await fetchSigner();
+	const signer = await fetchSignerOrWarn();
+	if (!signer) return;
+
 	if (!signer) {
 		toast.push('Please connect MetaMask', {
 			duration: 2000,
