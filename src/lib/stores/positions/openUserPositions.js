@@ -127,6 +127,10 @@ export const openUserPositionsFromEvents = derived(
 export const openUserPositionsFromSubgraph = derived(
 	[account, graphClientStore],
 	([$account, $graphClientStore], set) => {
+		if (!$account.isConnected) return;
+		if (!graphClientStore) return;
+
+		console.log('openUserPositionsFromSubgraph', $account.address.toLowerCase());
 		const unsubscribe = queryStore({
 			client: $graphClientStore,
 			query: gql`
@@ -152,16 +156,21 @@ export const openUserPositionsFromSubgraph = derived(
 			`,
 			variables: { trader: $account.address.toLowerCase() || '' }
 		}).subscribe((result) => {
-			if (result.data) {
+			console.log('result', result);
+			console.log('data', result.data);
+			if (result.error) {
+				set({ loading: false, error: result.error, positions: [] });
+			} else if (result.data) {
 				result.data.position = result.data.positions.map((/** @type {Position} */ position) => {
 					return position;
 				});
+				set({ loading: false, error: null, positions: result.data.positions });
 			}
-			set(result);
 		});
 
 		return unsubscribe;
-	}
+	},
+	initialPositionStoreState
 );
 
 export const openUserPositionsCombined = derived(
@@ -172,7 +181,7 @@ export const openUserPositionsCombined = derived(
 		/** @type {Position[]} */
 		let positions = [];
 
-		if ($openUserPositionsFromSubgraph.fetching) {
+		if ($openUserPositionsFromSubgraph.loading) {
 			set({ positions, loading: true, error: null });
 			return;
 		}
@@ -182,9 +191,7 @@ export const openUserPositionsCombined = derived(
 			return;
 		}
 
-		if ($openUserPositionsFromSubgraph.data) {
-			positions = $openUserPositionsFromSubgraph.data.positions;
-		}
+		positions = $openUserPositionsFromSubgraph.positions;
 
 		// Then check if new positions from events are not already in the list
 		// and add them to the top if missing
