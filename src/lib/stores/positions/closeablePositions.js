@@ -14,6 +14,8 @@ const createCloseablePositionsStore = () => {
 	let graphClient = get(graphClientStore);
 
 	const runQuery = () => {
+		if (lastPrice.isZero()) return;
+
 		graphClient
 			.query(
 				gql`
@@ -35,7 +37,7 @@ const createCloseablePositionsStore = () => {
 						}
 					}
 				`,
-				{ variables: { currentPriceUpdate: lastPrice.toString() || '0' } }
+				{ currentPriceUpdate: lastPrice.toString() || '0' }
 			)
 			.then((result) => {
 				set(result?.data?.positions.map((/** @type {{ id: string; }} */ p) => p.id) || []);
