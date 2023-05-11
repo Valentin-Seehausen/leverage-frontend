@@ -1,6 +1,6 @@
 import { account } from '$lib/stores/wallet';
-import { derived } from 'svelte/store';
-import { getTradePairContract } from '$lib/utils/contracts';
+import { derived, get } from 'svelte/store';
+import { tradePairContract } from '$lib/stores/contracts';
 
 /**
  * @typedef {Object} PositionClosedEvent
@@ -24,44 +24,48 @@ export const closedUserPositionsEvents = derived(
 		/** @type {PositionClosedEvent[]} */
 		let positions = [];
 
-		const tradePair = getTradePairContract();
+		let tradePair = get(tradePairContract);
+		tradePairContract.subscribe((newTradePair) => {
+			tradePair.removeAllListeners();
+			tradePair = newTradePair;
 
-		const positionClosedFilter = tradePair.filters.PositionClosed(
-			$account.address,
-			null,
-			null,
-			null,
-			null,
-			null,
-			null,
-			null,
-			null
-		);
+			const positionClosedFilter = tradePair.filters.PositionClosed(
+				$account.address,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null
+			);
 
-		tradePair.on(
-			positionClosedFilter,
-			(
-				_trader,
-				positionId,
-				_isLong,
-				_shares,
-				_entryPrice,
-				_leverage,
-				pnlShares,
-				closePrice,
-				closeDate
-			) => {
-				const newClosedPosition = {
-					id: positionId?.toString() || '',
-					closePrice: closePrice?.toString() || '0',
-					closeDate: closeDate?.toNumber() || 0,
-					pnlShares: pnlShares?.toString() || '0'
-				};
+			tradePair.on(
+				positionClosedFilter,
+				(
+					_trader,
+					positionId,
+					_isLong,
+					_shares,
+					_entryPrice,
+					_leverage,
+					pnlShares,
+					closePrice,
+					closeDate
+				) => {
+					const newClosedPosition = {
+						id: positionId?.toString() || '',
+						closePrice: closePrice?.toString() || '0',
+						closeDate: closeDate?.toNumber() || 0,
+						pnlShares: pnlShares?.toString() || '0'
+					};
 
-				positions = [...positions, newClosedPosition];
-				set(positions);
-			}
-		);
+					positions = [...positions, newClosedPosition];
+					set(positions);
+				}
+			);
+		});
 
 		return () => tradePair.removeAllListeners();
 	},

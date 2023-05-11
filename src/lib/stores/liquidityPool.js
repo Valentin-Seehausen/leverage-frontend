@@ -1,12 +1,12 @@
 import { fetchSigner, waitForTransaction } from '@wagmi/core';
-import { tradePair as tradePairAddress } from '$lib/addresses/contracts.mumbai.json';
-import { derived } from 'svelte/store';
+import { derived, get } from 'svelte/store';
 import { BigNumber } from 'ethers';
 import { isInitialized } from './client';
 import { account } from './wallet';
 import { toast } from '@zerodevx/svelte-toast';
-import { getLiquidityPoolContract } from '$lib/utils/contracts';
-import { userUsdc } from './usdc';
+import { contracts } from '$lib/stores/contracts';
+import { userUsdc } from '$lib/stores/usdc';
+import { addresses } from './addresses';
 
 /**
  * This store is used to run the other contract reading stores after a liquidity pool update
@@ -14,11 +14,11 @@ import { userUsdc } from './usdc';
  * I updates max once per block
  */
 export const liquitityPoolLastUpdate = derived(
-	isInitialized,
-	($isInitialized, set) => {
+	[isInitialized, contracts],
+	([$isInitialized, $contracts], set) => {
 		if (!$isInitialized) return;
 
-		const liquidityPoolInstance = getLiquidityPoolContract();
+		const liquidityPoolInstance = $contracts.getLiquidityPoolContract();
 
 		liquidityPoolInstance.on('Transfer', (_from, _to, _amount, event) => {
 			set(event.blockNumber);
@@ -35,11 +35,12 @@ export const liquitityPoolLastUpdate = derived(
 );
 
 export const totalSupply = derived(
-	liquitityPoolLastUpdate,
-	($liquitityPoolLastUpdate, set) => {
+	[liquitityPoolLastUpdate, contracts],
+	([$liquitityPoolLastUpdate, $contracts], set) => {
 		if ($liquitityPoolLastUpdate == 0) return;
 
-		getLiquidityPoolContract()
+		$contracts
+			.getLiquidityPoolContract()
 			.totalSupply()
 			.then((totalSupply) => {
 				set(totalSupply);
@@ -49,11 +50,12 @@ export const totalSupply = derived(
 );
 
 export const totalAssets = derived(
-	liquitityPoolLastUpdate,
-	($liquitityPoolLastUpdate, set) => {
+	[liquitityPoolLastUpdate, contracts],
+	([$liquitityPoolLastUpdate, $contracts], set) => {
 		if ($liquitityPoolLastUpdate == 0) return;
 
-		getLiquidityPoolContract()
+		$contracts
+			.getLiquidityPoolContract()
 			.totalAssets()
 			.then((totalAssets) => {
 				set(totalAssets);
@@ -63,12 +65,13 @@ export const totalAssets = derived(
 );
 
 export const tradePairBalance = derived(
-	liquitityPoolLastUpdate,
-	($liquitityPoolLastUpdate, set) => {
+	[liquitityPoolLastUpdate, contracts, addresses],
+	([$liquitityPoolLastUpdate, $contracts, $addresses], set) => {
 		if ($liquitityPoolLastUpdate == 0) return;
 
-		getLiquidityPoolContract()
-			.balanceOf(tradePairAddress)
+		$contracts
+			.getLiquidityPoolContract()
+			.balanceOf($addresses.addresses.tradePair)
 			.then((tradePairBalance) => {
 				set(tradePairBalance);
 			});
@@ -77,12 +80,13 @@ export const tradePairBalance = derived(
 );
 
 export const userShares = derived(
-	[liquitityPoolLastUpdate, account],
-	([$liquitityPoolLastUpdate, $account], set) => {
+	[liquitityPoolLastUpdate, contracts, account],
+	([$liquitityPoolLastUpdate, $contracts, $account], set) => {
 		if ($liquitityPoolLastUpdate == 0) return;
 		if (!$account.isConnected) return;
 
-		getLiquidityPoolContract()
+		$contracts
+			.getLiquidityPoolContract()
 			.balanceOf($account.address)
 			.then((userBalance) => {
 				set(userBalance);
@@ -125,7 +129,7 @@ export const redeem = async (/** @type {BigNumber} */ shares) => {
 		return;
 	}
 
-	const tx = await getLiquidityPoolContract(signer).redeem(shares);
+	const tx = await get(contracts).getLiquidityPoolContract(signer).redeem(shares);
 
 	const txToast = toast.push('Waiting for Withdraw Transaction...', {
 		initial: 0,

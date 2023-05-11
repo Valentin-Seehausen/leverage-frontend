@@ -2,21 +2,23 @@ import { getContract, getProvider } from '@wagmi/core';
 import priceFeedABI from '$lib/abis/AggregatorProxy';
 import aggregatorAbi from '$lib/abis/OffChainAggregator';
 
-import { CHAINLINK_BTC } from '$lib/addresses/contracts.mumbai.json';
 import { isInitialized } from './client';
 import { derived, readable } from 'svelte/store';
 import { BigNumber } from 'ethers';
 import { tweened } from 'svelte/motion';
 import { sineInOut } from 'svelte/easing';
 import { interpolateBigNumbers } from '$lib/utils/interpolateBigNumbers';
+import { addresses } from '$lib/stores/addresses';
 
 export const currentPriceUpdate = derived(
-	isInitialized,
-	($isInitialized, set) => {
+	[isInitialized, addresses],
+	([$isInitialized, $addresses], set) => {
 		if (!$isInitialized) return;
 
+		console.log($addresses.addresses.priceFeed);
+
 		const priceFeed = getContract({
-			address: CHAINLINK_BTC,
+			address: $addresses.addresses.priceFeed,
 			abi: priceFeedABI,
 			signerOrProvider: getProvider()
 		});

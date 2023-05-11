@@ -1,9 +1,9 @@
 import { queryStore, gql } from '@urql/svelte';
 import { account } from '$lib/stores/wallet';
-import { graphClient } from '$lib/stores/graph';
-import { derived } from 'svelte/store';
+import { graphClientStore } from '$lib/stores/graph';
+import { derived, get } from 'svelte/store';
 import { currentPrice } from '$lib/stores/priceFeed';
-import { getTradePairContract } from '$lib/utils/contracts';
+import { tradePairContract } from '$lib/stores/contracts';
 import { calculateSharesPnlPercentage } from '$lib/utils/position';
 import { closedUserPositionsEvents } from './closedUserPositionsEvents';
 
@@ -61,101 +61,108 @@ export const openUserPositionsFromEvents = derived(
 		/** @type {Position[]} */
 		let positions = [];
 
-		const tradePair = getTradePairContract();
+		let tradePair = get(tradePairContract);
+		tradePairContract.subscribe((newTradePair) => {
+			tradePair.removeAllListeners();
+			tradePair = newTradePair;
 
-		const positionOpenedFilter = tradePair.filters.PositionOpened(
-			$account.address,
-			null,
-			null,
-			null,
-			null,
-			null,
-			null,
-			null,
-			null,
-			null
-		);
+			const positionOpenedFilter = tradePair.filters.PositionOpened(
+				$account.address,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null
+			);
 
-		tradePair.on(
-			positionOpenedFilter,
-			(
-				_trader,
-				positionId,
-				collateral,
-				shares,
-				leverage,
-				isLong,
-				entryPrice,
-				liquidationPrice,
-				takeProfitPrice,
-				openDate
-			) => {
-				/** @type{Position} */
-				const newPosition = {
-					id: positionId?.toString() || '0',
-					collateral: collateral?.toString() || '0',
-					shares: shares?.toString() || '0',
-					leverage: leverage?.toString() || '0',
-					isLong: !!isLong,
-					entryPrice: entryPrice?.toString() || '0',
-					liquidationPrice: liquidationPrice?.toString() || '0',
-					takeProfitPrice: takeProfitPrice?.toString() || '0',
-					openDate: parseInt(openDate?.toString() || '0') || 0,
-					isOpen: true,
-					closeDate: 0,
-					closePrice: '0',
-					pnlShares: '0',
-					pnlSharesPercentage: 0,
-					pnlAssets: '0',
-					pnlAssetsPercentage: 0
-				};
+			tradePair.on(
+				positionOpenedFilter,
+				(
+					_trader,
+					positionId,
+					collateral,
+					shares,
+					leverage,
+					isLong,
+					entryPrice,
+					liquidationPrice,
+					takeProfitPrice,
+					openDate
+				) => {
+					/** @type{Position} */
+					const newPosition = {
+						id: positionId?.toString() || '0',
+						collateral: collateral?.toString() || '0',
+						shares: shares?.toString() || '0',
+						leverage: leverage?.toString() || '0',
+						isLong: !!isLong,
+						entryPrice: entryPrice?.toString() || '0',
+						liquidationPrice: liquidationPrice?.toString() || '0',
+						takeProfitPrice: takeProfitPrice?.toString() || '0',
+						openDate: parseInt(openDate?.toString() || '0') || 0,
+						isOpen: true,
+						closeDate: 0,
+						closePrice: '0',
+						pnlShares: '0',
+						pnlSharesPercentage: 0,
+						pnlAssets: '0',
+						pnlAssetsPercentage: 0
+					};
 
-				positions = [...positions, newPosition];
-				set(positions);
-			}
-		);
+					positions = [...positions, newPosition];
+					set(positions);
+				}
+			);
+		});
 
 		return () => tradePair.removeAllListeners();
 	},
 	initialPositions
 );
 
-export const openUserPositionsFromSubgraph = derived(account, ($account, set) => {
-	const unsubscribe = queryStore({
-		client: graphClient,
-		query: gql`
-			query ($trader: String!) {
-				positions(
-					where: { and: [{ trader: $trader }, { isOpen: true }] }
-					orderBy: openDate
-					orderDirection: desc
-				) {
-					id
-					collateral
-					shares
-					isOpen
-					isLong
-					liquidationPrice
-					takeProfitPrice
-					entryPrice
-					isLong
-					leverage
-					openDate
+export const openUserPositionsFromSubgraph = derived(
+	[account, graphClientStore],
+	([$account, $graphClientStore], set) => {
+		const unsubscribe = queryStore({
+			client: $graphClientStore,
+			query: gql`
+				query ($trader: String!) {
+					positions(
+						where: { and: [{ trader: $trader }, { isOpen: true }] }
+						orderBy: openDate
+						orderDirection: desc
+					) {
+						id
+						collateral
+						shares
+						isOpen
+						isLong
+						liquidationPrice
+						takeProfitPrice
+						entryPrice
+						isLong
+						leverage
+						openDate
+					}
 				}
+			`,
+			variables: { trader: $account.address.toLowerCase() || '' }
+		}).subscribe((result) => {
+			if (result.data) {
+				result.data.position = result.data.positions.map((/** @type {Position} */ position) => {
+					return position;
+				});
 			}
-		`,
-		variables: { trader: $account.address.toLowerCase() || '' }
-	}).subscribe((result) => {
-		if (result.data) {
-			result.data.position = result.data.positions.map((/** @type {Position} */ position) => {
-				return position;
-			});
-		}
-		set(result);
-	});
+			set(result);
+		});
 
-	return unsubscribe;
-});
+		return unsubscribe;
+	}
+);
 
 export const openUserPositionsCombined = derived(
 	[openUserPositionsFromEvents, openUserPositionsFromSubgraph],

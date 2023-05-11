@@ -1,7 +1,7 @@
 import { gql } from '@urql/svelte';
 import { currentPriceUpdate } from '$lib/stores/priceFeed';
-import { graphClient } from '../graph';
-import { writable } from 'svelte/store';
+import { graphClientStore } from '../graph';
+import { get, writable } from 'svelte/store';
 import { BigNumber } from 'ethers';
 
 const createCloseablePositionsStore = () => {
@@ -11,14 +11,7 @@ const createCloseablePositionsStore = () => {
 
 	let lastPrice = BigNumber.from(0);
 	let deactivated = false;
-
-	// Run the query on every new price
-	currentPriceUpdate.subscribe(($currentPriceUpdate) => {
-		if (deactivated) return;
-		if (lastPrice.eq($currentPriceUpdate)) return;
-		lastPrice = $currentPriceUpdate;
-		runQuery();
-	});
+	let graphClient = get(graphClientStore);
 
 	const runQuery = () => {
 		graphClient
@@ -48,6 +41,20 @@ const createCloseablePositionsStore = () => {
 				set(result?.data?.positions.map((/** @type {{ id: string; }} */ p) => p.id) || []);
 			});
 	};
+
+	// Run the query on every new price
+	currentPriceUpdate.subscribe(($currentPriceUpdate) => {
+		if (deactivated) return;
+		if (lastPrice.eq($currentPriceUpdate)) return;
+		lastPrice = $currentPriceUpdate;
+		runQuery();
+	});
+
+	// Possibly update the graph client
+	graphClientStore.subscribe(($graphClient) => {
+		graphClient = $graphClient;
+		runQuery();
+	});
 
 	/**
 	 * Deactivates the store for 20 seconds, as the subgraph needs time to update

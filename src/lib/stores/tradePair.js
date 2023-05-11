@@ -6,7 +6,7 @@ import { closeablePositions } from './positions/closeablePositions';
 import { BigNumber } from 'ethers';
 import { get } from 'svelte/store';
 import { toast } from '@zerodevx/svelte-toast';
-import { getTradePairContract } from '$lib/utils/contracts';
+import { contracts } from '$lib/stores/contracts';
 
 /**
  * Opens a position at TradePair via Signer
@@ -32,7 +32,7 @@ export const openPosition = async (collateral, leverage, isLong) => {
 		await increaseAllowance(collateral.mul(100));
 	}
 
-	let tradePair = getTradePairContract(signer);
+	let tradePair = get(contracts).getTradePairContract(signer);
 
 	const tx = await tradePair.openPosition(collateral, parsedLeverage, isLong);
 
@@ -66,7 +66,7 @@ export const closeCloseablePositions = async () => {
 
 	const ids = get(closeablePositions);
 
-	let tradePair = getTradePairContract(signer);
+	let tradePair = get(contracts).getTradePairContract(signer);
 
 	const tx = await tradePair.closePositions(ids.map((id) => BigNumber.from(id)));
 
