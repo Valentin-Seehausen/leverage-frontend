@@ -129,7 +129,6 @@ export const closedUserPositions = derived(
 
 			positions = [...positions, newClosedPosition];
 		});
-		console.log(positions);
 		set({ positions, loading: false, error: null });
 	},
 	initialPositionStoreState

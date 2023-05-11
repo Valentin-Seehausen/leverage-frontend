@@ -2,7 +2,7 @@ import { fetchSigner, waitForTransaction } from '@wagmi/core';
 import { parseUnits } from 'ethers/lib/utils.js';
 import { userUsdc, getAllowance, increaseAllowance } from './usdc';
 import { leverageDecimals } from '$lib/config/constants';
-import { closeablePositionIds } from './positions/closeablePositions';
+import { closeablePositions } from './positions/closeablePositions';
 import { BigNumber } from 'ethers';
 import { get } from 'svelte/store';
 import { toast } from '@zerodevx/svelte-toast';
@@ -64,7 +64,7 @@ export const closeCloseablePositions = async () => {
 		return;
 	}
 
-	const ids = get(closeablePositionIds);
+	const ids = get(closeablePositions);
 
 	let tradePair = getTradePairContract(signer);
 
@@ -84,4 +84,6 @@ export const closeCloseablePositions = async () => {
 		duration: 2000,
 		classes: ['success']
 	});
+
+	closeablePositions.reset();
 };
