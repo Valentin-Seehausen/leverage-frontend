@@ -1,12 +1,14 @@
 import { derived, get } from 'svelte/store';
 import { addresses } from './addresses';
 import { getProvider, getContract } from '@wagmi/core';
+import priceFeedABI from '$lib/abis/AggregatorProxy';
+import aggregatorAbi from '$lib/abis/OffChainAggregator';
 import liquidityPoolAbi from '$lib/abis/LiquidityPool';
 import tradePairAbi from '$lib/abis/TradePair';
 import usdcAbi from '$lib/abis/USDC';
 
 const createState = (
-	/** @type {{ liquidityPool: any; network?: string; priceFeed?: string; proxyAdmin?: string; startBlock?: number; tradePair: any; usdc: any; }} */ addresses
+	/** @type {{ liquidityPool: any; network?: string; priceFeed: any; proxyAdmin?: string; startBlock?: number; tradePair: any; usdc: any; }} */ addresses
 ) => {
 	/**
 	 *
@@ -44,10 +46,23 @@ const createState = (
 			signerOrProvider
 		});
 
+	/**
+	 *
+	 * @param {import('@wagmi/core').Provider | import('@wagmi/core').Signer} signerOrProvider
+	 * @returns
+	 */
+	const getPriceFeedContract = (signerOrProvider = getProvider()) =>
+		getContract({
+			address: addresses.priceFeed,
+			abi: priceFeedABI,
+			signerOrProvider
+		});
+
 	return {
 		getTradePairContract,
 		getLiquidityPoolContract,
-		getUsdcContract
+		getUsdcContract,
+		getPriceFeedContract
 	};
 };
 
@@ -65,4 +80,20 @@ export const tradePairContract = derived(contracts, ($contracts) => {
 
 export const usdcContract = derived(contracts, ($contracts) => {
 	return $contracts.getUsdcContract();
+});
+
+export const priceFeedContract = derived(contracts, ($contracts) => {
+	return $contracts.getPriceFeedContract();
+});
+
+export const priceFeedAggregatorContract = derived(priceFeedContract, ($priceFeed, set) => {
+	$priceFeed.aggregator().then((aggregatorAddress) => {
+		const aggregator = getContract({
+			address: aggregatorAddress,
+			abi: aggregatorAbi,
+			signerOrProvider: getProvider()
+		});
+		set(aggregator);
+		return aggregator;
+	});
 });

@@ -1,56 +1,45 @@
-import { getContract, getProvider } from '@wagmi/core';
-import priceFeedABI from '$lib/abis/AggregatorProxy';
-import aggregatorAbi from '$lib/abis/OffChainAggregator';
-
-import { isInitialized } from './client';
-import { derived, readable } from 'svelte/store';
+import { get, readable, writable } from 'svelte/store';
 import { BigNumber } from 'ethers';
 import { tweened } from 'svelte/motion';
 import { sineInOut } from 'svelte/easing';
 import { interpolateBigNumbers } from '$lib/utils/interpolateBigNumbers';
-import { addresses } from '$lib/stores/addresses';
+import { priceFeedContract, priceFeedAggregatorContract } from './contracts';
 
-export const currentPriceUpdate = derived(
-	[isInitialized, addresses],
-	([$isInitialized, $addresses], set) => {
-		if (!$isInitialized) return;
+const createCurrentPriceStore = () => {
+	const { subscribe, set } = writable(BigNumber.from(0));
 
-		const priceFeed = getContract({
-			address: $addresses.addresses.priceFeed,
-			abi: priceFeedABI,
-			signerOrProvider: getProvider()
-		});
+	let priceFeed = get(priceFeedContract);
 
-		// Set initial Value
+	/**
+	 * @type {{ removeAllListeners: () => void; on: (arg0: string, arg1: (answer: any) => void) => void; }}
+	 */
+	let priceFeedAggregator;
+
+	priceFeedContract.subscribe(($priceFeedContract) => {
+		priceFeed.removeAllListeners();
+		priceFeed = $priceFeedContract;
+
 		priceFeed.latestRoundData().then((data) => {
 			set(data.answer);
 		});
+	});
 
-		let close = () => {};
+	priceFeedAggregatorContract.subscribe(($priceFeedAggregator) => {
+		if (priceFeedAggregator) priceFeedAggregator.removeAllListeners();
+		if (!$priceFeedAggregator) return;
 
-		// SetUp listener and add subscription to close
-		priceFeed.aggregator().then((aggregatorAddress) => {
-			const aggregator = getContract({
-				address: aggregatorAddress,
-				abi: aggregatorAbi,
-				signerOrProvider: getProvider()
-			});
-
-			aggregator.on('AnswerUpdated', (answer) => {
-				set(answer);
-			});
-
-			close = () => {
-				aggregator.removeAllListeners();
-			};
+		priceFeedAggregator = $priceFeedAggregator;
+		priceFeedAggregator.on('AnswerUpdated', (answer) => {
+			set(answer);
 		});
+	});
 
-		return () => {
-			close();
-		};
-	},
-	BigNumber.from(0)
-);
+	return {
+		subscribe
+	};
+};
+
+export const currentPriceUpdate = createCurrentPriceStore();
 
 export const currentPrice = readable(BigNumber.from(0), (set) => {
 	let lastPrice = BigNumber.from(0);

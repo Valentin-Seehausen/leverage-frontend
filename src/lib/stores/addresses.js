@@ -1,4 +1,3 @@
-import { page } from '$app/stores';
 import arbitrumGoerliAddresses from '$lib/addresses/contracts.arbitrum-goerli.json';
 import arbitrumGoerliDevAddresses from '$lib/addresses/dev.contracts.arbitrum-goerli.json';
 import { graphEndpointArbitrumGoerli, graphEndpointArbitrumGoerliDev } from '$lib/config/constants';
@@ -13,7 +12,9 @@ const createAddressStore = () => {
 		graphEndpoint: graphEndpointArbitrumGoerli
 	};
 	let state = initState;
-	let dev = false;
+
+	// When dev is set once (by adding "?dev" to the url) it will stay set until the page is refreshed
+	let dev = new URLSearchParams(window.location.search).has('dev');
 	let chainId = 421613;
 	const { subscribe, set } = writable(state);
 
@@ -31,14 +32,6 @@ const createAddressStore = () => {
 		set(state);
 	};
 	setState();
-
-	page.subscribe((page) => {
-		if (!page) return;
-
-		// When dev is set once (by adding "?dev" to the url) it will stay set until the page is refreshed
-		dev = page?.url?.searchParams.has('dev') || dev;
-		setState();
-	});
 
 	isInitialized.subscribe(($isInitialized) => {
 		if (!$isInitialized) return;
