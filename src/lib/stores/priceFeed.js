@@ -15,8 +15,6 @@ export const currentPriceUpdate = derived(
 	([$isInitialized, $addresses], set) => {
 		if (!$isInitialized) return;
 
-		console.log($addresses.addresses.priceFeed);
-
 		const priceFeed = getContract({
 			address: $addresses.addresses.priceFeed,
 			abi: priceFeedABI,

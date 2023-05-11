@@ -26,6 +26,71 @@ export const positionBalance = readable(initValue, (set) => {
 	let state = initValue;
 	let unsubscribeSubgraph = () => {};
 
+	const updatePercentages = () => {
+		const totalShares = BigNumber.from(state.longShares).add(BigNumber.from(state.shortShares));
+		let longSharesPercentage = 0;
+		let shortSharesPercentage = 0;
+		if (!totalShares.isZero()) {
+			longSharesPercentage = parseFloat(
+				formatUnits(
+					BigNumber.from(state.longShares)
+						.mul(BigNumber.from('1000000000000')) // add 12 decimals
+						.div(totalShares),
+					10
+				)
+			);
+			shortSharesPercentage = parseFloat(
+				formatUnits(
+					BigNumber.from(state.shortShares)
+						.mul(BigNumber.from('1000000000000')) // add 12 decimals
+						.div(totalShares),
+					10
+				)
+			);
+		} else {
+			if (BigNumber.from(state.longShares).gt(0)) longSharesPercentage = 100;
+			else if (BigNumber.from(state.shortShares).gt(0)) shortSharesPercentage = 100;
+			else longSharesPercentage = shortSharesPercentage = 50;
+		}
+		const totalCollateral = BigNumber.from(state.longCollateral).add(
+			BigNumber.from(state.shortCollateral)
+		);
+		let longCollateralPercentage = 0;
+		let shortCollateralPercentage = 0;
+		if (!totalCollateral.isZero()) {
+			longCollateralPercentage = parseFloat(
+				formatUnits(
+					BigNumber.from(state.longCollateral)
+						.mul(BigNumber.from('1000000000000')) // add 12 decimals
+						.div(totalCollateral),
+					10
+				)
+			);
+			shortCollateralPercentage = parseFloat(
+				formatUnits(
+					BigNumber.from(state.shortCollateral)
+						.mul(BigNumber.from('1000000000000')) // add 12 decimals
+						.div(totalCollateral),
+					10
+				)
+			);
+		} else {
+			if (BigNumber.from(state.longCollateral).gt(0)) longCollateralPercentage = 100;
+			else if (BigNumber.from(state.shortCollateral).gt(0)) shortCollateralPercentage = 100;
+			else longCollateralPercentage = shortCollateralPercentage = 50;
+		}
+
+		state = {
+			...state,
+			longSharesPercentage,
+			shortSharesPercentage,
+			totalShares,
+			longCollateralPercentage,
+			shortCollateralPercentage,
+			totalCollateral
+		};
+	};
+
 	let tradePair = get(tradePairContract);
 	tradePairContract.subscribe((newTradePair) => {
 		tradePair.removeAllListeners();
@@ -120,71 +185,6 @@ export const positionBalance = readable(initValue, (set) => {
 			}
 		});
 	});
-
-	const updatePercentages = () => {
-		const totalShares = BigNumber.from(state.longShares).add(BigNumber.from(state.shortShares));
-		let longSharesPercentage = 0;
-		let shortSharesPercentage = 0;
-		if (!totalShares.isZero()) {
-			longSharesPercentage = parseFloat(
-				formatUnits(
-					BigNumber.from(state.longShares)
-						.mul(BigNumber.from('1000000000000')) // add 12 decimals
-						.div(totalShares),
-					10
-				)
-			);
-			shortSharesPercentage = parseFloat(
-				formatUnits(
-					BigNumber.from(state.shortShares)
-						.mul(BigNumber.from('1000000000000')) // add 12 decimals
-						.div(totalShares),
-					10
-				)
-			);
-		} else {
-			if (BigNumber.from(state.longShares).gt(0)) longSharesPercentage = 100;
-			else if (BigNumber.from(state.shortShares).gt(0)) shortSharesPercentage = 100;
-			else longSharesPercentage = shortSharesPercentage = 50;
-		}
-		const totalCollateral = BigNumber.from(state.longCollateral).add(
-			BigNumber.from(state.shortCollateral)
-		);
-		let longCollateralPercentage = 0;
-		let shortCollateralPercentage = 0;
-		if (!totalCollateral.isZero()) {
-			longCollateralPercentage = parseFloat(
-				formatUnits(
-					BigNumber.from(state.longCollateral)
-						.mul(BigNumber.from('1000000000000')) // add 12 decimals
-						.div(totalCollateral),
-					10
-				)
-			);
-			shortCollateralPercentage = parseFloat(
-				formatUnits(
-					BigNumber.from(state.shortCollateral)
-						.mul(BigNumber.from('1000000000000')) // add 12 decimals
-						.div(totalCollateral),
-					10
-				)
-			);
-		} else {
-			if (BigNumber.from(state.longCollateral).gt(0)) longCollateralPercentage = 100;
-			else if (BigNumber.from(state.shortCollateral).gt(0)) shortCollateralPercentage = 100;
-			else longCollateralPercentage = shortCollateralPercentage = 50;
-		}
-
-		state = {
-			...state,
-			longSharesPercentage,
-			shortSharesPercentage,
-			totalShares,
-			longCollateralPercentage,
-			shortCollateralPercentage,
-			totalCollateral
-		};
-	};
 
 	return () => Promise.all([unsubscribeSubgraph(), tradePair.removeAllListeners()]);
 });

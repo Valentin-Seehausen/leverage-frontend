@@ -34,7 +34,10 @@ const createAddressStore = () => {
 
 	page.subscribe((page) => {
 		if (!page) return;
-		dev = page?.url?.searchParams.has('dev');
+
+		// When dev is set once (by adding "?dev" to the url) it will stay set until the page is refreshed
+		dev = page?.url?.searchParams.has('dev') || dev;
+		setState();
 	});
 
 	isInitialized.subscribe(($isInitialized) => {
@@ -42,6 +45,7 @@ const createAddressStore = () => {
 		watchNetwork((network) => {
 			if (!network.chain) return;
 			chainId = network.chain?.id;
+			setState();
 		});
 	});
 
