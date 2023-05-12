@@ -94,7 +94,6 @@ export const positionBalance = readable(initValue, (set) => {
 			eventName: 'PositionOpened'
 		},
 		(log) => {
-			console.log('PositionOpened', log);
 			log.forEach(({ args: { collateral, shares, isLong } }) => {
 				if (isLong) {
 					state = {
@@ -126,7 +125,6 @@ export const positionBalance = readable(initValue, (set) => {
 			eventName: 'PositionClosed'
 		},
 		(log) => {
-			console.log('PositionClosed position balance', log);
 			log.forEach(({ args: { shares, isLong } }) => {
 				if (isLong) {
 					state = {
