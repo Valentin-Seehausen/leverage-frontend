@@ -34,8 +34,6 @@ export const currentPriceUpdate = derived(
 				eventName: 'AnswerUpdated'
 			},
 			(log) => {
-				console.log('priceUpdate', log);
-				console.log('priceUpdate', log[0].args.current);
 				set(log[0].args.current);
 			}
 		);

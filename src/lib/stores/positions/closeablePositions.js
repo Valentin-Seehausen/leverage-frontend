@@ -42,7 +42,6 @@ const createCloseablePositionsStore = () => {
 			variables: { price: lastPrice.toString() },
 			requestPolicy: 'network-only'
 		}).subscribe((result) => {
-			console.log(result);
 			set(result?.data?.positions.map((/** @type {{ id: string; }} */ p) => BigInt(p.id)) || []);
 		});
 	};

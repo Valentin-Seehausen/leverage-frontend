@@ -95,7 +95,6 @@ export const positionBalance = readable(initValue, (set) => {
 		},
 		(log) => {
 			log.forEach(({ args: { collateral, shares, isLong } }) => {
-				console.log('updating position balance', state);
 				if (isLong) {
 					state = {
 						...state,
