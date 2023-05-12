@@ -47,7 +47,7 @@
 		return false;
 	};
 
-	$: positions.length > 0 && open(PositionModal, { position: positions[0] });
+	// $: positions.length > 0 && open(PositionModal, { position: positions[0] });
 </script>
 
 <div class="flex flex-col">
