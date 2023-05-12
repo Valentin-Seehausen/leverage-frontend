@@ -55,7 +55,6 @@ export const closedUserPositionsSubgraph = derived(
 				set({ loading: false, error: result.error, positions: [] });
 			} else if (result.data) {
 				result.data.position = result.data.positions.map((/** @type {any} */ position) => {
-					console.log(position);
 					/** @type{Position} */
 					return {
 						id: position.id,
@@ -69,10 +68,9 @@ export const closedUserPositionsSubgraph = derived(
 						leverage: BigInt(position.leverage),
 						openDate: position.openDate,
 						pnlShares: position.pnlShares,
-						// TODO: Check if this can be simplified
-						pnlSharesPercentage: parseFloat(position.pnlSharesPercentage.toString()),
+						pnlSharesPercentage: Number(position.pnlSharesPercentage),
 						pnlAssets: BigInt(position.pnlAssets),
-						pnlAssetsPercentage: parseFloat(position.pnlAssetsPercentage.toString())
+						pnlAssetsPercentage: Number(position.pnlAssetsPercentage)
 					};
 				});
 				set({ loading: false, error: null, positions: result.data.positions });

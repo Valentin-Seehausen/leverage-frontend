@@ -31,7 +31,6 @@ export const calculateSharesPnlPercentage = (
 	/** @type {Position} */ position,
 	/** @type {bigint} */ currentPrice
 ) => {
-	console.log('calculateSharesPnlPercentage', position, currentPrice);
 	if (position.isLong) {
 		return parseFloat(
 			formatUnits(

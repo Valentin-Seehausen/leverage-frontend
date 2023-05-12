@@ -136,8 +136,6 @@ export const openUserPositionsFromSubgraph = derived(
 				set({ loading: false, error: result.error, positions: [] });
 			} else if (result.data) {
 				const parsedPositions = result.data.positions.map((/** @type {any} */ position) => {
-					console.log('open position from subgraph', position);
-					/** @type{Position} */
 					return {
 						id: position.id,
 						collateral: BigInt(position.collateral),
