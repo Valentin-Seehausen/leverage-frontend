@@ -124,7 +124,7 @@ export const closedUserPositions = derived(
 		// Check if new closed positions are in open positions and thus have to be added to the list
 		$closedUserPositionsEvents.forEach((closedPositionEvent) => {
 			const matchingOpenPosition = $openUserPositionsCombined.positions.find(
-				(p) => p.id === closedPositionEvent.id
+				(p) => p.id === closedPositionEvent.id.toString()
 			);
 
 			if (!matchingOpenPosition) return;

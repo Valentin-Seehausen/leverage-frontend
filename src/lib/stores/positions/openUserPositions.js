@@ -71,7 +71,7 @@ export const openUserPositionsFromEvents = derived(
 					}) => {
 						/** @type{Position} */
 						const newPosition = {
-							id: positionId,
+							id: positionId.toString(),
 							collateral: collateral,
 							shares: shares,
 							leverage: leverage,
@@ -199,7 +199,7 @@ export const openUserPositions = derived(
 
 		// Finally filter out closed positions
 		$closedUserPositionsEvents.forEach((position) => {
-			positions = positions.filter((p) => p.id !== position.id);
+			positions = positions.filter((p) => p.id !== position.id.toString());
 		});
 
 		// Set pnlSharesPercentage

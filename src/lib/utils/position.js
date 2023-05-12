@@ -2,7 +2,7 @@ import { formatUnits } from 'viem';
 
 /**
  * @typedef {Object} Position
- * @property {bigint} id
+ * @property {string} id
  * @property {boolean} isOpen
  * @property {boolean} isLong
  * @property {bigint} collateral

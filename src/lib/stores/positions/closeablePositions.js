@@ -18,17 +18,12 @@ const createCloseablePositionsStore = () => {
 	let unsubscribeQuery;
 
 	const query = gql`
-		query CloseablePositions($currentPriceUpdate: bigint!) {
+		query CloseablePositions($price: BigInt!) {
 			positions(
 				where: {
 					and: [
 						{ isOpen: true }
-						{
-							or: [
-								{ maxClosePrice_lt: $currentPriceUpdate }
-								{ minClosePrice_gte: $currentPriceUpdate }
-							]
-						}
+						{ or: [{ maxClosePrice_lt: $price }, { minClosePrice_gte: $price }] }
 					]
 				}
 			) {
@@ -44,9 +39,10 @@ const createCloseablePositionsStore = () => {
 		unsubscribeQuery = queryStore({
 			client: graphClient,
 			query,
-			variables: { currentPriceUpdate: lastPrice.toString() },
+			variables: { price: lastPrice.toString() },
 			requestPolicy: 'network-only'
 		}).subscribe((result) => {
+			console.log(result);
 			set(result?.data?.positions.map((/** @type {{ id: string; }} */ p) => BigInt(p.id)) || []);
 		});
 	};
