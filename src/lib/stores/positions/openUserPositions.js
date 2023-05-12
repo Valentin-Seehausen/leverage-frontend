@@ -2,10 +2,12 @@ import { queryStore, gql } from '@urql/svelte';
 import { account } from '$lib/stores/wallet';
 import { graphClientStore } from '$lib/stores/graph';
 import { derived, get } from 'svelte/store';
-import { currentPrice } from '$lib/stores/priceFeed';
-import { tradePairContract } from '$lib/stores/contracts';
+import { currentPriceTweened } from '$lib/stores/priceFeed';
 import { calculateSharesPnlPercentage } from '$lib/utils/position';
 import { closedUserPositionsEvents } from './closedUserPositionsEvents';
+import { client } from '../client';
+import { addresses } from '../addresses';
+import { parseAbi } from 'viem';
 
 // This file contains four stores:
 // - openUserPositionsFromEvents
@@ -14,23 +16,7 @@ import { closedUserPositionsEvents } from './closedUserPositionsEvents';
 // - openUserPositions (where closed positions are filtered out)
 
 /**
- * @typedef {Object} Position
- * @property {string} id
- * @property {boolean} isOpen
- * @property {boolean} isLong
- * @property {string} collateral
- * @property {string} shares
- * @property {string} leverage
- * @property {string} entryPrice
- * @property {string} liquidationPrice
- * @property {string} takeProfitPrice
- * @property {string} closePrice
- * @property {number} openDate
- * @property {number} closeDate
- * @property {string} pnlShares
- * @property {number} pnlSharesPercentage
- * @property {string} pnlAssets
- * @property {number} pnlAssetsPercentage
+ * @typedef {import('$lib/utils/position').Position} Position
  */
 
 /**
@@ -56,70 +42,62 @@ const initialPositionStoreState = {
 export const openUserPositionsFromEvents = derived(
 	account,
 	($account, set) => {
-		if (!$account.isConnected) return;
+		if (!$account.address) return;
 
 		/** @type {Position[]} */
 		let positions = [];
 
-		let tradePair = get(tradePairContract);
-		tradePairContract.subscribe((newTradePair) => {
-			tradePair.removeAllListeners();
-			tradePair = newTradePair;
+		const unwatch = client.publicClient.watchContractEvent({
+			address: get(addresses).addresses.tradePair,
+			abi: parseAbi([
+				'event PositionOpened(address indexed trader,uint256 positionId,uint256 collateral,uint256 shares,uint256 leverage,bool isLong,uint256 entryPrice,uint256 liquidationPrice,uint256 takeProfitPrice,uint256 openDate)'
+			]),
+			args: { trader: $account.address },
+			eventName: 'PositionOpened',
+			onLogs: (log) => {
+				console.log('PositionOpened for user', log);
+				log.forEach(
+					({
+						args: {
+							collateral,
+							positionId,
+							shares,
+							leverage,
+							isLong,
+							entryPrice,
+							liquidationPrice,
+							takeProfitPrice,
+							openDate
+						}
+					}) => {
+						/** @type{Position} */
+						const newPosition = {
+							id: positionId,
+							collateral: collateral,
+							shares: shares,
+							leverage: leverage,
+							isLong: isLong,
+							entryPrice: entryPrice,
+							liquidationPrice: liquidationPrice,
+							takeProfitPrice: takeProfitPrice,
+							openDate: Number(openDate),
+							isOpen: true,
+							closeDate: 0,
+							closePrice: 0n,
+							pnlShares: 0n,
+							pnlSharesPercentage: 0,
+							pnlAssets: 0n,
+							pnlAssetsPercentage: 0
+						};
 
-			const positionOpenedFilter = tradePair.filters.PositionOpened(
-				$account.address,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null
-			);
-
-			tradePair.on(
-				positionOpenedFilter,
-				(
-					_trader,
-					positionId,
-					collateral,
-					shares,
-					leverage,
-					isLong,
-					entryPrice,
-					liquidationPrice,
-					takeProfitPrice,
-					openDate
-				) => {
-					/** @type{Position} */
-					const newPosition = {
-						id: positionId?.toString() || '0',
-						collateral: collateral?.toString() || '0',
-						shares: shares?.toString() || '0',
-						leverage: leverage?.toString() || '0',
-						isLong: !!isLong,
-						entryPrice: entryPrice?.toString() || '0',
-						liquidationPrice: liquidationPrice?.toString() || '0',
-						takeProfitPrice: takeProfitPrice?.toString() || '0',
-						openDate: parseInt(openDate?.toString() || '0') || 0,
-						isOpen: true,
-						closeDate: 0,
-						closePrice: '0',
-						pnlShares: '0',
-						pnlSharesPercentage: 0,
-						pnlAssets: '0',
-						pnlAssetsPercentage: 0
-					};
-
-					positions = [...positions, newPosition];
-					set(positions);
-				}
-			);
+						positions = [...positions, newPosition];
+						set(positions);
+					}
+				);
+			}
 		});
 
-		return tradePair.removeAllListeners;
+		return unwatch;
 	},
 	initialPositions
 );
@@ -127,7 +105,7 @@ export const openUserPositionsFromEvents = derived(
 export const openUserPositionsFromSubgraph = derived(
 	[account, graphClientStore],
 	([$account, $graphClientStore], set) => {
-		if (!$account.isConnected) return;
+		if (!$account.address) return;
 		if (!graphClientStore) return;
 
 		const unsubscribe = queryStore({
@@ -147,7 +125,6 @@ export const openUserPositionsFromSubgraph = derived(
 						liquidationPrice
 						takeProfitPrice
 						entryPrice
-						isLong
 						leverage
 						openDate
 					}
@@ -158,10 +135,23 @@ export const openUserPositionsFromSubgraph = derived(
 			if (result.error) {
 				set({ loading: false, error: result.error, positions: [] });
 			} else if (result.data) {
-				result.data.position = result.data.positions.map((/** @type {Position} */ position) => {
-					return position;
+				const parsedPositions = result.data.positions.map((/** @type {any} */ position) => {
+					console.log('open position from subgraph', position);
+					/** @type{Position} */
+					return {
+						id: position.id,
+						collateral: BigInt(position.collateral),
+						shares: BigInt(position.shares),
+						isOpen: position.isOpen,
+						isLong: position.isLong,
+						liquidationPrice: BigInt(position.liquidationPrice),
+						takeProfitPrice: BigInt(position.takeProfitPrice),
+						entryPrice: BigInt(position.entryPrice),
+						leverage: BigInt(position.leverage),
+						openDate: position.openDate
+					};
 				});
-				set({ loading: false, error: null, positions: result.data.positions });
+				set({ loading: false, error: null, positions: parsedPositions });
 			}
 		});
 
@@ -206,8 +196,8 @@ export const openUserPositionsCombined = derived(
 
 // Filter out closed positions
 export const openUserPositions = derived(
-	[openUserPositionsCombined, closedUserPositionsEvents, currentPrice],
-	([$openUserPositionsCombined, $closedUserPositionsEvents, $currentPrice], set) => {
+	[openUserPositionsCombined, closedUserPositionsEvents, currentPriceTweened],
+	([$openUserPositionsCombined, $closedUserPositionsEvents, $currentPriceTweened], set) => {
 		let positions = $openUserPositionsCombined.positions;
 
 		// Finally filter out closed positions
@@ -217,7 +207,7 @@ export const openUserPositions = derived(
 
 		// Set pnlSharesPercentage
 		positions.map((position) => {
-			position.pnlSharesPercentage = calculateSharesPnlPercentage(position, $currentPrice);
+			position.pnlSharesPercentage = calculateSharesPnlPercentage(position, $currentPriceTweened);
 			return position;
 		});
 

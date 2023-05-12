@@ -10,17 +10,15 @@
 	} from '$lib/stores/liquidityPool';
 	import { liquidityPoolDecimals, usdcDecimals } from '$lib/config/constants';
 	import { formatValue } from '$lib/utils/format';
-	import { formatUnits, parseUnits } from 'ethers/lib/utils.js';
-	import { BigNumber } from 'ethers';
 	import { positionBalance } from '$lib/stores/positionBalance';
+	import { formatUnits, parseUnits } from 'viem';
 
-	let withdrawAssets = 0;
+	let withdrawAssets = '0';
 
 	// It is called withdraw at the UI, but we use the redeem function
 	const callRedeem = () => {
-		const redeemShares = BigNumber.from(parseUnits(withdrawAssets.toString(), usdcDecimals)).mul(
-			$liquidityPoolRatio
-		);
+		// @ts-ignore
+		const redeemShares = BigInt(parseUnits(withdrawAssets, usdcDecimals)) * $liquidityPoolRatio;
 		redeem(redeemShares);
 	};
 </script>
@@ -80,7 +78,7 @@
 					<span class="info-label text-sm grow">Withdraw USDC</span>
 					<button
 						class="info-label text-sm opacity-50"
-						on:click={() => (withdrawAssets = parseInt(formatUnits($userAssets, usdcDecimals)))}
+						on:click={() => (withdrawAssets = formatUnits($userAssets, usdcDecimals))}
 						>Max: {formatValue($userAssets, usdcDecimals)}</button
 					>
 				</div>

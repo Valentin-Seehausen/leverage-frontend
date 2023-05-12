@@ -1,6 +1,3 @@
-import { BigNumber } from 'ethers';
-import { formatUnits } from 'ethers/lib/utils.js';
-
 /**
  * @typedef {Object} FormatValueOptions
  * @property {boolean} [showSymbol]
@@ -8,9 +5,11 @@ import { formatUnits } from 'ethers/lib/utils.js';
  * @property {string} [symbol]
  */
 
+import { formatUnits } from 'viem';
+
 /**
- * @param {import("ethers").BigNumberish} value
- * @param {import("ethers").BigNumberish | undefined} decimals
+ * @param {bigint} value
+ * @param {number} decimals
  * @param {number | undefined} precision
  * @param {FormatValueOptions} [options]
  * @returns {string}
@@ -37,12 +36,7 @@ export const formatValue = (value, decimals, precision = 2, options) => {
 		Math.abs(+formattedValue)
 	);
 
-	const prefix =
-		mergedOptions.showPlus && !BigNumber.from(value).isNegative()
-			? '+'
-			: BigNumber.from(value).isNegative()
-			? '-'
-			: '';
+	const prefix = mergedOptions.showPlus && value > 0 ? '+' : value < 0 ? '-' : '';
 
 	return prefix + formattedNumber;
 };

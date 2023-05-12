@@ -1,13 +1,15 @@
 import { account } from '$lib/stores/wallet';
 import { derived } from 'svelte/store';
-import { contracts } from '$lib/stores/contracts';
+import { addresses } from '../addresses';
+import { parseAbi } from 'viem';
+import { client } from '../client';
 
 /**
  * @typedef {Object} PositionClosedEvent
- * @property {string} id
- * @property {string} closePrice
- * @property {number} closeDate
- * @property {string} pnlShares
+ * @property {bigint} id
+ * @property {bigint} closePrice
+ * @property {bigint} closeDate
+ * @property {bigint} pnlShares
  */
 
 /** @type {PositionClosedEvent[]} */
@@ -17,53 +19,35 @@ const initialPositionClosedEvents = [];
  * @type {import('svelte/store').Readable<PositionClosedEvent[]>}
  */
 export const closedUserPositionsEvents = derived(
-	[account, contracts],
-	([$account, $contracts], set) => {
-		if (!$account.isConnected) return;
-		if (!$contracts) return;
+	[account, addresses],
+	([$account, $addresses], set) => {
+		if (!$account.address) return;
 
 		/** @type {PositionClosedEvent[]} */
 		let positions = [];
 
-		const tradePair = $contracts.getTradePairContract();
-
-		const positionClosedFilter = tradePair.filters.PositionClosed(
-			$account.address,
-			null,
-			null,
-			null,
-			null,
-			null,
-			null,
-			null,
-			null
-		);
-
-		tradePair.on(
-			positionClosedFilter,
-			(
-				_trader,
-				positionId,
-				_isLong,
-				_shares,
-				_entryPrice,
-				_leverage,
-				pnlShares,
-				closePrice,
-				closeDate
-			) => {
-				const newClosedPosition = {
-					id: positionId?.toString() || '',
-					closePrice: closePrice?.toString() || '0',
-					closeDate: closeDate?.toNumber() || 0,
-					pnlShares: pnlShares?.toString() || '0'
-				};
-
-				positions = [...positions, newClosedPosition];
-				set(positions);
+		const unwatch = client.publicClient.watchContractEvent({
+			address: $addresses.addresses.tradePair,
+			abi: parseAbi([
+				'event PositionClosed(address indexed trader,uint256 positionId,bool isLong,uint256 shares,uint256 entryPrice,uint256 leverage,int256 pnlShares,uint256 closePrice,uint256 closeDate)'
+			]),
+			args: { trader: $account.address },
+			eventName: 'PositionClosed',
+			onLogs: (log) => {
+				console.log('PositionClosed for user', log);
+				log.forEach(({ args: { positionId, pnlShares, closePrice, closeDate } }) => {
+					const newClosedPosition = {
+						id: positionId,
+						closePrice: closePrice,
+						closeDate: closeDate,
+						pnlShares: pnlShares
+					};
+					positions = [...positions, newClosedPosition];
+					set(positions);
+				});
 			}
-		);
-		return tradePair.removeAllListeners;
+		});
+		return unwatch;
 	},
 	initialPositionClosedEvents
 );

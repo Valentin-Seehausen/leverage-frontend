@@ -2,7 +2,6 @@ import { queryStore, gql } from '@urql/svelte';
 import { account } from '$lib/stores/wallet';
 import { graphClientStore } from '$lib/stores/graph';
 import { derived } from 'svelte/store';
-import { BigNumber } from 'ethers';
 import { liquidityPoolRatio } from '$lib/stores/liquidityPool';
 import { openUserPositionsCombined } from './openUserPositions';
 import { closedUserPositionsEvents } from './closedUserPositionsEvents';
@@ -23,6 +22,8 @@ const initialPositionStoreState = {
 export const closedUserPositionsSubgraph = derived(
 	[account, graphClientStore],
 	([$account, $graphClientStore], set) => {
+		if (!$account.address) return;
+
 		const unsubscribe = queryStore({
 			client: $graphClientStore,
 			query: gql`
@@ -49,10 +50,38 @@ export const closedUserPositionsSubgraph = derived(
 				}
 			`,
 			variables: { trader: $account.address.toLowerCase() || '' }
-		}).subscribe(set);
+		}).subscribe((result) => {
+			if (result.error) {
+				set({ loading: false, error: result.error, positions: [] });
+			} else if (result.data) {
+				result.data.position = result.data.positions.map((/** @type {any} */ position) => {
+					console.log(position);
+					/** @type{Position} */
+					return {
+						id: position.id,
+						collateral: BigInt(position.collateral),
+						shares: BigInt(position.shares),
+						isOpen: position.isOpen,
+						isLong: position.isLong,
+						liquidationPrice: BigInt(position.liquidationPrice),
+						takeProfitPrice: BigInt(position.takeProfitPrice),
+						entryPrice: BigInt(position.entryPrice),
+						leverage: BigInt(position.leverage),
+						openDate: position.openDate,
+						pnlShares: position.pnlShares,
+						// TODO: Check if this can be simplified
+						pnlSharesPercentage: parseFloat(position.pnlSharesPercentage.toString()),
+						pnlAssets: BigInt(position.pnlAssets),
+						pnlAssetsPercentage: parseFloat(position.pnlAssetsPercentage.toString())
+					};
+				});
+				set({ loading: false, error: null, positions: result.data.positions });
+			}
+		});
 
 		return unsubscribe;
-	}
+	},
+	initialPositionStoreState
 );
 
 export const closedUserPositions = derived(
@@ -77,7 +106,7 @@ export const closedUserPositions = derived(
 		/** @type {Position[]} */
 		let positions = [];
 
-		if ($closedUserPositionsSubgraph.fetching) {
+		if ($closedUserPositionsSubgraph.loading) {
 			set({ positions, loading: true, error: null });
 			return;
 		}
@@ -87,16 +116,12 @@ export const closedUserPositions = derived(
 			return;
 		}
 
-		if ($closedUserPositionsSubgraph.data) {
-			positions = $closedUserPositionsSubgraph.data.positions.map(
-				(/** @type {Position} */ position) => {
-					position.pnlSharesPercentage = parseFloat(position.pnlSharesPercentage.toString()) || 0;
-					position.pnlAssetsPercentage =
-						Math.max(parseFloat(position.pnlAssetsPercentage.toString()), -100) || 0;
-					return position;
-				}
-			);
-		}
+		positions = $closedUserPositionsSubgraph.positions.map((/** @type {Position} */ position) => {
+			position.pnlSharesPercentage = parseFloat(position.pnlSharesPercentage.toString()) || 0;
+			position.pnlAssetsPercentage =
+				Math.max(parseFloat(position.pnlAssetsPercentage.toString()), -100) || 0;
+			return position;
+		});
 
 		// Check if new closed positions are in open positions and thus have to be added to the list
 		$closedUserPositionsEvents.forEach((closedPositionEvent) => {
@@ -109,25 +134,26 @@ export const closedUserPositions = derived(
 			const newClosedPosition = {
 				...matchingOpenPosition,
 				closePrice: closedPositionEvent.closePrice,
-				closeDate: closedPositionEvent.closeDate,
+				closeDate: Number(closedPositionEvent.closeDate),
 				pnlShares: closedPositionEvent.pnlShares,
 				isOpen: false,
-				pnlSharesPercentage: BigNumber.from(closedPositionEvent.pnlShares)?.isNegative()
-					? -100
-					: 100
+				pnlSharesPercentage: closedPositionEvent.pnlShares < 0 ? -100 : 100
 			};
 
 			if ($liquidityPoolRatio > 0) {
-				newClosedPosition.pnlAssets =
-					BigNumber.from(closedPositionEvent.pnlShares).div($liquidityPoolRatio).toString() || '0';
-				newClosedPosition.pnlAssetsPercentage = Math.max(
-					BigNumber.from(newClosedPosition.pnlAssets)
-						.mul(10000)
-						.div(newClosedPosition.collateral)
-						.div(100)
-						.toNumber(),
-					-100
-				);
+				if (newClosedPosition.pnlShares > 0n) {
+					newClosedPosition.pnlAssets = closedPositionEvent.pnlShares / $liquidityPoolRatio;
+					newClosedPosition.pnlAssetsPercentage = parseFloat(
+						(
+							(newClosedPosition.pnlAssets * 10000n) /
+							newClosedPosition.collateral /
+							100n
+						).toString()
+					);
+				} else {
+					newClosedPosition.pnlAssets = -newClosedPosition.collateral;
+					newClosedPosition.pnlAssetsPercentage = -100;
+				}
 			}
 
 			positions = [...positions, newClosedPosition];

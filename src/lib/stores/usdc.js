@@ -1,48 +1,41 @@
-import { waitForTransaction } from '@wagmi/core';
+import { readContract, waitForTransaction, writeContract } from '@wagmi/core';
 
 import { account } from './wallet';
 import { get, writable } from 'svelte/store';
-import { BigNumber } from 'ethers';
+
 import { toast } from '@zerodevx/svelte-toast';
-import { contracts, usdcContract } from '$lib/stores/contracts';
 import { addresses } from './addresses';
 import { fetchSignerOrWarn } from '$lib/utils/signer';
+import { parseAbi } from 'viem';
 
 const createUserUsdcStore = () => {
 	const initialState = {
-		balance: BigNumber.from('0'),
-		allowance: BigNumber.from('0')
+		balance: 0n,
+		allowance: 0n
 	};
 	let state = initialState;
-	/** @type{string | null} */
-	let address = null;
 	const { subscribe, set } = writable(state);
 
-	let usdc = get(usdcContract);
-	usdcContract.subscribe((newUsdc) => {
-		usdc = newUsdc;
-	});
-
-	let liquidityPoolAddress = get(addresses).addresses.liquidityPool;
-	addresses.subscribe(($addresses) => {
-		liquidityPoolAddress = $addresses.addresses.liquidityPool;
-	});
-
-	account.subscribe(($account) => {
-		address = null;
-		if (!$account.isConnected) return;
-		address = $account.address;
-		fetchValues();
-	});
-
 	const fetchValues = () => {
-		if (!address) return;
-		usdc.balanceOf(address).then((balance) => {
+		const userAddress = get(account).address;
+		if (!userAddress) return;
+
+		readContract({
+			address: get(addresses).addresses.usdc,
+			abi: parseAbi(['function balanceOf(address) view returns (uint256)']),
+			functionName: 'balanceOf',
+			args: [userAddress]
+		}).then((balance) => {
 			state.balance = balance;
 			set(state);
 		});
 
-		usdc.allowance(address, liquidityPoolAddress).then((allowance) => {
+		readContract({
+			address: get(addresses).addresses.usdc,
+			abi: parseAbi(['function allowance(address, address) view returns (uint256)']),
+			functionName: 'allowance',
+			args: [userAddress, get(addresses).addresses.liquidityPool]
+		}).then((allowance) => {
 			state.allowance = allowance;
 			set(state);
 		});
@@ -58,29 +51,39 @@ const createUserUsdcStore = () => {
 
 export const userUsdc = createUserUsdcStore();
 
-export const getAllowance = (/** @type {string} */ address) => {
-	return get(usdcContract).allowance(address, get(addresses).addresses.liquidityPool);
+/**
+ * @param {import('viem').Address} userAddress
+ */
+export const getAllowance = (userAddress) => {
+	return readContract({
+		address: get(addresses).addresses.usdc,
+		abi: parseAbi(['function allowance(address, address) view returns (uint256)']),
+		functionName: 'allowance',
+		args: [userAddress, get(addresses).addresses.liquidityPool]
+	});
 };
 
-export const increaseAllowance = async (/** @type {BigNumber} */ amount) => {
+export const increaseAllowance = async (/** @type {bigint} */ amount) => {
 	const signer = await fetchSignerOrWarn();
 	if (!signer) return;
 
-	let usdc = get(contracts).getUsdcContract(signer);
-
-	const tx = await usdc.increaseAllowance(get(addresses).addresses.liquidityPool, amount);
+	const tx = await writeContract({
+		address: get(addresses).addresses.usdc,
+		abi: parseAbi(['function increaseAllowance(address, uint256)']),
+		functionName: 'increaseAllowance',
+		args: [get(addresses).addresses.liquidityPool, amount]
+	});
 
 	const txToast = toast.push('Waiting for USDC Allowance Transaction...', {
 		initial: 0,
 		classes: ['info']
 	});
 
-	// @ts-ignore
-	await waitForTransaction({ hash: tx.hash });
+	await waitForTransaction(tx);
 
 	toast.pop(txToast);
 
-	toast.push('Allowance Successful', {
+	toast.push('Allowance Increased', {
 		duration: 2000,
 		classes: ['success']
 	});

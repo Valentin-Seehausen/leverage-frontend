@@ -15,37 +15,8 @@
 	/** @type {string} */
 	export let show;
 
-	/** @type {string[]} */
-	let expandedOpenPositions = [];
-	/** @type {string[]} */
-	let expandedClosedPositions = [];
-
-	/** @param {string} positionId */
-	const toggle = (position) => {
+	const openPositionModal = (/** @type {import('$lib/utils/position').Position}*/ position) =>
 		open(PositionModal, { position: position });
-		if (show === 'open') {
-			if (expandedOpenPositions.includes(position.id)) {
-				expandedOpenPositions = expandedOpenPositions.filter((id) => id !== position.id);
-			} else {
-				expandedOpenPositions = [...expandedOpenPositions, position.id];
-			}
-		} else if (show === 'closed') {
-			if (expandedClosedPositions.includes(position.id)) {
-				expandedClosedPositions = expandedClosedPositions.filter((id) => id !== position.id);
-			} else {
-				expandedClosedPositions = [...expandedClosedPositions, position.id];
-			}
-		}
-	};
-
-	$: isExpanded = (/** @type {string} */ positionId) => {
-		if (show === 'open') {
-			return expandedOpenPositions.includes(positionId);
-		} else if (show === 'closed') {
-			return expandedClosedPositions.includes(positionId);
-		}
-		return false;
-	};
 
 	// $: positions.length > 0 && open(PositionModal, { position: positions[0] });
 </script>
@@ -70,8 +41,8 @@
 			class={`flex flex-col cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-800 ${
 				index % 2 == 0 ? 'dark:bg-slate-800 dark:bg-opacity-50' : ''
 			}`}
-			on:click={() => toggle(position)}
-			on:keypress={() => toggle(position)}
+			on:click={() => openPositionModal(position)}
+			on:keypress={() => openPositionModal(position)}
 			transition:slide
 		>
 			<div class="flex py-2">
@@ -115,38 +86,6 @@
 					</div>
 				{/if}
 			</div>
-
-			{#if isExpanded(position.id)}
-				<div class="flex py-2 bg-gray-100 dark:bg-slate-800 dark:bg-opacity-50" transition:slide>
-					<div class="pl-2 w-1/2">
-						<span class="info-label">Opened:</span>
-						{new Date(position.openDate * 1000).toLocaleString()}
-						{#if !position.isOpen}
-							<br />
-							<span class="info-label">Closed:</span>
-							{new Date(position.closeDate * 1000).toLocaleString()}
-						{/if}
-					</div>
-					{#if position.isOpen}
-						<div class="w-1/2 text-right">
-							<span
-								class={`font-extrabold ${
-									position.pnlSharesPercentage >= 0 ? 'dark:text-green-600' : 'dark:text-red-700'
-								}`}>{formatPercentage(position.pnlSharesPercentage)}</span
-							>
-						</div>
-					{:else}
-						<div class="w-1/2 text-right">
-							<span class="info-label">Asset PnL:</span>
-							<span
-								class={`font-extrabold ${
-									position.pnlAssetsPercentage >= 0 ? 'dark:text-green-600' : 'dark:text-red-700'
-								}`}>{formatPercentage(position.pnlAssetsPercentage)}</span
-							>
-						</div>
-					{/if}
-				</div>
-			{/if}
 		</div>
 	{/each}
 </div>

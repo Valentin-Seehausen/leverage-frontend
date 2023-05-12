@@ -1,65 +1,64 @@
-import { get, readable, writable } from 'svelte/store';
-import { BigNumber } from 'ethers';
+import { derived, get, readable } from 'svelte/store';
 import { tweened } from 'svelte/motion';
 import { sineInOut } from 'svelte/easing';
-import { interpolateBigNumbers } from '$lib/utils/interpolateBigNumbers';
-import { priceFeedContract, priceFeedAggregatorContract } from './contracts';
-import { waitForTransaction } from '@wagmi/core';
+import { waitForTransaction, watchContractEvent, readContract, writeContract } from '@wagmi/core';
 import { toast } from '@zerodevx/svelte-toast';
-import { parseUnits } from 'ethers/lib/utils.js';
+
 import { fetchSignerOrWarn } from '$lib/utils/signer';
+import { addresses } from './addresses';
+import { isInitialized } from './client';
+import { parseAbi, parseUnits } from 'viem';
+import { interpolateBigInts } from '$lib/utils/interpolateBigInts';
 
-const createCurrentPriceStore = () => {
-	const { subscribe, set } = writable(BigNumber.from(0));
+export const currentPriceUpdate = derived(
+	[isInitialized, addresses],
+	([$isInitialized, $addresses], set) => {
+		if (!$isInitialized) return;
 
-	let priceFeed = get(priceFeedContract);
-
-	/**
-	 * @type {{ removeAllListeners: () => void; on: (arg0: string, arg1: (answer: any) => void) => void; }}
-	 */
-	let priceFeedAggregator;
-
-	priceFeedContract.subscribe(($priceFeedContract) => {
-		priceFeed.removeAllListeners();
-		priceFeed = $priceFeedContract;
-
-		priceFeed.latestRoundData().then((data) => {
-			set(data.answer);
+		readContract({
+			address: $addresses.addresses.priceFeed,
+			abi: parseAbi([
+				'function latestRoundData() view returns (uint80 roundId ,int256 answer , uint256 startedAt, uint256 updatedAt, uint80 answeredInRound)'
+			]),
+			functionName: 'latestRoundData'
+		}).then((data) => {
+			set(data[1]);
 		});
-	});
 
-	priceFeedAggregatorContract.subscribe(($priceFeedAggregator) => {
-		if (priceFeedAggregator) priceFeedAggregator.removeAllListeners();
-		if (!$priceFeedAggregator) return;
+		const unwatch = watchContractEvent(
+			{
+				address: $addresses.addresses.priceFeedAggregator,
+				abi: parseAbi([
+					'event AnswerUpdated(int256 indexed current, uint256 indexed roundId, uint256 timestamp)'
+				]),
+				eventName: 'AnswerUpdated'
+			},
+			(log) => {
+				set(log[0].args.current);
+			}
+		);
 
-		priceFeedAggregator = $priceFeedAggregator;
-		priceFeedAggregator.on('AnswerUpdated', (answer) => {
-			set(answer);
-		});
-	});
+		return unwatch;
+	},
+	0n
+);
 
-	return {
-		subscribe
-	};
-};
-
-export const currentPriceUpdate = createCurrentPriceStore();
-
-export const currentPrice = readable(BigNumber.from(0), (set) => {
-	let lastPrice = BigNumber.from(0);
+export const currentPriceTweened = readable(0n, (set) => {
+	let lastPrice = 0n;
 	let tween = tweened(lastPrice, {
 		duration: 200,
 		easing: sineInOut,
-		interpolate: interpolateBigNumbers
+		interpolate: interpolateBigInts
 	});
+
 	const unsubscribeTween = tween.subscribe((value) => {
 		set(value);
 	});
+
 	const unsubscribe = currentPriceUpdate.subscribe((newCurrentPrice) => {
-		if (!newCurrentPrice.eq(lastPrice)) {
-			lastPrice = newCurrentPrice;
-			tween.set(newCurrentPrice);
-		}
+		if (newCurrentPrice == lastPrice) return;
+		lastPrice = newCurrentPrice;
+		tween.set(newCurrentPrice);
 	});
 	return () => {
 		unsubscribeTween();
@@ -82,9 +81,14 @@ export const toggleDevPrice = async () => {
 	const price1 = parseUnits('60000', 8);
 	const price2 = parseUnits('61000', 8);
 
-	const newPrice = get(currentPriceUpdate).eq(price1) ? price2 : price1;
+	const newPrice = get(currentPriceUpdate) == price1 ? price2 : price1;
 
-	const tx = await get(priceFeedAggregatorContract).connect(signer).setNewPrice(newPrice);
+	const tx = writeContract({
+		address: get(addresses).addresses.priceFeedAggregator,
+		abi: parseAbi(['function setNewPrice(int256 newPrice) public']),
+		functionName: 'setNewPrice',
+		args: [newPrice]
+	});
 
 	const txToast = toast.push('Waiting for Price Update Transaction...', {
 		initial: 0,

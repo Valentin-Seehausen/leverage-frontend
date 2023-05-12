@@ -8,10 +8,23 @@ import {
 
 import { writable } from 'svelte/store';
 import { isInitialized } from './client';
+import { getAddress } from 'viem';
+
+const parseAddresses = (
+	/** @type {{ liquidityPool: any; network?: string; priceFeed: any; priceFeedAggregator: string; proxyAdmin?: string; startBlock?: number; tradePair: any; usdc: any; }} */ rawAddresses
+) => {
+	return {
+		liquidityPool: getAddress(rawAddresses.liquidityPool),
+		usdc: getAddress(rawAddresses.usdc),
+		tradePair: getAddress(rawAddresses.tradePair),
+		priceFeed: getAddress(rawAddresses.priceFeed),
+		priceFeedAggregator: getAddress(rawAddresses.priceFeedAggregator)
+	};
+};
 
 const createAddressStore = () => {
 	const initState = {
-		addresses: arbitrumGoerliAddresses,
+		addresses: parseAddresses(arbitrumGoerliAddresses),
 		graphEndpoint: graphEndpointArbitrumGoerli
 	};
 	let state = initState;
@@ -21,10 +34,10 @@ const createAddressStore = () => {
 	// Set first state
 	const setState = () => {
 		if (dev) {
-			state.addresses = arbitrumGoerliDevAddresses;
+			state.addresses = parseAddresses(arbitrumGoerliDevAddresses);
 			state.graphEndpoint = graphEndpointArbitrumGoerliDev;
 		} else {
-			state.addresses = arbitrumGoerliAddresses;
+			state.addresses = parseAddresses(arbitrumGoerliAddresses);
 			state.graphEndpoint = graphEndpointArbitrumGoerli;
 		}
 

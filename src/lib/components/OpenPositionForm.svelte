@@ -2,27 +2,27 @@
 	import { leverageDecimals, priceFeedDecimals, usdcDecimals } from '$lib/config/constants';
 	import { openPosition } from '$lib/stores/tradePair';
 	import { userUsdc } from '$lib/stores/usdc';
-	import { parseUnits } from 'ethers/lib/utils.js';
-	import { currentPrice } from '$lib/stores/priceFeed';
+	import { currentPriceTweened } from '$lib/stores/priceFeed';
 	import { formatValue } from '$lib/utils/format';
-	import { BigNumber } from 'ethers';
+	import { parseUnits } from 'viem';
 
 	let inputCollateral = '100';
 	$: inputCollateral = inputCollateral.replace(/[^0-9]/g, '');
-	$: collateral =
-		BigNumber.from(parseUnits(inputCollateral.toString(), usdcDecimals)) || BigNumber.from(0);
+	// @ts-ignore
+	$: collateral = BigInt(parseUnits(inputCollateral, usdcDecimals)) || 0n;
 	let leverage = 5;
 	let isLong = true;
 
-	$: maxClosePrice = $currentPrice
-		.mul(parseUnits('1', leverageDecimals))
-		.div(parseUnits(leverage.toString(), leverageDecimals))
-		.add($currentPrice);
-	$: minClosePrice = $currentPrice
-		.mul(parseUnits('1', leverageDecimals))
-		.div(parseUnits(leverage.toString(), leverageDecimals))
-		.sub($currentPrice)
-		.mul(-1);
+	$: maxClosePrice =
+		($currentPriceTweened * parseUnits('1', leverageDecimals)) /
+			// @ts-ignore
+			parseUnits(leverage.toString(), leverageDecimals) +
+		$currentPriceTweened;
+	$: minClosePrice =
+		($currentPriceTweened * parseUnits('1', leverageDecimals)) /
+			// @ts-ignore
+			parseUnits(leverage.toString(), leverageDecimals) -
+		$currentPriceTweened * -1n;
 	$: takeProfitPrice = isLong ? maxClosePrice : minClosePrice;
 	$: liquidationPrice = isLong ? minClosePrice : maxClosePrice;
 
@@ -30,8 +30,8 @@
 		openPosition(collateral, leverage, isLong);
 	};
 
-	$: allowanceIsSufficient = $userUsdc.allowance.gte(collateral);
-	$: balanceIsSufficient = $userUsdc.balance.gte(collateral);
+	$: allowanceIsSufficient = $userUsdc.allowance >= collateral;
+	$: balanceIsSufficient = $userUsdc.balance >= collateral;
 </script>
 
 <div class="box">
@@ -60,7 +60,8 @@
 			<span class="info-label text-sm grow">Collateral</span>
 			<button
 				class="info-label text-sm opacity-50"
-				on:click={() => (inputCollateral = $userUsdc.balance.div(10 ** usdcDecimals).toString())}
+				on:click={() =>
+					(inputCollateral = ($userUsdc.balance / 10n ** BigInt(usdcDecimals)).toString())}
 			>
 				Max: {formatValue($userUsdc.balance, usdcDecimals)}
 			</button>
@@ -86,7 +87,7 @@
 		</div>
 		<div class="flex flex-row">
 			<div class="basis-2/3 info-label">Entry Price:</div>
-			<div class="basis-1/3 text-right">{formatValue($currentPrice, priceFeedDecimals)}</div>
+			<div class="basis-1/3 text-right">{formatValue($currentPriceTweened, priceFeedDecimals)}</div>
 		</div>
 		<div class="flex flex-row">
 			<div class="basis-2/3 info-label">Liquidation Price:</div>
