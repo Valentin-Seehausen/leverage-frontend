@@ -2,6 +2,24 @@
 	import { liquidityPoolDecimals } from '$lib/config/constants';
 	import { positionBalance } from '$lib/stores/positionBalance';
 	import { formatValue } from '$lib/utils/format';
+	import { interpolateBigInts as interpolate } from '$lib/utils/interpolateBigInts';
+	import { sineInOut } from 'svelte/easing';
+	import { tweened } from 'svelte/motion';
+
+	const longSharesTweened = tweened(0n, { duration: 200, easing: sineInOut, interpolate });
+
+	const shortSharesTweened = tweened(0n, { duration: 200, easing: sineInOut, interpolate });
+
+	const longSharesPercentageTweened = tweened(0, { duration: 200, easing: sineInOut });
+	const shortSharesPercentageTweened = tweened(0, { duration: 200, easing: sineInOut });
+
+	$: {
+		longSharesTweened.set($positionBalance.longShares);
+		shortSharesTweened.set($positionBalance.shortShares);
+
+		longSharesPercentageTweened.set($positionBalance.longSharesPercentage);
+		shortSharesPercentageTweened.set($positionBalance.shortSharesPercentage);
+	}
 </script>
 
 <div class="p-6">
@@ -12,32 +30,32 @@
 	{:else}
 		<h2 class="font-semibold info-label font-heading mb-3">Share Distribution:</h2>
 
-		<div class="relative bg-gray-200 rounded h-8">
+		<div class="relative dark:bg-slate-600 rounded h-8">
 			<div
-				class="absolute font-semibold left-0 h-full bg-green-700 text-white text-xs text-left leading-8 px-2 transition-all duration-1000"
-				style={`width: ${$positionBalance.longSharesPercentage}%`}
+				class="absolute font-semibold left-0 h-full bg-green-700 text-white text-xs text-left leading-8 px-2"
+				style={`width: ${$longSharesPercentageTweened}%`}
 			>
-				{$positionBalance.longSharesPercentage.toFixed(2)}%
+				{$longSharesPercentageTweened.toFixed(2)}%
 			</div>
 
 			<div
-				class="absolute font-semibold right-0 h-full bg-red-700 text-white text-xs text-right leading-8 px-2 transition-all duration-1000"
-				style={`width: ${$positionBalance.shortSharesPercentage}%`}
+				class="absolute font-semibold right-0 h-full bg-red-700 text-white text-xs text-right leading-8 px-2"
+				style={`width: ${$shortSharesPercentageTweened}%`}
 			>
-				{$positionBalance.shortSharesPercentage.toFixed(2)}%
+				{$shortSharesPercentageTweened.toFixed(2)}%
 			</div>
 		</div>
 
 		<div class="flex flex-row mt-3">
 			<div class="info-label">Long:</div>
 			<div class="grow text-right">
-				{formatValue($positionBalance.longShares, liquidityPoolDecimals, 2, { showSymbol: false })}
+				{formatValue($longSharesTweened, liquidityPoolDecimals, 2, { showSymbol: false })}
 			</div>
 		</div>
 		<div class="flex flex-row">
 			<div class="info-label">Short:</div>
 			<div class="grow text-right">
-				{formatValue($positionBalance.shortShares, liquidityPoolDecimals, 2, { showSymbol: false })}
+				{formatValue($shortSharesTweened, liquidityPoolDecimals, 2, { showSymbol: false })}
 			</div>
 		</div>
 	{/if}
