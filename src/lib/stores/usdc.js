@@ -14,10 +14,11 @@ const createUserUsdcStore = () => {
 		allowance: 0n
 	};
 	let state = initialState;
+	/** @type {import('viem').Address | undefined} */
+	let userAddress;
 	const { subscribe, set } = writable(state);
 
 	const fetchValues = () => {
-		const userAddress = get(account).address;
 		if (!userAddress) return;
 
 		readContract({
@@ -40,6 +41,11 @@ const createUserUsdcStore = () => {
 			set(state);
 		});
 	};
+
+	account.subscribe((account) => {
+		userAddress = account.address;
+		fetchValues();
+	});
 
 	return {
 		subscribe,
