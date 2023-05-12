@@ -34,7 +34,6 @@ export const closedUserPositionsEvents = derived(
 			args: { trader: $account.address },
 			eventName: 'PositionClosed',
 			onLogs: (log) => {
-				console.log('PositionClosed for user', log);
 				log.forEach(({ args: { positionId, pnlShares, closePrice, closeDate } }) => {
 					const newClosedPosition = {
 						id: positionId,

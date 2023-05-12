@@ -95,6 +95,7 @@ export const positionBalance = readable(initValue, (set) => {
 		},
 		(log) => {
 			log.forEach(({ args: { collateral, shares, isLong } }) => {
+				console.log('updating position balance', state);
 				if (isLong) {
 					state = {
 						...state,
@@ -145,7 +146,7 @@ export const positionBalance = readable(initValue, (set) => {
 		}
 	);
 
-	graphClientStore.subscribe(($graphClient) => {
+	const unsubscribeGraphStore = graphClientStore.subscribe(($graphClient) => {
 		if (!$graphClient) {
 			unsubscribeSubgraph = () => {};
 			return;
@@ -163,11 +164,6 @@ export const positionBalance = readable(initValue, (set) => {
 						shortPositionCount
 						shortShares
 					}
-					_meta {
-						block {
-							number
-						}
-					}
 				}
 			`,
 			variables: { id: get(addresses).addresses.tradePair.toLowerCase() }
@@ -177,7 +173,12 @@ export const positionBalance = readable(initValue, (set) => {
 				state = {
 					...state,
 					loading: false,
-					...tradePair
+					longPositionCount: Number(tradePair.longPositionCount),
+					longCollateral: BigInt(tradePair.longCollateral),
+					longShares: BigInt(tradePair.longShares),
+					shortCollateral: BigInt(tradePair.shortCollateral),
+					shortPositionCount: Number(tradePair.shortPositionCount),
+					shortShares: BigInt(tradePair.shortShares)
 				};
 				updatePercentages();
 
@@ -192,5 +193,6 @@ export const positionBalance = readable(initValue, (set) => {
 		});
 	});
 
-	return () => Promise.all([unwatchOpen(), unwatchClose(), unsubscribeSubgraph()]);
+	return () =>
+		Promise.all([unwatchOpen(), unwatchClose(), unsubscribeSubgraph(), unsubscribeGraphStore()]);
 });

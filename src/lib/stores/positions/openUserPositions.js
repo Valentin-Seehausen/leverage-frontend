@@ -55,7 +55,6 @@ export const openUserPositionsFromEvents = derived(
 			args: { trader: $account.address },
 			eventName: 'PositionOpened',
 			onLogs: (log) => {
-				console.log('PositionOpened for user', log);
 				log.forEach(
 					({
 						args: {

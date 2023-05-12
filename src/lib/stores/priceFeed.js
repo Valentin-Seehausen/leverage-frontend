@@ -34,6 +34,8 @@ export const currentPriceUpdate = derived(
 				eventName: 'AnswerUpdated'
 			},
 			(log) => {
+				console.log('priceUpdate', log);
+				console.log('priceUpdate', log[0].args.current);
 				set(log[0].args.current);
 			}
 		);
@@ -83,7 +85,7 @@ export const toggleDevPrice = async () => {
 
 	const newPrice = get(currentPriceUpdate) == price1 ? price2 : price1;
 
-	const tx = writeContract({
+	const tx = await writeContract({
 		address: get(addresses).addresses.priceFeedAggregator,
 		abi: parseAbi(['function setNewPrice(int256 newPrice) public']),
 		functionName: 'setNewPrice',
@@ -95,8 +97,7 @@ export const toggleDevPrice = async () => {
 		classes: ['info']
 	});
 
-	// @ts-ignore
-	await waitForTransaction({ hash: tx.hash });
+	await waitForTransaction(tx);
 
 	toast.pop(txToast);
 

@@ -39,8 +39,7 @@ export const openPosition = async (collateral, leverage, isLong) => {
 		classes: ['info']
 	});
 
-	// @ts-ignore
-	await waitForTransaction({ hash: tx.hash });
+	await waitForTransaction(tx);
 
 	toast.pop(txToast);
 

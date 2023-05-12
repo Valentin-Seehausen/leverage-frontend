@@ -26,7 +26,7 @@ export const liquitityPoolLastUpdate = derived(
 				eventName: 'Transfer'
 			},
 			(log) => {
-				console.log(log);
+				console.log('Liquidity Pool Update', log);
 				set(log[log.length - 1].blockNumber || 0n);
 			}
 		);
