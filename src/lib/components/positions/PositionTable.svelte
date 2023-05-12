@@ -4,12 +4,14 @@
 	import { leverageDecimals, priceFeedDecimals, usdcDecimals } from '$lib/config/constants';
 	import { formatPercentage, formatValue } from '$lib/utils/format';
 	import { slide } from 'svelte/transition';
+	import { getContext } from 'svelte';
+	import PositionModal from './PositionModal.svelte';
+	const { open } = getContext('simple-modal');
 
 	dayjs.extend(relativeTime);
 
 	/** @type {import("$lib/utils/position").Position[]} */
 	export let positions;
-
 	/** @type {string} */
 	export let show;
 
@@ -19,18 +21,19 @@
 	let expandedClosedPositions = [];
 
 	/** @param {string} positionId */
-	const toggle = (positionId) => {
+	const toggle = (position) => {
+		open(PositionModal, { position: position });
 		if (show === 'open') {
-			if (expandedOpenPositions.includes(positionId)) {
-				expandedOpenPositions = expandedOpenPositions.filter((id) => id !== positionId);
+			if (expandedOpenPositions.includes(position.id)) {
+				expandedOpenPositions = expandedOpenPositions.filter((id) => id !== position.id);
 			} else {
-				expandedOpenPositions = [...expandedOpenPositions, positionId];
+				expandedOpenPositions = [...expandedOpenPositions, position.id];
 			}
 		} else if (show === 'closed') {
-			if (expandedClosedPositions.includes(positionId)) {
-				expandedClosedPositions = expandedClosedPositions.filter((id) => id !== positionId);
+			if (expandedClosedPositions.includes(position.id)) {
+				expandedClosedPositions = expandedClosedPositions.filter((id) => id !== position.id);
 			} else {
-				expandedClosedPositions = [...expandedClosedPositions, positionId];
+				expandedClosedPositions = [...expandedClosedPositions, position.id];
 			}
 		}
 	};
@@ -43,6 +46,8 @@
 		}
 		return false;
 	};
+
+	$: positions.length > 0 && open(PositionModal, { position: positions[0] });
 </script>
 
 <div class="flex flex-col">
@@ -65,8 +70,8 @@
 			class={`flex flex-col cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-800 ${
 				index % 2 == 0 ? 'dark:bg-slate-800 dark:bg-opacity-50' : ''
 			}`}
-			on:click={() => toggle(position.id)}
-			on:keypress={() => toggle(position.id)}
+			on:click={() => toggle(position)}
+			on:keypress={() => toggle(position)}
 			transition:slide
 		>
 			<div class="flex py-2">

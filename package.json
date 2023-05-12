@@ -41,6 +41,7 @@
 		"chartjs-plugin-datalabels": "^2.2.0",
 		"dayjs": "^1.11.7",
 		"ethers": "^5.7.2",
+		"svelte-simple-modal": "^1.5.2",
 		"truncate-eth-address": "^1.0.2"
 	}
 }
