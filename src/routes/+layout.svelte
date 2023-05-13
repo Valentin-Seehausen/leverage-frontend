@@ -21,7 +21,10 @@
 	setContextClient(client);
 </script>
 
-<Modal classBg="dark:bg-slate-800 bg-slate-800">
+<Modal
+	classBg="dark:bg-slate-950"
+	classContent="dark:bg-slate-800 text-white border rounded dark:border-slate-700 shadow-lg dark:shadow-slate-950"
+>
 	<Nav />
 
 	<div class="max-w-screen-2xl m-auto xl:p-3">

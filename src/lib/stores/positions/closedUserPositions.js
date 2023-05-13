@@ -28,7 +28,11 @@ export const closedUserPositionsSubgraph = derived(
 			client: $graphClientStore,
 			query: gql`
 				query ($trader: String!) {
-					positions(where: { and: [{ trader: $trader }, { isOpen: false }] }) {
+					positions(
+						where: { and: [{ trader: $trader }, { isOpen: false }] }
+						orderBy: closeDate
+						orderDirection: desc
+					) {
 						id
 						collateral
 						shares
@@ -54,7 +58,7 @@ export const closedUserPositionsSubgraph = derived(
 			if (result.error) {
 				set({ loading: false, error: result.error, positions: [] });
 			} else if (result.data) {
-				result.data.position = result.data.positions.map((/** @type {any} */ position) => {
+				const newClosedPositions = result.data.positions.map((/** @type {any} */ position) => {
 					/** @type{Position} */
 					return {
 						id: position.id,
@@ -65,15 +69,17 @@ export const closedUserPositionsSubgraph = derived(
 						liquidationPrice: BigInt(position.liquidationPrice),
 						takeProfitPrice: BigInt(position.takeProfitPrice),
 						entryPrice: BigInt(position.entryPrice),
+						closePrice: BigInt(position.closePrice),
 						leverage: BigInt(position.leverage),
 						openDate: position.openDate,
-						pnlShares: position.pnlShares,
+						closeDate: position.closeDate,
+						pnlShares: BigInt(position.pnlShares),
 						pnlSharesPercentage: Number(position.pnlSharesPercentage),
 						pnlAssets: BigInt(position.pnlAssets),
 						pnlAssetsPercentage: Number(position.pnlAssetsPercentage)
 					};
 				});
-				set({ loading: false, error: null, positions: result.data.positions });
+				set({ loading: false, error: null, positions: newClosedPositions });
 			}
 		});
 
@@ -99,11 +105,13 @@ export const closedUserPositions = derived(
 		set
 	) => {
 		if (!$openUserPositionsCombined) return;
-		// First fill positions from subgraph
 
-		/** @type {Position[]} */
+		/**
+		 *  @type {Position[]}
+		 */
 		let positions = [];
 
+		// First fill positions from subgraph
 		if ($closedUserPositionsSubgraph.loading) {
 			set({ positions, loading: true, error: null });
 			return;
@@ -114,12 +122,7 @@ export const closedUserPositions = derived(
 			return;
 		}
 
-		positions = $closedUserPositionsSubgraph.positions.map((/** @type {Position} */ position) => {
-			position.pnlSharesPercentage = parseFloat(position.pnlSharesPercentage.toString()) || 0;
-			position.pnlAssetsPercentage =
-				Math.max(parseFloat(position.pnlAssetsPercentage.toString()), -100) || 0;
-			return position;
-		});
+		positions = $closedUserPositionsSubgraph.positions;
 
 		// Check if new closed positions are in open positions and thus have to be added to the list
 		$closedUserPositionsEvents.forEach((closedPositionEvent) => {

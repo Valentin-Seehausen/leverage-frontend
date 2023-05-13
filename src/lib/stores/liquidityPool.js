@@ -106,7 +106,8 @@ export const liquidityPoolRatio = derived(
 		}
 
 		set($totalSupply / $totalAssets);
-	}
+	},
+	0n
 );
 
 export const userAssets = derived(
