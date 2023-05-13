@@ -35,33 +35,33 @@
 	{:else}
 		<div class="overflow-hidden h-[570px] relative">
 			{#if activeTab === 'open'}
-				{#if $openUserPositions.loading}
-					<p>Loading your positions.</p>
-				{:else if $openUserPositions.error}
-					<p>Error: {$openUserPositions.error.message}</p>
-				{:else}
-					<div
-						class="top-0 absolute h-[500px] w-full"
-						in:fly={{ x: '-100%', duration: 250 }}
-						out:fly={{ x: '-100%', duration: 250 }}
-					>
+				<div
+					class="top-0 absolute h-[500px] w-full"
+					in:fly|local={{ x: '-100%', duration: 250 }}
+					out:fly|local={{ x: '-100%', duration: 250 }}
+				>
+					{#if $openUserPositions.loading}
+						<p>Loading your positions.</p>
+					{:else if $openUserPositions.error}
+						<p>Error: {$openUserPositions.error.message}</p>
+					{:else}
 						<PositionTable positions={$openUserPositions.positions} show={'open'} />
-					</div>
-				{/if}
+					{/if}
+				</div>
 			{:else if activeTab === 'closed'}
-				{#if $closedUserPositions.loading}
-					<p>Loading your positions.</p>
-				{:else if $closedUserPositions.error}
-					<p>Error: {$closedUserPositions.error.message}</p>
-				{:else}
-					<div
-						class="top-0 absolute h-[500px] w-full"
-						in:fly={{ x: '100%', duration: 250 }}
-						out:fly={{ x: '100%', duration: 250 }}
-					>
+				<div
+					class="top-0 absolute h-[500px] w-full"
+					in:fly|local={{ x: '100%', duration: 250 }}
+					out:fly|local={{ x: '100%', duration: 250 }}
+				>
+					{#if $closedUserPositions.loading}
+						<p>Loading your positions.</p>
+					{:else if $closedUserPositions.error}
+						<p>Error: {$closedUserPositions.error.message}</p>
+					{:else}
 						<PositionTable positions={$closedUserPositions.positions} show={'closed'} />
-					</div>
-				{/if}
+					{/if}
+				</div>
 			{/if}
 		</div>
 	{/if}
