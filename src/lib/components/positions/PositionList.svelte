@@ -2,6 +2,7 @@
 	import * as dayjs from 'dayjs';
 	import relativeTime from 'dayjs/plugin/relativeTime';
 	import PositionCard from './PositionCard.svelte';
+	import { fly } from 'svelte/transition';
 
 	import { openUserPositions } from '$lib/stores/positions/openUserPositions';
 	import PositionTable from './PositionTable.svelte';
@@ -11,6 +12,7 @@
 
 	let activeTab = 'open';
 	$: positions = activeTab === 'open' ? $openUserPositions : $closedUserPositions;
+	$: $openUserPositions;
 </script>
 
 <div class="box">
@@ -39,8 +41,36 @@
 				{/each}
 			</div>
 		</div>
-		<div class="hidden lg:block">
-			<PositionTable positions={positions.positions} show={activeTab} />
+		<div class="overflow-x-hidden overflow-y-scroll h-80 w-full relative">
+			{#if activeTab === 'open'}
+				{#if $openUserPositions.loading}
+					<p>Loading your positions.</p>
+				{:else if $openUserPositions.error}
+					<p>Error: {$openUserPositions.error.message}</p>
+				{:else}
+					<div
+						class="hidden lg:block absolute top-0 w-full"
+						in:fly={{ x: '-100%', duration: 250 }}
+						out:fly={{ x: '-100%', duration: 250 }}
+					>
+						<PositionTable positions={$openUserPositions.positions} show={'open'} />
+					</div>
+				{/if}
+			{:else if activeTab === 'closed'}
+				{#if $closedUserPositions.loading}
+					<p>Loading your positions.</p>
+				{:else if $closedUserPositions.error}
+					<p>Error: {$closedUserPositions.error.message}</p>
+				{:else}
+					<div
+						class="hidden lg:block absolute top-0 w-full"
+						in:fly={{ x: '100%', duration: 250 }}
+						out:fly={{ x: '100%', duration: 250 }}
+					>
+						<PositionTable positions={$closedUserPositions.positions} show={'closed'} />
+					</div>
+				{/if}
+			{/if}
 		</div>
 	{/if}
 </div>

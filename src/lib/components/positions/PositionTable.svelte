@@ -22,8 +22,8 @@
 </script>
 
 <div class="flex flex-col">
-	<div class="flex py-2">
-		<div class="pl-2 w-1/6">Type</div>
+	<div class="flex py-3">
+		<div class="pl-3 w-1/6">Type</div>
 		<div class="w-1/6 text-right">Leverage</div>
 		<div class="w-1/6 text-right">Collateral</div>
 		<div class="w-1/6 text-right">Entry Price</div>
@@ -32,7 +32,7 @@
 			<div class="w-1/6 text-right">Take Profit Price</div>
 		{:else if show === 'closed'}
 			<div class="w-1/6 text-right">Close Price</div>
-			<div class="w-1/6 text-right">PnL</div>
+			<div class="w-1/6 text-right pr-3">PnL</div>
 		{/if}
 	</div>
 
@@ -43,7 +43,7 @@
 			}`}
 			on:click={() => openPositionModal(position)}
 			on:keypress={() => openPositionModal(position)}
-			transition:slide
+			transition:slide|local
 		>
 			<div class="flex py-2">
 				<div class="pl-2 w-1/6">
@@ -77,7 +77,7 @@
 					<div class="w-1/6 text-right">
 						<span class="font-mono">{formatValue(position.closePrice, priceFeedDecimals, 2)}</span>
 					</div>
-					<div class="w-1/6 text-right">
+					<div class="w-1/6 text-right pr-3">
 						<span
 							class={`font-extrabold ${
 								position.pnlSharesPercentage >= 0 ? 'dark:text-green-600' : 'dark:text-red-700'
