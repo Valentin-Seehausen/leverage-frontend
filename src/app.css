@@ -7,7 +7,7 @@
 		@apply dark:text-slate-400;
 	}
 	.box {
-		@apply p-3 mx-3 my-6 border rounded dark:border-slate-800 dark:bg-slate-900;
+		@apply p-2 md:p-3 m-2 md:mx-3 my-6 border rounded dark:border-slate-800 dark:bg-slate-900;
 	}
 	.user-input {
 		@apply dark:bg-slate-800 dark:hover:bg-slate-700 dark:focus:bg-slate-700 dark:border-slate-600 
@@ -35,5 +35,23 @@
 	}
 	._toastItem {
 		@apply rounded-sm;
+	}
+
+	/* Firefox */
+	* {
+		scrollbar-width: thin;
+		scrollbar-color: #475569 #1e293b;
+	}
+	/* Chrome, Edge, and Safari */
+	*::-webkit-scrollbar {
+		width: 10px;
+	}
+	*::-webkit-scrollbar-track {
+		background: #1e293b;
+		border-radius: 5px;
+	}
+	*::-webkit-scrollbar-thumb {
+		background-color: #475569;
+		border-radius: 14px;
 	}
 }

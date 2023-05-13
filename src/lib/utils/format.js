@@ -42,16 +42,22 @@ export const formatValue = (value, decimals, precision = 2, options) => {
 };
 
 /**
+ * @typedef {Object} FormatPercentageOptions
+ * @property {number | undefined} [decimals]
+ */
+
+/**
  * @param {number | string} value
+ * @param {FormatPercentageOptions} [options]
  * @returns
  */
-export const formatPercentage = (value) => {
+export const formatPercentage = (value, options = { decimals: 2 }) => {
 	if (typeof value === 'number') {
 		const prefix = value >= 0 ? '+' : '';
-		return prefix + value.toFixed(2) + '%';
+		return prefix + value.toFixed(options.decimals) + '%';
 	} else if (typeof value === 'string') {
 		const prefix = value.startsWith('-') ? '+' : '';
-		const fixedValue = parseFloat(value).toFixed(2);
+		const fixedValue = parseFloat(value).toFixed(options.decimals);
 		return prefix + fixedValue + '%';
 	}
 	return value;
