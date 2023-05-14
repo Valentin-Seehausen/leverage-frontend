@@ -30,7 +30,7 @@ const config = {
 			}
 		}
 	},
-	perprocess: vitePreprocess()
+	preprocess: vitePreprocess()
 };
 
 export default config;

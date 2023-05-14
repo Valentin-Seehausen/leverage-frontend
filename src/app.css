@@ -37,6 +37,16 @@
 		@apply rounded-sm;
 	}
 
+	.bottom-nav-button {
+		@apply flex flex-col p-1 dark:text-slate-400 items-center;
+		&:active {
+			@apply dark:text-slate-100 dark:bg-slate-600;
+		}
+		&.current {
+			@apply dark:text-slate-100;
+		}
+	}
+
 	/* Firefox */
 	* {
 		scrollbar-width: thin;

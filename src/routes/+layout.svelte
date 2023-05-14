@@ -26,23 +26,24 @@
 	classContent="dark:bg-slate-800 dark:text-slate-100 border rounded dark:border-slate-700 shadow-lg dark:shadow-slate-950"
 >
 	<Nav />
-
-	<div class="max-w-screen-2xl m-auto xl:p-3">
-		<div class="lg:flex">
-			<div class="flex-1 lg:flex">
-				<HouseKeepingButton />
+	<main class="min-h-screen">
+		<div class="max-w-screen-2xl min-h-full m-auto xl:p-3">
+			<div class="lg:flex">
+				<div class="flex-1 lg:flex">
+					<HouseKeepingButton />
+				</div>
 			</div>
+
+			<slot />
 		</div>
 
-		<slot />
-	</div>
-
-	<div class="toast-wrap">
-		<SvelteToast {options} />
-	</div>
+		<div class="toast-wrap">
+			<SvelteToast {options} />
+		</div>
+	</main>
 
 	<footer
-		class="mt-36 info-label text-xs text-center py-12 dark:bg-slate-900 font-light border-t dark:border-slate-800"
+		class="mt-36 info-label text-xs text-center py-12 pb-24 md:pb-12 dark:bg-slate-900 font-light border-t dark:border-slate-800"
 	>
 		<div class="max-w-screen-lg m-auto">
 			<h2 class="heading font-semibold">Hyperbolic Trading</h2>
