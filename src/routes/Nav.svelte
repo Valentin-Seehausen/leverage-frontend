@@ -24,7 +24,7 @@
 	<div class="flex lg:hidden place-content-between lg:place-content-end px-6 py-5">
 		<Hamburger
 			bind:open
-			--color="white"
+			--color="#F1F5F9"
 			--padding="0"
 			--layer-width="30px"
 			--layer-height="3px"

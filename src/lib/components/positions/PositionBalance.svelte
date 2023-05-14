@@ -32,14 +32,14 @@
 
 		<div class="relative dark:bg-slate-600 rounded h-8">
 			<div
-				class="absolute font-semibold left-0 h-full bg-green-700 text-white text-xs text-left leading-8 px-2"
+				class="absolute font-semibold left-0 h-full bg-green-700 dark:text-slate-100 text-xs text-left leading-8 px-2"
 				style={`width: ${$longSharesPercentageTweened}%`}
 			>
 				{$longSharesPercentageTweened.toFixed(2)}%
 			</div>
 
 			<div
-				class="absolute font-semibold right-0 h-full bg-red-700 text-white text-xs text-right leading-8 px-2"
+				class="absolute font-semibold right-0 h-full bg-red-700 dark:text-slate-100 text-xs text-right leading-8 px-2"
 				style={`width: ${$shortSharesPercentageTweened}%`}
 			>
 				{$shortSharesPercentageTweened.toFixed(2)}%

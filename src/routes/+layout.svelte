@@ -23,7 +23,7 @@
 
 <Modal
 	classBg="dark:bg-slate-950"
-	classContent="dark:bg-slate-800 text-white border rounded dark:border-slate-700 shadow-lg dark:shadow-slate-950"
+	classContent="dark:bg-slate-800 dark:text-slate-100 border rounded dark:border-slate-700 shadow-lg dark:shadow-slate-950"
 >
 	<Nav />
 

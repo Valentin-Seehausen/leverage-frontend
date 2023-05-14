@@ -40,7 +40,7 @@
 		<button
 			class={`flex-1 text-sm font-semibold py-2 px-4 active:bg-green-700 focus:bg-green-700 ${
 				isLong ? 'bg-green-600' : 'bg-slate-700'
-			} text-white rounded-l`}
+			} dark:text-slate-100 rounded-l`}
 			on:click={() => (isLong = true)}
 		>
 			Long
@@ -48,7 +48,7 @@
 		<button
 			class={`flex-1 text-sm font-semibold py-2 px-4 active:bg-red-700 focus:bg-red-700 ${
 				!isLong ? 'bg-red-600' : 'bg-slate-700'
-			} text-white rounded-r`}
+			} dark:text-slate-100 rounded-r`}
 			on:click={() => (isLong = false)}
 		>
 			Short
