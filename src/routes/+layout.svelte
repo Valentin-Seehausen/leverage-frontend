@@ -27,7 +27,7 @@
 >
 	<Nav />
 	<main class="min-h-screen">
-		<div class="max-w-screen-2xl min-h-full m-auto xl:p-3">
+		<div class="">
 			<div class="lg:flex">
 				<div class="flex-1 lg:flex">
 					<HouseKeepingButton />

@@ -6,27 +6,29 @@
 	import PositionBalance from '$lib/components/positions/PositionBalance.svelte';
 </script>
 
-<div class="lg:flex">
-	<div class="basis-2/3 xl:basis-3/4">
-		<div class="box">
-			<TradingViewWidget />
+<div class="max-w-screen-2xl min-h-full m-auto xl:p-3 md:mt-24">
+	<div class="lg:flex">
+		<div class="basis-2/3 xl:basis-3/4">
+			<div class="box">
+				<TradingViewWidget />
+			</div>
+			<div class="box">
+				<PositionBalance />
+			</div>
 		</div>
-		<div class="box">
-			<PositionBalance />
+		<div class="basis-1/3 xl:basis-1/4">
+			<OpenPositionForm />
+			<DevPanel />
 		</div>
 	</div>
-	<div class="basis-1/3 xl:basis-1/4">
-		<OpenPositionForm />
-		<DevPanel />
+
+	<div class="lg:flex">
+		<div class="basis-2/3 xl:basis-3/4" />
 	</div>
-</div>
 
-<div class="lg:flex">
-	<div class="basis-2/3 xl:basis-3/4" />
-</div>
-
-<div class="lg:flex">
-	<div class="basis-2/3 xl:basis-3/4">
-		<PositionList />
+	<div class="lg:flex">
+		<div class="basis-2/3 xl:basis-3/4">
+			<PositionList />
+		</div>
 	</div>
 </div>

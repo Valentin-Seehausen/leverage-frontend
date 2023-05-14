@@ -9,7 +9,9 @@
 </script>
 
 <!-- Large Navigation -->
-<nav class="hidden md:flex place-content-between lg:place-content-end lg:gap-6 px-8 py-4">
+<nav
+	class="hidden md:flex fixed top-0 w-full h-30 z-50 dark:bg-slate-800/60 place-content-end gap-6 px-8 py-4 h-30 backdrop-blur-lg"
+>
 	<h1 class="flex-1 justify-center text-3xl font-bold flex-2 mb-4 lg:mb-0 font-heading">
 		Hyperbolic Finance
 	</h1>
