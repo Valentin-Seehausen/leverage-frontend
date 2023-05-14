@@ -48,7 +48,10 @@
 		{/if}
 	</div>
 
-	<div class="overflow-auto h-[500px] w-full">
+	<!-- Scroll Container -->
+	<div
+		class="overflow-auto h-[500px] w-full shadow-[inset_0_-24px_32px_-24px_rgba(2,6,23,0.5),inset_0_24px_32px_-24px_rgba(2,6,23,0.5)]"
+	>
 		{#each positions as position, index (position.id)}
 			<div
 				class={`flex flex-col rounded cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-800 ${
