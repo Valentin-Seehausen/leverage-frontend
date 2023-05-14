@@ -6,6 +6,10 @@
 @tailwind utilities;
 
 @layer components {
+	/* TODO: Remove when https://github.com/sveltejs/svelte-preprocess addad fix for the scroll thingy */
+	body {
+		overflow-y: scroll !important;
+	}
 	.info-label {
 		@apply dark:text-slate-400;
 	}
