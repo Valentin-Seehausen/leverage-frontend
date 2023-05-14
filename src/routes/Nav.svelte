@@ -18,8 +18,6 @@
 	<WalletConnectButton />
 </nav>
 
-<!-- Medium Navigati
-
 <!-- Small Navigation (Bottom Bar)  -->
 <nav
 	class="fixed justify-around items-center md:hidden bottom-0 w-full h-14 dark:bg-slate-700 flex z-10 border-t dark:border-slate-600 shadow-[0_0_9px_12px_rgba(2,6,23,0.3)]"

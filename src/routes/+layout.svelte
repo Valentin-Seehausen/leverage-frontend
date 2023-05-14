@@ -4,7 +4,7 @@
 	import HouseKeepingButton from '$lib/components/HouseKeepingButton.svelte';
 
 	import Nav from './Nav.svelte';
-	import '../app.css';
+	import '../app.postcss';
 	import { Client, setContextClient, cacheExchange, fetchExchange } from '@urql/svelte';
 
 	// Toast Options
@@ -62,7 +62,7 @@
 				<span class="font-semibold">Disclaimer:</span> Trading involves risk, including possible loss
 				of principal. The information provided by Hyperbolic Trading does not constitute investment advice,
 				financial advice, trading advice, or any other sort of advice, and you should not treat any of
-				the website's content as such. Hyperbolic Trading does not recommend that any cryptocurrency
+				the website&apos;s content as such. Hyperbolic Trading does not recommend that any cryptocurrency
 				should be bought, sold, or held by you. Always conduct your own due diligence before making any
 				investment decisions. Hyperbolic Trading is governed by a Decentralized Autonomous Organization
 				(DAO), which ensures the protocol operates in a decentralized and democratic manner. However,
