@@ -1,4 +1,5 @@
 <script>
+	import logo from '$lib/assets/logo-512x512.png';
 	import WalletConnectButton from '$lib/components/WalletConnectButton.svelte';
 	import { page } from '$app/stores';
 
@@ -12,6 +13,7 @@
 <nav
 	class="hidden md:flex fixed top-0 w-full h-30 z-50 dark:bg-slate-800/60 place-content-end gap-6 px-8 py-4 h-30 backdrop-blur-lg"
 >
+	<img alt="Hyperbolic Finance Logo" src={logo} class="w-10 h-10" />
 	<h1 class="flex-1 justify-center text-3xl font-bold flex-2 mb-4 lg:mb-0 font-heading">
 		Hyperbolic Finance
 	</h1>
