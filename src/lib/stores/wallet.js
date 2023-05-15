@@ -19,7 +19,7 @@ export const metaMaskConnector = new MetaMaskConnector({
  */
 
 /** @type {AccountStoreState} */
-const initialValue = {
+const initialState = {
 	isConnected: false,
 	address: undefined,
 	shortAddress: '',
@@ -39,10 +39,15 @@ export const account = derived(
 	($isInitialized, set) => {
 		if (!$isInitialized) return;
 
-		let state = initialValue;
+		let state = initialState;
 
 		const unwatchAccount = watchAccount(async (account) => {
-			if (!account.address) return;
+			if (!account.address) {
+				state = initialState;
+				set(state);
+				return;
+			}
+
 			state = {
 				...state,
 				address: getAddress(account.address),
@@ -73,5 +78,5 @@ export const account = derived(
 			unwatchNetwork();
 		};
 	},
-	initialValue
+	initialState
 );

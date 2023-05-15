@@ -1,9 +1,10 @@
 <script>
 	import { getWalletClient } from '@wagmi/core';
-	import { account } from '$lib/stores/wallet';
+	import { account, connectWallet } from '$lib/stores/wallet';
 	import { arbitrumGoerli } from 'viem/chains';
 	import { toast } from '@zerodevx/svelte-toast';
 	import { requestFunds, userUsdc } from '$lib/stores/usdc';
+	import CheckBox from '$lib/components/CheckBox.svelte';
 
 	const addArbitrumGoerli = async () => {
 		const client = await getWalletClient();
@@ -248,11 +249,7 @@
 				>
 					<div class="relative pl-16">
 						<dt class="text-base font-semibold leading-7 text-white/85">
-							<div
-								class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-cyan-700"
-							>
-								1.
-							</div>
+							<CheckBox text="1." showCheckbox={$account.isConnected} />
 							Connect MetaMask.
 						</dt>
 						<dd class="mt-2 text-base leading-7 dark:text-white/70">
@@ -274,7 +271,7 @@
 								Perfect, you are already connected with MetaMask!
 							{:else}
 								<button
-									on:click={addArbitrumGoerli}
+									on:click={connectWallet}
 									class="text-sm font-semibold leading-6 dark:text-slate-100"
 								>
 									Connect MetaMask
@@ -285,11 +282,7 @@
 
 					<div class="relative pl-16">
 						<dt class="text-base font-semibold leading-7 text-white/85">
-							<div
-								class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-cyan-700"
-							>
-								2.
-							</div>
+							<CheckBox text="2." showCheckbox={$account.chainId === arbitrumGoerli.id} />
 							Add Arbitrum Testnet to your Wallet.
 						</dt>
 						<dd class="mt-2 text-base leading-7 dark:text-white/70">
@@ -323,11 +316,7 @@
 
 					<div class="relative pl-16">
 						<dt class="text-base font-semibold leading-7 text-white/85">
-							<div
-								class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-cyan-700"
-							>
-								3.
-							</div>
+							<CheckBox text="3." showCheckbox={$account.balance > 0} />
 							Get Testnet Ether
 						</dt>
 						<dd class="mt-2 text-base leading-7 dark:text-white/70">
@@ -363,11 +352,7 @@
 
 					<div class="relative pl-16">
 						<dt class="text-base font-semibold leading-7 text-white/85">
-							<div
-								class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-cyan-700"
-							>
-								4.
-							</div>
+							<CheckBox text="4." showCheckbox={$userUsdc.balance > 0} />
 							Get some test USDC
 						</dt>
 						<dd class="mt-2 text-base leading-7 dark:text-white/70">
@@ -401,11 +386,7 @@
 
 					<div class="relative pl-16">
 						<dt class="text-base font-semibold leading-7 text-white/85">
-							<div
-								class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-cyan-700"
-							>
-								5.
-							</div>
+							<CheckBox text="5." showCheckbox={onboardingCompleted} />
 							Have fun on our Plattform
 						</dt>
 						<dd class="mt-2 text-base leading-7 dark:text-white/70">
