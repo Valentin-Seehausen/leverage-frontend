@@ -97,7 +97,7 @@
 
 	<button
 		on:click={handleSubmit}
-		class="user-button w-full mt-6 hover:shadow-md hover:shadow-cyan-500/10"
+		class="user-button w-full mt-6 hover:shadow-md hover:shadow-cyan-900/20"
 		disabled={!balanceIsSufficient}
 	>
 		{#if !balanceIsSufficient}
