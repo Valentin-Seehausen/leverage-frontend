@@ -1,9 +1,28 @@
+<script>
+	import { getWalletClient } from '@wagmi/core';
+	import { account } from '$lib/stores/wallet';
+	import { arbitrumGoerli } from 'viem/chains';
+	import { toast } from '@zerodevx/svelte-toast';
+
+	const addArbitrumGoerli = async () => {
+		const client = await getWalletClient();
+		if (!client) {
+			toast.push('Connect MetaMask First', {
+				classes: ['info']
+			});
+			return;
+		}
+
+		client?.addChain({ chain: arbitrumGoerli });
+	};
+</script>
+
 <!-- Home and Onboarding -->
 
 <div class="bg-gradient-to-br from-valhalla-600">
 	<div class="relative isolate px-6 pt-14 lg:px-8">
 		<div
-			class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
+			class="fixed inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
 			aria-hidden="true"
 		>
 			<div
@@ -180,6 +199,209 @@
 					</dd>
 				</div>
 			</dl>
+		</div>
+	</div>
+</div>
+
+<div class="bg-gradient-to-br from-valhalla-600">
+	<div class="relative isolate px-6 pt-14 lg:px-8">
+		<div
+			class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
+			aria-hidden="true"
+		>
+			<div
+				class="relative right-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[-30deg] bg-gradient-to-tr from-primary-400 to-valhalla-400 opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
+				style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"
+			/>
+		</div>
+		<div class="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
+			<div class="text-center">
+				<h1 class="text-4xl font-bold tracking-tight dark:text-slate-100 sm:text-6xl">
+					Start Testing now
+				</h1>
+				<p class="mt-6 text-lg leading-8 dark:text-slate-400">
+					Our Plattform is live for test users. Follow these simple steps to get started.
+				</p>
+			</div>
+			<div class="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
+				<dl
+					class="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-1 lg:gap-y-16"
+				>
+					<div class="relative pl-16">
+						<dt class="text-base font-semibold leading-7 text-white/85">
+							<div
+								class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-cyan-700"
+							>
+								1.
+							</div>
+							Connect MetaMask.
+						</dt>
+						<dd class="mt-2 text-base leading-7 dark:text-white/70">
+							As this is a MVP, only MetaMask is supported. Please connect MetaMask
+						</dd>
+						<dd class="mt-2 text-base leading-7 dark:text-white/70">
+							{#if $account.isConnected}
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									fill="none"
+									viewBox="0 0 24 24"
+									stroke-width="1.5"
+									stroke="currentColor"
+									class="w-6 h-6 inline"
+								>
+									<path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+								</svg>
+
+								Perfect, you are already connected with MetaMask!
+							{:else}
+								<button
+									on:click={addArbitrumGoerli}
+									class="text-sm font-semibold leading-6 dark:text-slate-100"
+								>
+									Connect MetaMask
+								</button>
+							{/if}
+						</dd>
+					</div>
+
+					<div class="relative pl-16">
+						<dt class="text-base font-semibold leading-7 text-white/85">
+							<div
+								class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-cyan-700"
+							>
+								2.
+							</div>
+							Add Arbitrum Testnet to your Wallet.
+						</dt>
+						<dd class="mt-2 text-base leading-7 dark:text-white/70">
+							We currently support the Arbitrum Testnet. Add it to your wallet to get started.
+						</dd>
+
+						{#if $account.chainId === arbitrumGoerli.id}
+							<dd class="mt-2 text-base leading-7 dark:text-white/70">
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									fill="none"
+									viewBox="0 0 24 24"
+									stroke-width="1.5"
+									stroke="currentColor"
+									class="w-6 h-6 inline"
+								>
+									<path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+								</svg>
+
+								Perfect, you are already connected to Arbitrum Goerli
+							</dd>
+						{:else}
+							<dd class="mt-2 text-base leading-7 dark:text-white/70">
+								<button
+									on:click={addArbitrumGoerli}
+									class="text-sm font-semibold leading-6 dark:text-slate-100"
+								>
+									Add Arbitrum Testnet
+								</button>
+							</dd>
+						{/if}
+					</div>
+
+					<div class="relative pl-16">
+						<dt class="text-base font-semibold leading-7 text-white/85">
+							<div
+								class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-cyan-700"
+							>
+								3.
+							</div>
+							Get Testnet Ether
+						</dt>
+						<dd class="mt-2 text-base leading-7 dark:text-white/70">
+							To pay for you gas, you need testnet ether. We recommend this faucet, where you get it
+							free and fast.
+						</dd>
+						<dd class="mt-2 text-base leading-7 dark:text-white/70">
+							{#if $account.balance > 0}
+								<dd class="mt-2 text-base leading-7 dark:text-white/70">
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										fill="none"
+										viewBox="0 0 24 24"
+										stroke-width="1.5"
+										stroke="currentColor"
+										class="w-6 h-6 inline"
+									>
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											d="M4.5 12.75l6 6 9-13.5"
+										/>
+									</svg>
+
+									Perfect, you are already have testnet ether on Arbitrum Goerli.
+								</dd>
+							{:else}
+								<a
+									href="https://faucet.triangleplatform.com/arbitrum/goerli"
+									target="_blank"
+									class="text-sm font-semibold leading-6 dark:text-slate-100"
+								>
+									Get Testnet Ether
+								</a>
+							{/if}
+						</dd>
+					</div>
+
+					<div class="relative pl-16">
+						<dt class="text-base font-semibold leading-7 text-white/85">
+							<div
+								class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-cyan-700"
+							>
+								4.
+							</div>
+							Have fun on our Plattform
+						</dt>
+						<dd class="mt-2 text-base leading-7 dark:text-white/70">
+							To pay for you gas, you need testnet ether. We recommend this faucet, where you get it
+							free and fast.
+						</dd>
+						<dd class="mt-2 text-base leading-7 dark:text-white/70">
+							{#if $account.chainId === arbitrumGoerli.id && $account.balance > 0}
+								<dd class="mt-2 text-base leading-7 dark:text-white/70">
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										fill="none"
+										viewBox="0 0 24 24"
+										stroke-width="1.5"
+										stroke="currentColor"
+										class="w-6 h-6 inline"
+									>
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											d="M4.5 12.75l6 6 9-13.5"
+										/>
+									</svg>
+
+									Have fun testing our plattform!
+
+									<a href="/trading" class="text-sm font-semibold leading-6 dark:text-slate-100">
+										Go to Trading Page
+									</a>
+								</dd>
+							{:else}
+								Please complete the steps above first.
+							{/if}
+						</dd>
+					</div>
+				</dl>
+			</div>
+		</div>
+		<div
+			class="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]"
+			aria-hidden="true"
+		>
+			<div
+				class="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-primary-400 to-valhalla-400 opacity-30 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]"
+				style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"
+			/>
 		</div>
 	</div>
 </div>

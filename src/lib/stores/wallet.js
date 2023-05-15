@@ -1,5 +1,5 @@
 import { derived } from 'svelte/store';
-import { connect, watchAccount, getWalletClient } from '@wagmi/core';
+import { connect, watchAccount, getWalletClient, watchNetwork, fetchBalance } from '@wagmi/core';
 import truncateEthAddress from 'truncate-eth-address';
 import { isInitialized } from './client';
 import { MetaMaskConnector } from '@wagmi/core/connectors/metaMask';
@@ -14,13 +14,17 @@ export const metaMaskConnector = new MetaMaskConnector({
  * @property {boolean} isConnected
  * @property {import('viem').Address | undefined} address
  * @property {string} shortAddress
+ * @property {number | undefined} chainId
+ * @property {bigint} balance
  */
 
 /** @type {AccountStoreState} */
 const initialValue = {
 	isConnected: false,
 	address: undefined,
-	shortAddress: ''
+	shortAddress: '',
+	chainId: undefined,
+	balance: 0n
 };
 
 export const connectWallet = async () => {
@@ -35,16 +39,42 @@ export const account = derived(
 	($isInitialized, set) => {
 		if (!$isInitialized) return;
 
-		const unwatch = watchAccount(async (account) => {
+		let state = initialValue;
+
+		const unwatchAccount = watchAccount(async (account) => {
 			if (!account.address) return;
-			set({
+			state = {
+				...state,
 				address: getAddress(account.address),
 				isConnected: account.isConnected,
 				shortAddress: truncateEthAddress(account.address || '')
+			};
+			console.log(state);
+			set(state);
+			fetchBalance({ address: account.address }).then((balanceResult) => {
+				state = {
+					...state,
+					balance: balanceResult.value
+				};
+				console.log(state);
+				set(state);
 			});
 		});
 
-		return () => unwatch();
+		const unwatchNetwork = watchNetwork(async (network) => {
+			if (!network) return;
+			state = {
+				...state,
+				chainId: network.chain?.id
+			};
+			console.log(state);
+			set(state);
+		});
+
+		return () => {
+			unwatchAccount();
+			unwatchNetwork();
+		};
 	},
 	initialValue
 );

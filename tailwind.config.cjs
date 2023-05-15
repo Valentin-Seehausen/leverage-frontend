@@ -69,6 +69,32 @@ const brandColors = {
 		800: '#983b14',
 		900: '#7b3313',
 		950: '#421708'
+	},
+	bilbao: {
+		50: '#f0fdf0',
+		100: '#dcfcde',
+		200: '#bbf7bf',
+		300: '#86ef8f',
+		400: '#4ade57',
+		500: '#22c530',
+		600: '#16a323',
+		700: '#157f1f',
+		800: '#16651e',
+		900: '#14531b',
+		950: '#052e0b'
+	},
+	tamarillo: {
+		50: '#fef2f3',
+		100: '#ffe1e4',
+		200: '#ffc9ce',
+		300: '#fea3ab',
+		400: '#fc6d7a',
+		500: '#f43f4f',
+		600: '#e12132',
+		700: '#bd1827',
+		800: '#931621',
+		900: '#821a23',
+		950: '#47080e'
 	}
 };
 
@@ -94,10 +120,10 @@ const config = {
 			white: defaultColors.white,
 			gray: defaultColors.slate,
 			primary: brandColors.mandy,
-			red: defaultColors.red,
+			red: brandColors.tamarillo,
 			cyan: brandColors['bright-turquoise'],
 			secondary: brandColors['bright-turquoise'],
-			green: defaultColors.green,
+			green: brandColors.bilbao,
 			valhalla: brandColors.valhalla,
 			purple: brandColors.cosmic,
 			yellow: brandColors.rajah,

@@ -43,7 +43,7 @@
 	</main>
 
 	<footer
-		class="mt-36 info-label text-xs text-center py-12 pb-24 md:pb-12 dark:bg-slate-900 font-light border-t dark:border-slate-800"
+		class="info-label text-xs text-center py-12 pb-24 md:pb-12 dark:bg-slate-900 font-light border-t dark:border-slate-800"
 	>
 		<div class="max-w-screen-lg m-auto">
 			<h2 class="heading font-semibold">Hyperbolic Trading</h2>
