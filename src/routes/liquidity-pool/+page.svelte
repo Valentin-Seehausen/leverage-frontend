@@ -88,7 +88,7 @@
 
 				<button class="w-full user-button mt-6" on:click={callRedeem}>Withdraw</button>
 			</div>
-			<div class="p-3 my-3">
+			<div class="p-2 md:p-3 m-3 md:mx-9 my-12">
 				<p class="info-label text-sm">
 					You can always withdraw your shares. A protocol fee of 1% will apply to incentivice
 					liquidity provision. The only way to provide liquidity is to profit from a successful

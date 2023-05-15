@@ -8,7 +8,7 @@
 
 {#if showCheckbox}
 	<div
-		class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-green-700"
+		class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-green-800/80"
 	>
 		<svg
 			xmlns="http://www.w3.org/2000/svg"

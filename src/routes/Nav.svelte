@@ -34,7 +34,7 @@
 
 <!-- Small Navigation (Bottom Bar)  -->
 <nav
-	class="fixed justify-around items-center md:hidden bottom-0 w-full h-14 dark:bg-slate-700 flex z-10 border-t dark:border-slate-600 shadow-[0_0_9px_12px_rgba(2,6,23,0.3)]"
+	class="fixed justify-around items-center md:hidden bottom-0 w-full h-14 dark:border-valhalla-200/40 dark:bg-valhalla-700 shadow-xl shadow-valhalla-500/20 hover:shadow-valhalla-500/30 flex z-10 border-t"
 >
 	<a
 		class="bottom-nav-button flex flex-col p-1 items-center"
