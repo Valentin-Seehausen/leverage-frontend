@@ -3,15 +3,22 @@
 	import WalletConnectButton from '$lib/components/WalletConnectButton.svelte';
 	import { page } from '$app/stores';
 
+	let scrollY = 0;
 	let open = false;
 	let toggle = () => {
 		open = !open;
 	};
 </script>
 
+<svelte:window bind:scrollY />
+
 <!-- Medium and Large Navigation -->
 <nav
-	class="hidden md:flex fixed top-0 w-full lg:h-30 z-50 dark:bg-valhalla-500 place-content-end justify-center gap-6 px-8 py-4 h-30 backdrop-blur-lg"
+	class={`hidden md:flex fixed top-0 w-full lg:h-30 z-50 place-content-end justify-center gap-6 px-8 py-4 h-30 backdrop-blur-lg transition-all border-b ${
+		scrollY > 40
+			? 'dark:border-valhalla-400/40  dark:bg-valhalla-700/80 shadow-xl shadow-valhalla-500/20 hover:shadow-valhalla-500/30'
+			: 'dark:bg-transparent dark:border-transparent shadow-none'
+	} `}
 >
 	<a
 		href="/"
