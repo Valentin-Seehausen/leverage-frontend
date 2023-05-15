@@ -80,8 +80,8 @@
 			--toastContainerBottom: 2rem;
 		}
 		:global(.log.info) {
-			--toastBackground: theme(colors.amber.700);
-			--toastBarBackground: theme(colors.amber.600);
+			--toastBackground: theme(colors.yellow.700);
+			--toastBarBackground: theme(colors.yellow.600);
 		}
 		:global(.log.error) {
 			--toastBackground: theme(colors.red.800);

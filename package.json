@@ -34,8 +34,7 @@
 		"postcss-load-config": "^4.0.1",
 		"svelte-preprocess": "^5.0.3",
 		"@tailwindcss/forms": "^0.5.3",
-		"@tailwindcss/typography": "^0.5.9",
-		"daisyui": "^2.51.6"
+		"@tailwindcss/typography": "^0.5.9"
 	},
 	"type": "module",
 	"dependencies": {

@@ -1,8 +1,4 @@
-const typography = require('@tailwindcss/typography');
-const forms = require('@tailwindcss/forms');
-const defaultColors = require('tailwindcss/colors');
-
-const brandColors = {
+export const brandcolors = {
 	// The dark blue background color
 	valhalla: {
 		50: '#F4F4F7',
@@ -71,42 +67,3 @@ const brandColors = {
 		950: '#421708'
 	}
 };
-
-/** @type {import('tailwindcss').Config}*/
-const config = {
-	content: ['./src/**/*.{html,js,svelte,ts}'],
-	darkMode: 'class',
-	theme: {
-		fontFamily: {
-			sans: [
-				'Inter var, sans-serif',
-				{
-					fontFeatureSettings: '"ss01", "ss02", "ss03", "tnum", "case", "zero"',
-					fontVariationSettings: '"opsz" 32'
-				}
-			]
-		},
-		colors: {
-			transparent: 'transparent',
-			current: 'currentColor',
-			black: defaultColors.black,
-			slate: defaultColors.slate,
-			white: defaultColors.white,
-			gray: defaultColors.slate,
-			primary: brandColors.mandy,
-			red: defaultColors.red,
-			secondary: brandColors['bright-turquoise'],
-			green: defaultColors.green,
-			blue: brandColors.valhalla,
-			purple: brandColors.cosmic,
-			yellow: brandColors.rajah,
-
-			extend: {}
-		},
-		extend: {}
-	},
-
-	plugins: [forms, typography]
-};
-
-module.exports = config;
