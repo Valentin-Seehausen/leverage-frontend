@@ -32,7 +32,7 @@
 				<div class="mt-10 flex items-center justify-center gap-x-6">
 					<a
 						href="#"
-						class="rounded-md dark:bg-cyan-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-cyan-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-600"
+						class="rounded-md dark:bg-cyan-700 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-cyan-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-600"
 						>Get started</a
 					>
 					<a href="#" class="text-sm font-semibold leading-6 dark:text-slate-100"
@@ -73,7 +73,7 @@
 				<div class="relative pl-16">
 					<dt class="text-base font-semibold leading-7 text-white/85">
 						<div
-							class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-cyan-600"
+							class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-cyan-700"
 						>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -100,7 +100,7 @@
 				<div class="relative pl-16">
 					<dt class="text-base font-semibold leading-7 text-white/85">
 						<div
-							class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-cyan-600"
+							class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-cyan-700"
 						>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -127,7 +127,7 @@
 				<div class="relative pl-16">
 					<dt class="text-base font-semibold leading-7 text-white/85">
 						<div
-							class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-cyan-600"
+							class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-cyan-700"
 						>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -154,7 +154,7 @@
 				<div class="relative pl-16">
 					<dt class="text-base font-semibold leading-7 text-white/85">
 						<div
-							class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-cyan-600"
+							class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-cyan-700"
 						>
 							<svg
 								class="h-6 w-6 text-white"
