@@ -15,6 +15,19 @@
 
 		client?.addChain({ chain: arbitrumGoerli });
 	};
+
+	$: onboardingCompleted = $account.chainId === arbitrumGoerli.id && $account.balance > 0;
+
+	function handleAnchorClick(event) {
+		event.preventDefault();
+		const link = event.currentTarget;
+		const anchor = document.getElementById(new URL(link.href).hash.replace('#', ''));
+		if (!anchor) return;
+		window.scrollTo({
+			top: anchor.offsetTop,
+			behavior: 'smooth'
+		});
+	}
 </script>
 
 <!-- Home and Onboarding -->
@@ -31,16 +44,6 @@
 			/>
 		</div>
 		<div class="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
-			<div class="hidden sm:mb-8 sm:flex sm:justify-center">
-				<div
-					class="relative rounded-full px-3 py-1 text-sm leading-6 dark:text-slate-400 ring-1 dark:ring-slate-100/10 hover:dark:ring-slate-100/20"
-				>
-					Announcing our next round of funding. <a href="#" class="font-semibold dark:text-cyan-400"
-						><span class="absolute inset-0" aria-hidden="true" />Read more
-						<span aria-hidden="true">&rarr;</span></a
-					>
-				</div>
-			</div>
 			<div class="text-center">
 				<h1 class="text-4xl font-bold tracking-tight dark:text-slate-100 sm:text-6xl">
 					Hyperbolic Finance
@@ -49,12 +52,24 @@
 					Redefining the Future of Crypto Derivatives
 				</p>
 				<div class="mt-10 flex items-center justify-center gap-x-6">
+					{#if onboardingCompleted}
+						<a
+							href="/trading"
+							class="rounded-md dark:bg-cyan-700 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-cyan-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-600"
+							>Start Trading</a
+						>
+					{:else}
+						<a
+							href="#anchor-onboarding"
+							on:click={handleAnchorClick}
+							class="rounded-md dark:bg-cyan-700 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-cyan-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-600"
+							>Start Onboard</a
+						>
+					{/if}
 					<a
-						href="#"
-						class="rounded-md dark:bg-cyan-700 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-cyan-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-600"
-						>Get started</a
-					>
-					<a href="#" class="text-sm font-semibold leading-6 dark:text-slate-100"
+						href="#anchor-learn-more"
+						on:click={handleAnchorClick}
+						class="text-sm font-semibold leading-6 dark:text-slate-100"
 						>Learn more <span aria-hidden="true">→</span></a
 					>
 				</div>
@@ -72,7 +87,7 @@
 	</div>
 </div>
 
-<div class="bg-gradient-to-tr from-primary-900 py-24 sm:py-32">
+<div class="bg-gradient-to-tr from-primary-900 py-24 sm:py-32" id="anchor-learn-more">
 	<div class="mx-auto max-w-7xl px-6 lg:px-8">
 		<div class="mx-auto max-w-2xl lg:text-center">
 			<h2 class="text-base font-semibold leading-7 text-cyan-200">Trade capital efficient</h2>
@@ -203,7 +218,7 @@
 	</div>
 </div>
 
-<div class="bg-gradient-to-br from-valhalla-600">
+<div class="bg-gradient-to-br from-valhalla-600" id="anchor-onboarding">
 	<div class="relative isolate px-6 pt-14 lg:px-8">
 		<div
 			class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
@@ -217,7 +232,7 @@
 		<div class="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
 			<div class="text-center">
 				<h1 class="text-4xl font-bold tracking-tight dark:text-slate-100 sm:text-6xl">
-					Start Testing now
+					Onboarding
 				</h1>
 				<p class="mt-6 text-lg leading-8 dark:text-slate-400">
 					Our Plattform is live for test users. Follow these simple steps to get started.
@@ -363,7 +378,7 @@
 							free and fast.
 						</dd>
 						<dd class="mt-2 text-base leading-7 dark:text-white/70">
-							{#if $account.chainId === arbitrumGoerli.id && $account.balance > 0}
+							{#if onboardingCompleted}
 								<dd class="mt-2 text-base leading-7 dark:text-white/70">
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
