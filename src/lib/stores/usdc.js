@@ -98,3 +98,32 @@ export const increaseAllowance = async (/** @type {bigint} */ amount) => {
 
 	return;
 };
+
+export const requestFunds = async () => {
+	const signer = await fetchSignerOrWarn();
+	if (!signer) return;
+
+	const tx = await writeContract({
+		address: get(addresses).addresses.faucet,
+		abi: parseAbi(['function requestFunds()']),
+		functionName: 'requestFunds'
+	});
+
+	const txToast = toast.push('Requesting Test USDC...', {
+		initial: 0,
+		classes: ['info']
+	});
+
+	await waitForTransaction(tx);
+
+	toast.pop(txToast);
+
+	toast.push('Test USDC received!', {
+		duration: 2000,
+		classes: ['success']
+	});
+
+	userUsdc.requestUpdate();
+
+	return;
+};

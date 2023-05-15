@@ -49,14 +49,12 @@ export const account = derived(
 				isConnected: account.isConnected,
 				shortAddress: truncateEthAddress(account.address || '')
 			};
-			console.log(state);
 			set(state);
 			fetchBalance({ address: account.address }).then((balanceResult) => {
 				state = {
 					...state,
 					balance: balanceResult.value
 				};
-				console.log(state);
 				set(state);
 			});
 		});
@@ -67,7 +65,6 @@ export const account = derived(
 				...state,
 				chainId: network.chain?.id
 			};
-			console.log(state);
 			set(state);
 		});
 

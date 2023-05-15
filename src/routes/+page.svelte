@@ -3,6 +3,7 @@
 	import { account } from '$lib/stores/wallet';
 	import { arbitrumGoerli } from 'viem/chains';
 	import { toast } from '@zerodevx/svelte-toast';
+	import { requestFunds, userUsdc } from '$lib/stores/usdc';
 
 	const addArbitrumGoerli = async () => {
 		const client = await getWalletClient();
@@ -16,15 +17,17 @@
 		client?.addChain({ chain: arbitrumGoerli });
 	};
 
-	$: onboardingCompleted = $account.chainId === arbitrumGoerli.id && $account.balance > 0;
+	$: onboardingCompleted =
+		$account.chainId === arbitrumGoerli.id && $account.balance > 0 && $userUsdc.balance > 0;
 
-	function handleAnchorClick(event) {
-		event.preventDefault();
-		const link = event.currentTarget;
-		const anchor = document.getElementById(new URL(link.href).hash.replace('#', ''));
-		if (!anchor) return;
+	/**
+	 * @param {string} elementId
+	 */
+	function scrollTo(elementId) {
+		const element = document.getElementById(elementId);
+		if (!element) return;
 		window.scrollTo({
-			top: anchor.offsetTop,
+			top: element.offsetTop,
 			behavior: 'smooth'
 		});
 	}
@@ -59,18 +62,19 @@
 							>Start Trading</a
 						>
 					{:else}
-						<a
-							href="#anchor-onboarding"
-							on:click={handleAnchorClick}
+						<button
+							on:click={() => scrollTo('anchor-onboarding')}
 							class="rounded-md dark:bg-cyan-700 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-cyan-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-600"
-							>Start Onboard</a
 						>
+							Start Onboard
+						</button>
 					{/if}
-					<a
-						href="#anchor-learn-more"
-						on:click={handleAnchorClick}
+					<button
+						on:click={() => scrollTo('anchor-learn-more')}
 						class="text-sm font-semibold leading-6 dark:text-slate-100"
-						>Learn more <span aria-hidden="true">→</span></a
+					>
+						Learn more
+						<span aria-hidden="true">→</span></button
 					>
 				</div>
 			</div>
@@ -292,8 +296,8 @@
 							We currently support the Arbitrum Testnet. Add it to your wallet to get started.
 						</dd>
 
-						{#if $account.chainId === arbitrumGoerli.id}
-							<dd class="mt-2 text-base leading-7 dark:text-white/70">
+						<dd class="mt-2 text-base leading-7 dark:text-white/70">
+							{#if $account.chainId === arbitrumGoerli.id}
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									fill="none"
@@ -306,17 +310,15 @@
 								</svg>
 
 								Perfect, you are already connected to Arbitrum Goerli
-							</dd>
-						{:else}
-							<dd class="mt-2 text-base leading-7 dark:text-white/70">
+							{:else}
 								<button
 									on:click={addArbitrumGoerli}
 									class="text-sm font-semibold leading-6 dark:text-slate-100"
 								>
 									Add Arbitrum Testnet
 								</button>
-							</dd>
-						{/if}
+							{/if}
+						</dd>
 					</div>
 
 					<div class="relative pl-16">
@@ -334,24 +336,18 @@
 						</dd>
 						<dd class="mt-2 text-base leading-7 dark:text-white/70">
 							{#if $account.balance > 0}
-								<dd class="mt-2 text-base leading-7 dark:text-white/70">
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										fill="none"
-										viewBox="0 0 24 24"
-										stroke-width="1.5"
-										stroke="currentColor"
-										class="w-6 h-6 inline"
-									>
-										<path
-											stroke-linecap="round"
-											stroke-linejoin="round"
-											d="M4.5 12.75l6 6 9-13.5"
-										/>
-									</svg>
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									fill="none"
+									viewBox="0 0 24 24"
+									stroke-width="1.5"
+									stroke="currentColor"
+									class="w-6 h-6 inline"
+								>
+									<path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+								</svg>
 
-									Perfect, you are already have testnet ether on Arbitrum Goerli.
-								</dd>
+								Perfect, you are already have testnet ether on Arbitrum Goerli.
 							{:else}
 								<a
 									href="https://faucet.triangleplatform.com/arbitrum/goerli"
@@ -360,6 +356,7 @@
 								>
 									Get Testnet Ether
 								</a>
+								(and reload this page afterwards)
 							{/if}
 						</dd>
 					</div>
@@ -371,6 +368,44 @@
 							>
 								4.
 							</div>
+							Get some test USDC
+						</dt>
+						<dd class="mt-2 text-base leading-7 dark:text-white/70">
+							To test our plattform we created a test smart contract of USDC. You can get it for
+							free.
+						</dd>
+						<dd class="mt-2 text-base leading-7 dark:text-white/70">
+							{#if $userUsdc.balance > 0}
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									fill="none"
+									viewBox="0 0 24 24"
+									stroke-width="1.5"
+									stroke="currentColor"
+									class="w-6 h-6 inline"
+								>
+									<path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+								</svg>
+
+								You have enough test USDC to start trading.
+							{:else}
+								<button
+									on:click={requestFunds}
+									class="text-sm font-semibold leading-6 dark:text-slate-100"
+								>
+									Request Test USDC
+								</button>
+							{/if}
+						</dd>
+					</div>
+
+					<div class="relative pl-16">
+						<dt class="text-base font-semibold leading-7 text-white/85">
+							<div
+								class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-cyan-700"
+							>
+								5.
+							</div>
 							Have fun on our Plattform
 						</dt>
 						<dd class="mt-2 text-base leading-7 dark:text-white/70">
@@ -379,28 +414,22 @@
 						</dd>
 						<dd class="mt-2 text-base leading-7 dark:text-white/70">
 							{#if onboardingCompleted}
-								<dd class="mt-2 text-base leading-7 dark:text-white/70">
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										fill="none"
-										viewBox="0 0 24 24"
-										stroke-width="1.5"
-										stroke="currentColor"
-										class="w-6 h-6 inline"
-									>
-										<path
-											stroke-linecap="round"
-											stroke-linejoin="round"
-											d="M4.5 12.75l6 6 9-13.5"
-										/>
-									</svg>
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									fill="none"
+									viewBox="0 0 24 24"
+									stroke-width="1.5"
+									stroke="currentColor"
+									class="w-6 h-6 inline"
+								>
+									<path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+								</svg>
 
-									Have fun testing our plattform!
+								Have fun testing our plattform!
 
-									<a href="/trading" class="text-sm font-semibold leading-6 dark:text-slate-100">
-										Go to Trading Page
-									</a>
-								</dd>
+								<a href="/trading" class="text-sm font-semibold leading-6 dark:text-slate-100">
+									Go to Trading Page
+								</a>
 							{:else}
 								Please complete the steps above first.
 							{/if}

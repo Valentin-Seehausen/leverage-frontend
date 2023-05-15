@@ -11,11 +11,12 @@ import { isInitialized } from './client';
 import { getAddress } from 'viem';
 
 const parseAddresses = (
-	/** @type {{ liquidityPool: any; network?: string; priceFeed: any; priceFeedAggregator: string; proxyAdmin?: string; startBlock?: number; tradePair: any; usdc: any; }} */ rawAddresses
+	/** @type {{ liquidityPool: any; faucet: any; network?: string; priceFeed: any; priceFeedAggregator: string; proxyAdmin?: string; startBlock?: number; tradePair: any; usdc: any; }} */ rawAddresses
 ) => {
 	return {
 		liquidityPool: getAddress(rawAddresses.liquidityPool),
 		usdc: getAddress(rawAddresses.usdc),
+		faucet: getAddress(rawAddresses.faucet),
 		tradePair: getAddress(rawAddresses.tradePair),
 		priceFeed: getAddress(rawAddresses.priceFeed),
 		priceFeedAggregator: getAddress(rawAddresses.priceFeedAggregator)
