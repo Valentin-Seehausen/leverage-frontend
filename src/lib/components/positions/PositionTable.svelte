@@ -4,9 +4,11 @@
 	import { leverageDecimals, priceFeedDecimals, usdcDecimals } from '$lib/config/constants';
 	import { formatPercentage, formatValue } from '$lib/utils/format';
 	import { slide } from 'svelte/transition';
-	import { getContext } from 'svelte';
+
 	import PositionModal from './PositionModal.svelte';
-	const { open } = getContext('simple-modal');
+
+	import { modal } from '$lib/stores/modal';
+	import { bind } from 'svelte-simple-modal';
 
 	dayjs.extend(relativeTime);
 
@@ -15,9 +17,10 @@
 	/** @type {string} */
 	export let show;
 
-	const openPositionModal = (/** @type {import('$lib/utils/position').Position}*/ position) =>
-		open(PositionModal, { position: position });
-
+	const openPositionModal = (/** @type {import('$lib/utils/position').Position}*/ position) => {
+		// open(PositionModal, { position: position });
+		modal.set(bind(PositionModal, { position: position }));
+	};
 	// $: positions.length > 0 && open(PositionModal, { position: positions[0] });
 </script>
 

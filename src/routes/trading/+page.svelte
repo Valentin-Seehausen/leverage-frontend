@@ -6,7 +6,7 @@
 	import PositionBalance from '$lib/components/positions/PositionBalance.svelte';
 </script>
 
-<div class="max-w-screen-2xl min-h-full m-auto xl:p-3">
+<div class="max-w-screen-2xl min-h-full m-auto xl:p-3 md:mt-24">
 	<div class="lg:flex">
 		<div class="basis-2/3 xl:basis-3/4">
 			<div class="box">

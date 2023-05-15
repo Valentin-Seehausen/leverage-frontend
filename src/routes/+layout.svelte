@@ -6,6 +6,7 @@
 	import Nav from './Nav.svelte';
 	import '../app.postcss';
 	import { Client, setContextClient, cacheExchange, fetchExchange } from '@urql/svelte';
+	import { modal } from '$lib/stores/modal';
 
 	// Toast Options
 	/** @type {import("@zerodevx/svelte-toast/stores").SvelteToastOptions} */
@@ -19,14 +20,25 @@
 	});
 
 	setContextClient(client);
+	$: console.log($modal);
 </script>
 
+{#if $modal && $modal}
+	<style>
+		.box {
+			opacity: 0.1;
+		}
+	</style>
+{/if}
+
 <Modal
-	classBg="dark:bg-slate-950"
-	classContent="dark:bg-slate-800 dark:text-slate-100 border rounded dark:border-slate-700 shadow-lg dark:shadow-slate-950"
+	classBg="dark:bg-slate-950/10"
+	classContent="border rounded-lg dark:border-valhalla-400/40 bg-gradient-to-br from-valhalla-900/90 to-valhalla-800/90  shadow-xl shadow-valhalla-500/20  hover:shadow-valhalla-500/30 transition-all  border rounded dark:text-valhalla-100/80"
+	show={$modal}
+	on:close={() => modal.set(null)}
 >
 	<Nav />
-	<main class="min-h-screen isolate pb-24">
+	<main class="min-h-screen isolate">
 		<!-- Upper Scroll background -->
 		<div class="fixed inset-x-0 -z-10 transform-gpu blur-3xl sm:-top-80" aria-hidden="true">
 			<div

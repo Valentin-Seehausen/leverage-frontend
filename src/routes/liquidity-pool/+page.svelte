@@ -24,10 +24,6 @@
 </script>
 
 <div class="max-w-screen-2xl min-h-full m-auto xl:p-3 md:mt-24">
-	<div class="p-3 mb-3">
-		<h1 class="headline">Liquidity Pool</h1>
-	</div>
-
 	<div class="lg:flex">
 		<div class="lg:basis-2/3 xl:basis-3/4">
 			<div class="box">
