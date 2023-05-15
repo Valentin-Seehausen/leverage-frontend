@@ -95,7 +95,11 @@
 		</div>
 	</div>
 
-	<button on:click={handleSubmit} class="user-button w-full mt-6" disabled={!balanceIsSufficient}>
+	<button
+		on:click={handleSubmit}
+		class="user-button w-full mt-6 hover:shadow-md hover:shadow-cyan-500/10"
+		disabled={!balanceIsSufficient}
+	>
 		{#if !balanceIsSufficient}
 			Not enough USDC
 		{:else if !allowanceIsSufficient}

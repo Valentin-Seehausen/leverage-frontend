@@ -9,15 +9,17 @@
 	};
 </script>
 
-<!-- Large Navigation -->
+<!-- Medium and Large Navigation -->
 <nav
-	class="hidden md:flex fixed top-0 w-full h-30 z-50 dark:bg-valhalla-500 place-content-end gap-6 px-8 py-4 h-30 backdrop-blur-lg"
+	class="hidden md:flex fixed top-0 w-full lg:h-30 z-50 dark:bg-valhalla-500 place-content-end justify-center gap-6 px-8 py-4 h-30 backdrop-blur-lg"
 >
-	<h1 class="flex-1 justify-center text-xl font-semibold flex-2 mb-4 lg:mb-0 font-heading">
+	<a
+		href="/"
+		class="inline text-left self-center flex-1 justify-center text-xl font-semibold flex-2 font-heading"
+	>
 		<img alt="Hyperbolic Finance Logo" src={logo} class="w-10 h-10 mr-3 inline" />
-		Hyperbolic Finance
-	</h1>
-	<a class="nav-button" href="/">Home</a>
+		<span class="hidden lg:inline">Hyperbolic Finance</span>
+	</a>
 	<a class="nav-button" href="/trading">Trading</a>
 	<a class="nav-button" href="/liquidity-pool">Liquidity Pool</a>
 	<WalletConnectButton />

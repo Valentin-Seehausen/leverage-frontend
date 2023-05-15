@@ -2,10 +2,15 @@
 	import { account, connectWallet } from '$lib/stores/wallet';
 </script>
 
-<button class="user-button" on:click={connectWallet}>
-	{#if $account.isConnected}
+{#if $account.isConnected}
+	<button class="user-button" on:click={connectWallet}>
 		{$account.shortAddress}
-	{:else}
+	</button>
+{:else}
+	<button
+		class="user-button dark:bg-secondary-700 dark:hover:bg-secondary-800"
+		on:click={connectWallet}
+	>
 		Connect Wallet
-	{/if}
-</button>
+	</button>
+{/if}
