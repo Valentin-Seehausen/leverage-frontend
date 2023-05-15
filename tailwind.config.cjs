@@ -95,9 +95,10 @@ const config = {
 			gray: defaultColors.slate,
 			primary: brandColors.mandy,
 			red: defaultColors.red,
+			cyan: brandColors['bright-turquoise'],
 			secondary: brandColors['bright-turquoise'],
 			green: defaultColors.green,
-			blue: brandColors.valhalla,
+			valhalla: brandColors.valhalla,
 			purple: brandColors.cosmic,
 			yellow: brandColors.rajah,
 
