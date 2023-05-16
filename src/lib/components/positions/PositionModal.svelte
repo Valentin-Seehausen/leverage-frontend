@@ -16,7 +16,7 @@
 <div>
 	<h2>Position Details</h2>
 
-	<div class="my-6 md:max-lg:px-2 px-2">
+	<div class="my-6 px-2">
 		<div class="flex flex-row">
 			<div class="basis-2/3 info-label">Direction:</div>
 			<div class="basis-1/3 text-right">

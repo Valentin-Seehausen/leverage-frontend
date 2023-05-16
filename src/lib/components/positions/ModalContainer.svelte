@@ -24,7 +24,7 @@
 			/>
 		</Transition>
 		<div class="fixed inset-0 overflow-y-auto">
-			<div class="flex min-h-full items-center justify-center p-4 text-center">
+			<div class="flex min-h-full items-center justify-center p-0 md:p-4 text-center">
 				<Transition
 					enter="transition-all"
 					enterFrom="opacity-0 scale-95"
@@ -34,19 +34,15 @@
 					leaveTo="opacity-0 scale-95"
 				>
 					<div
-						class="box w-full max-w-md transform overflow-hidden rounded-2xl p-6 text-left align-middle shadow-xl transition-all"
+						class="box shadow-2xl shadow-valhalla-400/40 hover:shadow-valhalla-400/50 w-full max-w-md transform overflow-hidden rounded-2xl p-6 text-left align-middle transition-all"
 						use:positionDetailsDialog.modal
 					>
 						{#if $positionDetailsModal}
 							<PositionModal position={$positionDetailsModal} />
 						{/if}
-						<div class="mt-4">
-							<button
-								type="button"
-								class="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-								on:click={positionDetailsDialog.close}
-							>
-								Got it, thanks!
+						<div class="mt-4 text-right px-2">
+							<button type="button" class="user-button" on:click={positionDetailsDialog.close}>
+								Close
 							</button>
 						</div>
 					</div>
