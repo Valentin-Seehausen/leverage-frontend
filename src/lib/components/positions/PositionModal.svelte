@@ -11,12 +11,15 @@
 
 	/** @type {import("$lib/utils/position").Position} */
 	export let position;
+
+	$: console.log(position);
 </script>
 
 <div>
-	<h2>Position Details</h2>
-
-	<div class="my-6 px-2">
+	<div class="box-head dark:bg-valhalla-300/10 w-full m-0 p-6 py-4">
+		<h2>Position {position.id}</h2>
+	</div>
+	<div class="my-2 p-6 px-2 md:px-6">
 		<div class="flex flex-row">
 			<div class="basis-2/3 info-label">Direction:</div>
 			<div class="basis-1/3 text-right">

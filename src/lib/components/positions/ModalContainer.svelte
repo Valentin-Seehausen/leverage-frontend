@@ -38,9 +38,7 @@
 						use:positionDetailsDialog.modal
 					>
 						{#if $positionDetailsModal}
-							<div class="p-6">
-								<PositionModal position={$positionDetailsModal} />
-							</div>
+							<PositionModal position={$positionDetailsModal} />
 						{/if}
 						<div class="mt-4 text-right dark:bg-valhalla-900/80">
 							<button
