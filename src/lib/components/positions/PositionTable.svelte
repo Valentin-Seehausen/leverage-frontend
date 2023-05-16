@@ -14,22 +14,20 @@
 	export let show;
 
 	const openPositionModal = (/** @type {import('$lib/utils/position').Position}*/ position) => {
-		// open(PositionModal, { position: position });
 		positionDetailsModal.open(position);
 	};
-	$: positions.length > 0 && openPositionModal(positions[0]);
 </script>
 
 <div class="">
 	<!-- Medium and Large Table Head -->
-	<div class="hidden md:flex py-3">
+	<div class="hidden md:flex py-5 font-semibold info-label">
 		<div class="pl-3 w-1/6">Type</div>
 		<div class="w-1/6 text-right">Leverage</div>
 		<div class="w-1/6 text-right">Collateral</div>
 		<div class="w-1/6 text-right">Entry Price</div>
 		{#if show === 'open'}
 			<div class="w-1/6 text-right hidden md:block">Liquidation Price</div>
-			<div class="w-1/6 text-right hidden md:block">Take Profit Price</div>
+			<div class="w-1/6 text-right hidden md:block pr-3">Take Profit Price</div>
 		{:else if show === 'closed'}
 			<div class="w-1/6 text-right">Close Price</div>
 			<div class="w-1/6 text-right pr-3">PnL</div>
@@ -37,7 +35,7 @@
 	</div>
 
 	<!-- Mobile Table Head -->
-	<div class="flex md:hidden py-3 text-sm">
+	<div class="flex md:hidden py-3 text-sm font-semibold info-label">
 		<div class="pl-1 w-1/3">Dir. Lev.<br />Collateral</div>
 		<div class="w-1/3 text-right">Open Price</div>
 		{#if show === 'open'}
@@ -83,7 +81,7 @@
 								{formatValue(position.liquidationPrice, priceFeedDecimals, 2)}
 							</span>
 						</div>
-						<div class="w-1/6 text-right">
+						<div class="w-1/6 text-right pr-3">
 							<span class="font-mono">
 								{formatValue(position.takeProfitPrice, priceFeedDecimals, 2)}
 							</span>
