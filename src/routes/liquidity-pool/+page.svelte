@@ -12,6 +12,7 @@
 	import { formatValue } from '$lib/utils/format';
 	import { positionBalance } from '$lib/stores/positionBalance';
 	import { formatUnits, parseUnits } from 'viem';
+	import HouseKeepingButton from '$lib/components/HouseKeepingButton.svelte';
 
 	let withdrawAssets = '0';
 
@@ -24,6 +25,8 @@
 </script>
 
 <div class="max-w-screen-2xl min-h-full m-auto xl:p-3 md:mt-24">
+	<HouseKeepingButton />
+
 	<div class="lg:flex">
 		<div class="lg:basis-2/3 xl:basis-3/4">
 			<div class="box">
