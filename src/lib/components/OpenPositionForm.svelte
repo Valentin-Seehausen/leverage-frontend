@@ -1,5 +1,10 @@
 <script>
-	import { leverageDecimals, priceFeedDecimals, usdcDecimals } from '$lib/config/constants';
+	import {
+		leverageDecimals,
+		minCollateral,
+		priceFeedDecimals,
+		usdcDecimals
+	} from '$lib/config/constants';
 	import { openPosition } from '$lib/stores/tradePair';
 	import { userUsdc } from '$lib/stores/usdc';
 	import { currentPriceTweened } from '$lib/stores/priceFeed';
@@ -38,16 +43,16 @@
 	<h2 class="font-semibold font-heading mb-3">Open Position</h2>
 	<div class="flex w-full mb-6">
 		<button
-			class={`flex-1 text-sm font-semibold py-2 px-4 active:bg-green-700 focus:bg-green-700 ${
-				isLong ? 'bg-green-600' : 'bg-slate-700'
+			class={`flex-1 text-sm font-semibold py-2 px-4 active:bg-green-700 focus:bg-green-700 transition-all ${
+				isLong ? 'bg-green-700' : 'bg-slate-700'
 			} dark:text-slate-100 rounded-l`}
 			on:click={() => (isLong = true)}
 		>
 			Long
 		</button>
 		<button
-			class={`flex-1 text-sm font-semibold py-2 px-4 active:bg-red-700 focus:bg-red-700 ${
-				!isLong ? 'bg-red-600' : 'bg-slate-700'
+			class={`flex-1 text-sm font-semibold py-2 px-4 active:bg-red-700 focus:bg-red-700 transition-all ${
+				!isLong ? 'bg-red-700' : 'bg-slate-700'
 			} dark:text-slate-100 rounded-r`}
 			on:click={() => (isLong = false)}
 		>
@@ -72,7 +77,7 @@
 	<label class="block">
 		<span class="info-label text-sm">Leverage {leverage}x {leverage === 100 ? '🦍' : ''}</span>
 		<input
-			class="pl-[4%] w-full bg-gradient-to-r from-slate-800 from-5% via-cyan-800 via-5% to-purple-800 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 dark:accent-slate-300"
+			class="pl-[4%] w-full bg-gradient-to-r from-gray-800 from-5% via-primary-700/80 via-5% to-secondary-600/50 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 dark:accent-slate-300"
 			type="range"
 			bind:value={leverage}
 			min={5}
@@ -98,7 +103,7 @@
 	<button
 		on:click={handleSubmit}
 		class="user-button w-full mt-6 hover:shadow-md hover:shadow-cyan-900/20"
-		disabled={!balanceIsSufficient}
+		disabled={!balanceIsSufficient || collateral < minCollateral}
 	>
 		{#if !balanceIsSufficient}
 			Not enough USDC
@@ -120,5 +125,9 @@
 		<div class="text-sm info-label text-center mt-6 mb-3">
 			You need to increase your allowance to open this position.
 		</div>
+	{/if}
+
+	{#if collateral < minCollateral}
+		<div class="text-sm info-label text-center mt-6 mb-3">Minimum collateral is 100 USDC.</div>
 	{/if}
 </div>
