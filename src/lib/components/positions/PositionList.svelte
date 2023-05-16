@@ -10,7 +10,6 @@
 	dayjs.extend(relativeTime);
 
 	let activeTab = 'open';
-	$: positions = activeTab === 'open' ? $openUserPositions : $closedUserPositions;
 	$: $openUserPositions;
 </script>
 

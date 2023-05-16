@@ -2,9 +2,7 @@ import { createDialog } from 'svelte-headlessui';
 import { writable } from 'svelte/store';
 
 export const positionDetailsDialog = createDialog({ label: 'Position Details' });
-/**
- * @typedef {import('$lib/utils/position').Position} Position
- */
+/** @typedef {import('$lib/utils/position').Position} Position */
 
 const createPositionDetailsModal = () => {
 	/**

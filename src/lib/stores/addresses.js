@@ -10,9 +10,19 @@ import { writable } from 'svelte/store';
 import { isInitialized } from './client';
 import { getAddress } from 'viem';
 
-const parseAddresses = (
-	/** @type {{ liquidityPool: any; faucet: any; network?: string; priceFeed: any; priceFeedAggregator: string; proxyAdmin?: string; startBlock?: number; tradePair: any; usdc: any; }} */ rawAddresses
-) => {
+/**
+ * @param {Object} rawAddresses - The raw addresses object
+ * @param {any} rawAddresses.liquidityPool - The liquidity pool address
+ * @param {any} rawAddresses.faucet - The faucet address
+ * @param {string} [rawAddresses.network] - The network name
+ * @param {any} rawAddresses.priceFeed - The price feed address
+ * @param {string} rawAddresses.priceFeedAggregator - The price feed aggregator address
+ * @param {string} [rawAddresses.proxyAdmin] - The proxy admin address
+ * @param {number} [rawAddresses.startBlock] - The starting block number
+ * @param {any} rawAddresses.tradePair - The trade pair address
+ * @param {any} rawAddresses.usdc - The usdc address
+ */
+const parseAddresses = (rawAddresses) => {
 	return {
 		liquidityPool: getAddress(rawAddresses.liquidityPool),
 		usdc: getAddress(rawAddresses.usdc),
@@ -32,7 +42,6 @@ const createAddressStore = () => {
 
 	const { subscribe, set } = writable(state);
 
-	// Set first state
 	const setState = () => {
 		if (dev) {
 			state.addresses = parseAddresses(arbitrumGoerliDevAddresses);

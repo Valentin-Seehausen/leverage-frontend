@@ -5,15 +5,16 @@
 	import { formatPercentage, formatValue } from '$lib/utils/format';
 	import { slide } from 'svelte/transition';
 	import { positionDetailsModal } from '$lib/stores/positionDetailsModal';
+	/** @typedef {import('$lib/utils/position').Position} Position */
 
 	dayjs.extend(relativeTime);
 
-	/** @type {import("$lib/utils/position").Position[]} */
+	/** @type {Position[]} */
 	export let positions;
 	/** @type {string} */
 	export let show;
 
-	const openPositionModal = (/** @type {import('$lib/utils/position').Position}*/ position) => {
+	const openPositionModal = (/** @type {Position}*/ position) => {
 		positionDetailsModal.open(position);
 	};
 </script>

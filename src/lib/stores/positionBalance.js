@@ -5,6 +5,8 @@ import { formatUnits, parseAbi } from 'viem';
 import { addresses } from './addresses';
 import { watchContractEvent } from '@wagmi/core';
 
+// Position Balance gets fetched from subgraph and than updated from events
+
 const initValue = {
 	longCollateral: 0n,
 	longCollateralPercentage: 0,

@@ -1,10 +1,10 @@
 <script>
 	import { account } from '$lib/stores/wallet';
-	import { dev } from '$lib/config/constants';
+	import { dev, devAddress } from '$lib/config/constants';
 	import { toggleDevPrice } from '$lib/stores/priceFeed';
 
 	// Hardcoded bc. dev
-	$: isAdmin = $account.address === '0xfd08B2027F61893Ee2090E76eF157bdC56eF3e40';
+	$: isAdmin = $account.address === devAddress;
 </script>
 
 {#if dev}
