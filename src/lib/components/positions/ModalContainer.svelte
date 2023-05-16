@@ -1,0 +1,59 @@
+<script>
+	import Transition from 'svelte-transition';
+	import { positionDetailsModal, positionDetailsDialog } from '$lib/stores/positionDetailsModal.js';
+	import PositionModal from './PositionModal.svelte';
+	import { browser } from '$app/environment';
+
+	$: if (browser) document.body.classList.toggle('noscroll', $positionDetailsDialog.expanded);
+</script>
+
+<div class="relative z-10">
+	<Transition show={$positionDetailsDialog.expanded}>
+		<Transition
+			enter="transition-all"
+			enterFrom="opacity-0"
+			enterTo="opacity-100"
+			leave="transition-all"
+			leaveFrom="opacity-100"
+			leaveTo="opacity-0"
+		>
+			<div
+				class="fixed inset-0 bg-black bg-opacity-25"
+				on:click={positionDetailsDialog.close}
+				on:keydown={positionDetailsDialog.close}
+			/>
+		</Transition>
+		<div class="fixed inset-0 overflow-y-auto">
+			<div class="flex min-h-full items-center justify-center p-0 md:p-4 text-center">
+				<Transition
+					enter="transition-all"
+					enterFrom="opacity-0 scale-95"
+					enterTo="opacity-100 scale-100"
+					leave="transition-all"
+					leaveFrom="opacity-100 scale-100"
+					leaveTo="opacity-0 scale-95"
+				>
+					<div
+						class="box p-0 w-full max-w-md transform overflow-hidden rounded-2xl text-left align-middle transition-all"
+						use:positionDetailsDialog.modal
+					>
+						{#if $positionDetailsModal}
+							<div class="p-6">
+								<PositionModal position={$positionDetailsModal} />
+							</div>
+						{/if}
+						<div class="mt-4 text-right dark:bg-valhalla-900/80">
+							<button
+								type="button"
+								class="rounded-none w-full bg-gradient-to-br from-secondary-800 to-secondary-900 py-3 ring-0 outline-none dark:text-secondary-50 font-semibold shadow-[inset_0_12px_12px_0_rgb(0,0,0,0.05)] shadow-secondary-700/5 hover:shadow-secondary-700/10 transition-all"
+								on:click={positionDetailsDialog.close}
+							>
+								Close
+							</button>
+						</div>
+					</div>
+				</Transition>
+			</div>
+		</div>
+	</Transition>
+</div>

@@ -1,23 +1,25 @@
 import { gql, queryStore } from '@urql/svelte';
 import { graphClientStore } from './graph';
 import { get, readable } from 'svelte/store';
-import { BigNumber } from 'ethers';
-import { formatUnits } from 'ethers/lib/utils.js';
-import { tradePairContract } from '$lib/stores/contracts';
+import { formatUnits, parseAbi } from 'viem';
+import { addresses } from './addresses';
+import { watchContractEvent } from '@wagmi/core';
+
+// Position Balance gets fetched from subgraph and than updated from events
 
 const initValue = {
-	longCollateral: '0',
+	longCollateral: 0n,
 	longCollateralPercentage: 0,
 	longPositionCount: 0,
-	longShares: '0',
+	longShares: 0n,
 	longSharesPercentage: 0,
-	shortCollateral: '0',
+	shortCollateral: 0n,
 	shortCollateralPercentage: 0,
 	shortPositionCount: 0,
-	shortShares: '0',
+	shortShares: 0n,
 	shortSharesPercentage: 0,
-	totalShares: BigNumber.from('0'),
-	totalCollateral: BigNumber.from('0'),
+	totalShares: 0n,
+	totalCollateral: 0n,
 	loading: true,
 	/** @type {import("@urql/svelte").CombinedError | null} */ error: null
 };
@@ -27,56 +29,50 @@ export const positionBalance = readable(initValue, (set) => {
 	let unsubscribeSubgraph = () => {};
 
 	const updatePercentages = () => {
-		const totalShares = BigNumber.from(state.longShares).add(BigNumber.from(state.shortShares));
+		const totalShares = BigInt(state.longShares) + BigInt(state.shortShares);
 		let longSharesPercentage = 0;
 		let shortSharesPercentage = 0;
-		if (!totalShares.isZero()) {
+		if (totalShares == 0n) {
+			if (BigInt(state.longShares) > 0) longSharesPercentage = 100;
+			else if (BigInt(state.shortShares) > 0) shortSharesPercentage = 100;
+			else longSharesPercentage = shortSharesPercentage = 50;
+		} else {
 			longSharesPercentage = parseFloat(
 				formatUnits(
-					BigNumber.from(state.longShares)
-						.mul(BigNumber.from('1000000000000')) // add 12 decimals
-						.div(totalShares),
+					(BigInt(state.longShares) * 1000000000000n) / // add 12 decimals
+						totalShares,
 					10
 				)
 			);
 			shortSharesPercentage = parseFloat(
 				formatUnits(
-					BigNumber.from(state.shortShares)
-						.mul(BigNumber.from('1000000000000')) // add 12 decimals
-						.div(totalShares),
+					(BigInt(state.shortShares) * 1000000000000n) / // add 12 decimals
+						totalShares,
 					10
 				)
 			);
-		} else {
-			if (BigNumber.from(state.longShares).gt(0)) longSharesPercentage = 100;
-			else if (BigNumber.from(state.shortShares).gt(0)) shortSharesPercentage = 100;
-			else longSharesPercentage = shortSharesPercentage = 50;
 		}
-		const totalCollateral = BigNumber.from(state.longCollateral).add(
-			BigNumber.from(state.shortCollateral)
-		);
+		const totalCollateral = BigInt(state.longCollateral) + BigInt(state.shortCollateral);
 		let longCollateralPercentage = 0;
 		let shortCollateralPercentage = 0;
-		if (!totalCollateral.isZero()) {
+		if (totalCollateral > 0n) {
 			longCollateralPercentage = parseFloat(
 				formatUnits(
-					BigNumber.from(state.longCollateral)
-						.mul(BigNumber.from('1000000000000')) // add 12 decimals
-						.div(totalCollateral),
+					(BigInt(state.longCollateral) * 1000000000000n) / // add 12 decimals
+						totalCollateral,
 					10
 				)
 			);
 			shortCollateralPercentage = parseFloat(
 				formatUnits(
-					BigNumber.from(state.shortCollateral)
-						.mul(BigNumber.from('1000000000000')) // add 12 decimals
-						.div(totalCollateral),
+					(BigInt(state.shortCollateral) * 1000000000000n) / // add 12 decimals
+						totalCollateral,
 					10
 				)
 			);
 		} else {
-			if (BigNumber.from(state.longCollateral).gt(0)) longCollateralPercentage = 100;
-			else if (BigNumber.from(state.shortCollateral).gt(0)) shortCollateralPercentage = 100;
+			if (BigInt(state.longCollateral) > 0) longCollateralPercentage = 100;
+			else if (BigInt(state.shortCollateral) > 0) shortCollateralPercentage = 100;
 			else longCollateralPercentage = shortCollateralPercentage = 50;
 		}
 
@@ -91,55 +87,67 @@ export const positionBalance = readable(initValue, (set) => {
 		};
 	};
 
-	let tradePair = get(tradePairContract);
-	tradePairContract.subscribe((newTradePair) => {
-		tradePair.removeAllListeners();
-
-		tradePair = newTradePair;
-
-		tradePair.on(
-			'PositionOpened',
-			(_trader, _positionId, collateral, shares, _leverage, isLong) => {
+	const unwatchOpen = watchContractEvent(
+		{
+			address: get(addresses).addresses.tradePair,
+			abi: parseAbi([
+				'event PositionOpened(address indexed trader,uint256 positionId,uint256 collateral,uint256 shares,uint256 leverage,bool isLong,uint256 entryPrice,uint256 liquidationPrice,uint256 takeProfitPrice,uint256 openDate)'
+			]),
+			eventName: 'PositionOpened'
+		},
+		(log) => {
+			log.forEach(({ args: { collateral, shares, isLong } }) => {
 				if (isLong) {
 					state = {
 						...state,
 						longPositionCount: state.longPositionCount + 1,
-						longShares: BigNumber.from(state.longShares).add(shares.mul(2)).toString(),
-						longCollateral: BigNumber.from(state.longCollateral).add(collateral).toString()
+						longShares: state.longShares + shares * 2n,
+						longCollateral: state.longCollateral + collateral
 					};
 				} else {
 					state = {
 						...state,
 						shortPositionCount: state.shortPositionCount + 1,
-						shortShares: BigNumber.from(state.shortShares).add(shares.mul(2)).toString(),
-						shortCollateral: BigNumber.from(state.shortCollateral).add(collateral).toString()
+						shortShares: state.shortShares + shares * 2n,
+						shortCollateral: state.shortCollateral + collateral
 					};
 				}
-				updatePercentages();
-				set(state);
-			}
-		);
-
-		tradePair.on('PositionClosed', (_trader, _positionId, isLong, shares) => {
-			if (isLong) {
-				state = {
-					...state,
-					longPositionCount: state.longPositionCount - 1,
-					longShares: BigNumber.from(state.longShares).sub(shares.mul(2)).toString()
-				};
-			} else {
-				state = {
-					...state,
-					shortPositionCount: state.shortPositionCount - 1,
-					shortShares: BigNumber.from(state.shortShares).sub(shares.mul(2)).toString()
-				};
-			}
+			});
 			updatePercentages();
 			set(state);
-		});
-	});
+		}
+	);
 
-	graphClientStore.subscribe(($graphClient) => {
+	const unwatchClose = watchContractEvent(
+		{
+			address: get(addresses).addresses.tradePair,
+			abi: parseAbi([
+				'event PositionClosed(address indexed trader,uint256 positionId,bool isLong,uint256 shares,uint256 entryPrice,uint256 leverage,int256 pnlShares,uint256 closePrice,uint256 closeDate)'
+			]),
+			eventName: 'PositionClosed'
+		},
+		(log) => {
+			log.forEach(({ args: { shares, isLong } }) => {
+				if (isLong) {
+					state = {
+						...state,
+						longPositionCount: state.longPositionCount - 1,
+						longShares: state.longShares - shares * 2n
+					};
+				} else {
+					state = {
+						...state,
+						shortPositionCount: state.shortPositionCount - 1,
+						shortShares: state.shortShares - shares * 2n
+					};
+				}
+			});
+			updatePercentages();
+			set(state);
+		}
+	);
+
+	const unsubscribeGraphStore = graphClientStore.subscribe(($graphClient) => {
 		if (!$graphClient) {
 			unsubscribeSubgraph = () => {};
 			return;
@@ -157,21 +165,21 @@ export const positionBalance = readable(initValue, (set) => {
 						shortPositionCount
 						shortShares
 					}
-					_meta {
-						block {
-							number
-						}
-					}
 				}
 			`,
-			variables: { id: tradePair.address.toLowerCase() }
+			variables: { id: get(addresses).addresses.tradePair.toLowerCase() }
 		}).subscribe((result) => {
 			if (result.data) {
 				const tradePair = result.data.tradePair;
 				state = {
 					...state,
 					loading: false,
-					...tradePair
+					longPositionCount: Number(tradePair.longPositionCount),
+					longCollateral: BigInt(tradePair.longCollateral),
+					longShares: BigInt(tradePair.longShares),
+					shortCollateral: BigInt(tradePair.shortCollateral),
+					shortPositionCount: Number(tradePair.shortPositionCount),
+					shortShares: BigInt(tradePair.shortShares)
 				};
 				updatePercentages();
 
@@ -186,5 +194,6 @@ export const positionBalance = readable(initValue, (set) => {
 		});
 	});
 
-	return () => Promise.all([unsubscribeSubgraph(), tradePair.removeAllListeners()]);
+	return () =>
+		Promise.all([unwatchOpen(), unwatchClose(), unsubscribeSubgraph(), unsubscribeGraphStore()]);
 });

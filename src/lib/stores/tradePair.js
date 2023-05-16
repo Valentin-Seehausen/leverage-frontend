@@ -1,43 +1,45 @@
-import { waitForTransaction } from '@wagmi/core';
-import { parseUnits } from 'ethers/lib/utils.js';
+import { waitForTransaction, writeContract } from '@wagmi/core';
 import { userUsdc, getAllowance, increaseAllowance } from './usdc';
 import { leverageDecimals } from '$lib/config/constants';
 import { closeablePositions } from './positions/closeablePositions';
-import { BigNumber } from 'ethers';
 import { get } from 'svelte/store';
 import { toast } from '@zerodevx/svelte-toast';
-import { contracts } from '$lib/stores/contracts';
 import { fetchSignerOrWarn } from '$lib/utils/signer';
+import { parseAbi, parseUnits } from 'viem';
+import { addresses } from './addresses';
 
 /**
  * Opens a position at TradePair via Signer
- * @param {BigNumber} collateral
+ * @param {bigint} collateral
  * @param {number} leverage
  * @param {boolean} isLong
  */
 export const openPosition = async (collateral, leverage, isLong) => {
+	// @ts-ignore
 	const parsedLeverage = parseUnits(leverage.toString(), leverageDecimals);
 
 	const signer = await fetchSignerOrWarn();
 	if (!signer) return;
 
-	const allowance = await getAllowance(await signer.getAddress());
+	const allowance = await getAllowance(await signer.account.address);
 
-	if (collateral.gt(allowance)) {
-		await increaseAllowance(collateral.mul(100));
+	if (collateral > allowance) {
+		await increaseAllowance(collateral * 100n);
 	}
 
-	let tradePair = get(contracts).getTradePairContract(signer);
-
-	const tx = await tradePair.openPosition(collateral, parsedLeverage, isLong);
+	const tx = await writeContract({
+		address: get(addresses).addresses.tradePair,
+		abi: parseAbi(['function openPosition(uint256, uint256, bool)']),
+		functionName: 'openPosition',
+		args: [collateral, parsedLeverage, isLong]
+	});
 
 	const txToast = toast.push('Waiting for Open Position Transaction...', {
 		initial: 0,
 		classes: ['info']
 	});
 
-	// @ts-ignore
-	await waitForTransaction({ hash: tx.hash });
+	await waitForTransaction(tx);
 
 	toast.pop(txToast);
 
@@ -55,17 +57,19 @@ export const closeCloseablePositions = async () => {
 
 	const ids = get(closeablePositions);
 
-	let tradePair = get(contracts).getTradePairContract(signer);
-
-	const tx = await tradePair.closePositions(ids.map((id) => BigNumber.from(id)));
+	const tx = await writeContract({
+		address: get(addresses).addresses.tradePair,
+		abi: parseAbi(['function closePositions(uint256[])']),
+		functionName: 'closePositions',
+		args: [ids]
+	});
 
 	const txToast = toast.push('Waiting for House Keeping Transaction...', {
 		initial: 0,
 		classes: ['info']
 	});
 
-	// @ts-ignore
-	await waitForTransaction({ hash: tx.hash });
+	await waitForTransaction(tx);
 
 	toast.pop(txToast);
 

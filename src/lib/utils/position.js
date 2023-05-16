@@ -1,25 +1,24 @@
+import { formatUnits } from 'viem';
+
 /**
  * @typedef {Object} Position
  * @property {string} id
  * @property {boolean} isOpen
  * @property {boolean} isLong
- * @property {string} collateral
- * @property {string} shares
- * @property {string} leverage
- * @property {string} entryPrice
- * @property {string} liquidationPrice
- * @property {string} takeProfitPrice
- * @property {string} closePrice
+ * @property {bigint} collateral
+ * @property {bigint} shares
+ * @property {bigint} leverage
+ * @property {bigint} entryPrice
+ * @property {bigint} liquidationPrice
+ * @property {bigint} takeProfitPrice
+ * @property {bigint} closePrice
  * @property {number} openDate
  * @property {number} closeDate
- * @property {string} pnlShares
+ * @property {bigint} pnlShares
  * @property {number} pnlSharesPercentage
- * @property {string} pnlAssets
+ * @property {bigint} pnlAssets
  * @property {number} pnlAssetsPercentage
  */
-
-import { BigNumber } from 'ethers';
-import { formatUnits } from 'ethers/lib/utils.js';
 
 /**
  * @typedef {Object} PositionStoreState
@@ -30,29 +29,29 @@ import { formatUnits } from 'ethers/lib/utils.js';
 
 export const calculateSharesPnlPercentage = (
 	/** @type {Position} */ position,
-	/** @type {BigNumber} */ currentPrice
+	/** @type {bigint} */ currentPrice
 ) => {
 	if (position.isLong) {
 		return parseFloat(
 			formatUnits(
-				currentPrice
-					.sub(position.entryPrice)
-					.mul(100) // make it a percentage
-					.mul(BigNumber.from('1000000000000')) // add 12 decimals
-					.mul(position.leverage) // add 6 decimals from leverage
-					.div(position.entryPrice),
+				currentPrice -
+					(position.entryPrice *
+						100n * // make it a percentage
+						1000000000000n * // add 12 decimals
+						position.leverage) / // add 6 decimals from leverage
+						position.entryPrice,
 				18
 			)
 		);
 	} else {
 		return parseFloat(
 			formatUnits(
-				BigNumber.from(position.entryPrice)
-					.sub(currentPrice)
-					.mul(100) // make it a percentage
-					.mul(BigNumber.from('1000000000000')) // add 12 decimals
-					.mul(position.leverage) // add 6 decimals from leverage
-					.div(position.entryPrice),
+				position.entryPrice -
+					(currentPrice *
+						100n * // make it a percentage
+						1000000000000n * // add 12 decimals
+						position.leverage) / // add 6 decimals from leverage
+						position.entryPrice,
 				18
 			)
 		);

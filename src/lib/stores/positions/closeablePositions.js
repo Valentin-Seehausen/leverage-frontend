@@ -2,14 +2,13 @@ import { gql, queryStore } from '@urql/svelte';
 import { currentPriceUpdate } from '$lib/stores/priceFeed';
 import { graphClientStore } from '../graph';
 import { get, writable } from 'svelte/store';
-import { BigNumber } from 'ethers';
 
 const createCloseablePositionsStore = () => {
-	/** @type {string[]} */
+	/** @type {bigint[]} */
 	const initialState = [];
 	const { subscribe, set } = writable(initialState);
 
-	let lastPrice = BigNumber.from(0);
+	let lastPrice = 0n;
 	let deactivated = false;
 	let graphClient = get(graphClientStore);
 
@@ -19,17 +18,12 @@ const createCloseablePositionsStore = () => {
 	let unsubscribeQuery;
 
 	const query = gql`
-		query CloseablePositions($currentPriceUpdate: BigInt!) {
+		query CloseablePositions($price: BigInt!) {
 			positions(
 				where: {
 					and: [
 						{ isOpen: true }
-						{
-							or: [
-								{ maxClosePrice_lt: $currentPriceUpdate }
-								{ minClosePrice_gte: $currentPriceUpdate }
-							]
-						}
+						{ or: [{ maxClosePrice_lt: $price }, { minClosePrice_gte: $price }] }
 					]
 				}
 			) {
@@ -39,23 +33,23 @@ const createCloseablePositionsStore = () => {
 	`;
 
 	const runQuery = () => {
-		if (lastPrice.isZero()) return;
+		if (lastPrice == 0n) return;
 		if (unsubscribeQuery) unsubscribeQuery();
 
 		unsubscribeQuery = queryStore({
 			client: graphClient,
 			query,
-			variables: { currentPriceUpdate: lastPrice.toString() || '0' },
+			variables: { price: lastPrice.toString() },
 			requestPolicy: 'network-only'
 		}).subscribe((result) => {
-			set(result?.data?.positions.map((/** @type {{ id: string; }} */ p) => p.id) || []);
+			set(result?.data?.positions.map((/** @type {{ id: string; }} */ p) => BigInt(p.id)) || []);
 		});
 	};
 
 	// Run the query on every new price
 	currentPriceUpdate.subscribe(($currentPriceUpdate) => {
 		if (deactivated) return;
-		if (lastPrice.eq($currentPriceUpdate)) return;
+		if (lastPrice == $currentPriceUpdate) return;
 		lastPrice = $currentPriceUpdate;
 		runQuery();
 	});

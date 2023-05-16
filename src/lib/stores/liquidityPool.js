@@ -1,13 +1,13 @@
-import { waitForTransaction } from '@wagmi/core';
+import { waitForTransaction, watchContractEvent, writeContract } from '@wagmi/core';
 import { derived, get } from 'svelte/store';
-import { BigNumber } from 'ethers';
 import { isInitialized } from './client';
 import { account } from './wallet';
 import { toast } from '@zerodevx/svelte-toast';
-import { contracts } from '$lib/stores/contracts';
 import { userUsdc } from '$lib/stores/usdc';
 import { addresses } from './addresses';
 import { fetchSignerOrWarn } from '$lib/utils/signer';
+import { readContract } from '@wagmi/core';
+import liquidityPoolAbi from '$lib/abis/LiquidityPool';
 
 /**
  * This store is used to run the other contract reading stores after a liquidity pool update
@@ -15,124 +15,130 @@ import { fetchSignerOrWarn } from '$lib/utils/signer';
  * I updates max once per block
  */
 export const liquitityPoolLastUpdate = derived(
-	[isInitialized, contracts],
-	([$isInitialized, $contracts], set) => {
+	[isInitialized, addresses],
+	([$isInitialized, $addresses], set) => {
 		if (!$isInitialized) return;
 
-		const liquidityPoolInstance = $contracts.getLiquidityPoolContract();
-
-		liquidityPoolInstance.on('Transfer', (_from, _to, _amount, event) => {
-			set(event.blockNumber);
-		});
+		const unwatch = watchContractEvent(
+			{
+				address: $addresses.addresses.liquidityPool,
+				abi: liquidityPoolAbi,
+				eventName: 'Transfer'
+			},
+			(log) => {
+				set(log[log.length - 1].blockNumber || 0n);
+			}
+		);
 
 		// set to 1 to trigger the first update
-		set(1);
+		set(1n);
 
-		return () => {
-			liquidityPoolInstance.removeAllListeners();
-		};
+		return unwatch;
 	},
-	0
+	0n
 );
 
 export const totalSupply = derived(
-	[liquitityPoolLastUpdate, contracts],
-	([$liquitityPoolLastUpdate, $contracts], set) => {
-		if ($liquitityPoolLastUpdate == 0) return;
+	[liquitityPoolLastUpdate, addresses],
+	([$liquitityPoolLastUpdate, $addresses], set) => {
+		if ($liquitityPoolLastUpdate == 0n) return;
 
-		$contracts
-			.getLiquidityPoolContract()
-			.totalSupply()
-			.then((totalSupply) => {
-				set(totalSupply);
-			});
+		readContract({
+			address: $addresses.addresses.liquidityPool,
+			abi: liquidityPoolAbi,
+			functionName: 'totalSupply'
+		}).then((totalSupply) => set(totalSupply));
 	},
-	BigNumber.from('0')
+	0n
 );
 
 export const totalAssets = derived(
-	[liquitityPoolLastUpdate, contracts],
-	([$liquitityPoolLastUpdate, $contracts], set) => {
-		if ($liquitityPoolLastUpdate == 0) return;
+	[liquitityPoolLastUpdate, addresses],
+	([$liquitityPoolLastUpdate, $addresses], set) => {
+		if ($liquitityPoolLastUpdate == 0n) return;
 
-		$contracts
-			.getLiquidityPoolContract()
-			.totalAssets()
-			.then((totalAssets) => {
-				set(totalAssets);
-			});
+		readContract({
+			address: $addresses.addresses.liquidityPool,
+			abi: liquidityPoolAbi,
+			functionName: 'totalAssets'
+		}).then((totalAssets) => set(totalAssets));
 	},
-	BigNumber.from('0')
+	0n
 );
 
 export const tradePairBalance = derived(
-	[liquitityPoolLastUpdate, contracts, addresses],
-	([$liquitityPoolLastUpdate, $contracts, $addresses], set) => {
-		if ($liquitityPoolLastUpdate == 0) return;
+	[liquitityPoolLastUpdate, addresses],
+	([$liquitityPoolLastUpdate, $addresses], set) => {
+		if ($liquitityPoolLastUpdate == 0n) return;
 
-		$contracts
-			.getLiquidityPoolContract()
-			.balanceOf($addresses.addresses.tradePair)
-			.then((tradePairBalance) => {
-				set(tradePairBalance);
-			});
+		readContract({
+			address: $addresses.addresses.liquidityPool,
+			abi: liquidityPoolAbi,
+			functionName: 'balanceOf',
+			args: [$addresses.addresses.tradePair]
+		}).then((tradePairBalance) => set(tradePairBalance));
 	},
-	BigNumber.from('0')
+	0n
 );
 
 export const userShares = derived(
-	[liquitityPoolLastUpdate, contracts, account],
-	([$liquitityPoolLastUpdate, $contracts, $account], set) => {
-		if ($liquitityPoolLastUpdate == 0) return;
-		if (!$account.isConnected) return;
+	[liquitityPoolLastUpdate, addresses, account],
+	([$liquitityPoolLastUpdate, $addresses, $account], set) => {
+		if ($liquitityPoolLastUpdate == 0n) return;
+		if (!$account.address) return;
 
-		$contracts
-			.getLiquidityPoolContract()
-			.balanceOf($account.address)
-			.then((userBalance) => {
-				set(userBalance);
-			});
+		readContract({
+			address: $addresses.addresses.liquidityPool,
+			abi: liquidityPoolAbi,
+			functionName: 'balanceOf',
+			args: [$account.address]
+		}).then((tradePairBalance) => set(tradePairBalance));
 	},
-	BigNumber.from('0')
+	0n
 );
 
 export const liquidityPoolRatio = derived(
 	[totalAssets, totalSupply],
 	([$totalAssets, $totalSupply], set) => {
-		if ($totalAssets.isZero() || $totalSupply.isZero()) {
-			set(BigNumber.from('0'));
+		if ($totalAssets == 0n || $totalSupply == 0n) {
+			set(0n);
 			return;
 		}
 
-		set($totalSupply.div($totalAssets));
-	}
+		set($totalSupply / $totalAssets);
+	},
+	0n
 );
 
 export const userAssets = derived(
 	[userShares, liquidityPoolRatio],
 	([$userShares, $liquidityPoolRatio], set) => {
-		if ($userShares.isZero() || $liquidityPoolRatio.isZero()) {
-			set(BigNumber.from('0'));
+		if ($userShares == 0n || $liquidityPoolRatio == 0n) {
+			set(0n);
 			return;
 		}
-		set($userShares.div($liquidityPoolRatio));
+		set($userShares / $liquidityPoolRatio);
 	},
-	BigNumber.from('0')
+	0n
 );
 
-export const redeem = async (/** @type {BigNumber} */ shares) => {
+export const redeem = async (/** @type {bigint} */ shares) => {
 	const signer = await fetchSignerOrWarn();
 	if (!signer) return;
 
-	const tx = await get(contracts).getLiquidityPoolContract(signer).redeem(shares);
+	const tx = await writeContract({
+		address: get(addresses).addresses.liquidityPool,
+		abi: liquidityPoolAbi,
+		functionName: 'redeem',
+		args: [shares]
+	});
 
 	const txToast = toast.push('Waiting for Withdraw Transaction...', {
 		initial: 0,
 		classes: ['info']
 	});
 
-	// @ts-ignore
-	await waitForTransaction({ hash: tx.hash });
+	await waitForTransaction(tx);
 
 	toast.pop(txToast);
 

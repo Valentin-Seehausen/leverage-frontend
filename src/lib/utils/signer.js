@@ -1,9 +1,9 @@
 import { arbitrumGoerliChainId } from '$lib/config/constants';
-import { fetchSigner, switchNetwork } from '@wagmi/core';
+import { getWalletClient, switchNetwork } from '@wagmi/core';
 import { toast } from '@zerodevx/svelte-toast';
 
 export const fetchSignerOrWarn = async () => {
-	let signer = await fetchSigner();
+	let signer = await getWalletClient();
 	if (!signer) {
 		toast.push('Please connect MetaMask', {
 			duration: 2000,
@@ -23,7 +23,7 @@ export const fetchSignerOrWarn = async () => {
 			});
 			return;
 		}
-		signer = await fetchSigner();
+		signer = await getWalletClient();
 	}
 
 	return signer;

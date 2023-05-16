@@ -8,23 +8,46 @@ import {
 
 import { writable } from 'svelte/store';
 import { isInitialized } from './client';
+import { getAddress } from 'viem';
+
+/**
+ * @param {Object} rawAddresses - The raw addresses object
+ * @param {any} rawAddresses.liquidityPool - The liquidity pool address
+ * @param {any} rawAddresses.faucet - The faucet address
+ * @param {string} [rawAddresses.network] - The network name
+ * @param {any} rawAddresses.priceFeed - The price feed address
+ * @param {string} rawAddresses.priceFeedAggregator - The price feed aggregator address
+ * @param {string} [rawAddresses.proxyAdmin] - The proxy admin address
+ * @param {number} [rawAddresses.startBlock] - The starting block number
+ * @param {any} rawAddresses.tradePair - The trade pair address
+ * @param {any} rawAddresses.usdc - The usdc address
+ */
+const parseAddresses = (rawAddresses) => {
+	return {
+		liquidityPool: getAddress(rawAddresses.liquidityPool),
+		usdc: getAddress(rawAddresses.usdc),
+		faucet: getAddress(rawAddresses.faucet),
+		tradePair: getAddress(rawAddresses.tradePair),
+		priceFeed: getAddress(rawAddresses.priceFeed),
+		priceFeedAggregator: getAddress(rawAddresses.priceFeedAggregator)
+	};
+};
 
 const createAddressStore = () => {
 	const initState = {
-		addresses: arbitrumGoerliAddresses,
+		addresses: parseAddresses(arbitrumGoerliAddresses),
 		graphEndpoint: graphEndpointArbitrumGoerli
 	};
 	let state = initState;
 
 	const { subscribe, set } = writable(state);
 
-	// Set first state
 	const setState = () => {
 		if (dev) {
-			state.addresses = arbitrumGoerliDevAddresses;
+			state.addresses = parseAddresses(arbitrumGoerliDevAddresses);
 			state.graphEndpoint = graphEndpointArbitrumGoerliDev;
 		} else {
-			state.addresses = arbitrumGoerliAddresses;
+			state.addresses = parseAddresses(arbitrumGoerliAddresses);
 			state.graphEndpoint = graphEndpointArbitrumGoerli;
 		}
 
