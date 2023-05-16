@@ -34,14 +34,20 @@
 					leaveTo="opacity-0 scale-95"
 				>
 					<div
-						class="box shadow-2xl shadow-valhalla-400/40 hover:shadow-valhalla-400/50 w-full max-w-md transform overflow-hidden rounded-2xl p-6 text-left align-middle transition-all"
+						class="box p-0 w-full max-w-md transform overflow-hidden rounded-2xl text-left align-middle transition-all"
 						use:positionDetailsDialog.modal
 					>
 						{#if $positionDetailsModal}
-							<PositionModal position={$positionDetailsModal} />
+							<div class="p-6">
+								<PositionModal position={$positionDetailsModal} />
+							</div>
 						{/if}
-						<div class="mt-4 text-right px-2">
-							<button type="button" class="user-button" on:click={positionDetailsDialog.close}>
+						<div class="mt-4 text-right dark:bg-valhalla-900/80">
+							<button
+								type="button"
+								class="rounded-none w-full bg-gradient-to-br from-secondary-800 to-secondary-900 py-3 focus:ring-0 focus:outline-none dark:text-secondary-50 font-semibold shadow-[inset_0_12px_12px_0_rgb(0,0,0,0.05)] shadow-secondary-700/5 hover:shadow-secondary-700/10 transition-all"
+								on:click={positionDetailsDialog.close}
+							>
 								Close
 							</button>
 						</div>

@@ -17,7 +17,7 @@
 		// open(PositionModal, { position: position });
 		positionDetailsModal.open(position);
 	};
-	// $: positions.length > 0 && open(PositionModal, { position: positions[0] });
+	$: positions.length > 0 && openPositionModal(positions[0]);
 </script>
 
 <div class="">
