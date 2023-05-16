@@ -34,24 +34,22 @@ export const calculateSharesPnlPercentage = (
 	if (position.isLong) {
 		return parseFloat(
 			formatUnits(
-				currentPrice -
-					(position.entryPrice *
-						100n * // make it a percentage
-						1000000000000n * // add 12 decimals
-						position.leverage) / // add 6 decimals from leverage
-						position.entryPrice,
+				((currentPrice - position.entryPrice) *
+					100n * // make it a percentage
+					1000000000000n * // add 12 decimals
+					position.leverage) / // add 6 decimals from leverage
+					position.entryPrice,
 				18
 			)
 		);
 	} else {
 		return parseFloat(
 			formatUnits(
-				position.entryPrice -
-					(currentPrice *
-						100n * // make it a percentage
-						1000000000000n * // add 12 decimals
-						position.leverage) / // add 6 decimals from leverage
-						position.entryPrice,
+				((position.entryPrice - currentPrice) *
+					100n * // make it a percentage
+					1000000000000n * // add 12 decimals
+					position.leverage) / // add 6 decimals from leverage
+					position.entryPrice,
 				18
 			)
 		);
