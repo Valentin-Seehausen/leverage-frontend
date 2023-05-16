@@ -3,6 +3,7 @@
 	"liquidityPool": "0xb906dd4B0625D1EBADa7d88d6eC6dAC95CDd215c",
 	"network": "arbitrum-goerli",
 	"priceFeed": "0x68a7aD6b058B818ED1A65eF7E81426d891783723",
+	"priceFeedAggregator": "0x9A38d302c9fDa050BA2948f389764f2928F29858",
 	"proxyAdmin": "0xBD5692ea52c45D3a20eA1b8c40B5922595008880",
 	"startBlock": 20031573,
 	"tradePair": "0xc1ABE9d6B1d27931EDdADa451e944Fb2E8866ccE",
