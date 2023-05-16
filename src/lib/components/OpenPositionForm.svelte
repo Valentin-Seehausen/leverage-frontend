@@ -80,7 +80,7 @@
 		/>
 	</label>
 
-	<div class="my-6 md:max-lg:px-2 px-2">
+	<div class="my-6 md:max-lg:px-2 px-2 text-sm">
 		<div class="flex flex-row">
 			<div class="basis-2/3 info-label">Take Profit Price:</div>
 			<div class="basis-1/3 text-right">{formatValue(takeProfitPrice, priceFeedDecimals)}</div>

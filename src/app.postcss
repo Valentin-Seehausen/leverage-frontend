@@ -5,15 +5,17 @@
 @tailwind utilities;
 
 @layer components {
-	/* TODO: Remove when https://github.com/sveltejs/svelte-preprocess addad fix for the scroll thingy */
-	body {
-		overflow-y: scroll !important;
+	main {
+		@apply transition-all;
+		&.modalOpen {
+			@apply opacity-10 scale-95;
+		}
 	}
 	.info-label {
 		@apply dark:text-slate-400;
 	}
 	.box {
-		@apply p-2 md:p-6 m-3 md:mx-9 my-12 border rounded-lg dark:border-valhalla-400/40 bg-gradient-to-br from-valhalla-900/90 to-valhalla-800/90  shadow-xl shadow-valhalla-500/20  hover:shadow-valhalla-500/30 transition-all;
+		@apply p-2 md:p-6 m-3 md:mx-4 xl:mx-5 2xl:mx-9 my-12 border rounded-lg dark:border-valhalla-400/40 bg-gradient-to-br from-valhalla-900/90 to-valhalla-800/90  shadow-xl shadow-valhalla-500/20  hover:shadow-valhalla-500/30 transition-all;
 	}
 	.user-input {
 		@apply dark:bg-slate-800 dark:hover:bg-gray-700 dark:focus:bg-gray-700 dark:border-slate-600 
@@ -51,11 +53,6 @@
 		&.current {
 			@apply dark:text-valhalla-100/80;
 		}
-	}
-
-	/* For Svelte Modal */
-	.bg {
-		background: rgb(2 6 23 / 0.1) !important;
 	}
 
 	/* Firefox */
