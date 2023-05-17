@@ -24,7 +24,7 @@
 </script>
 
 <div>
-	<div class="box-head dark:bg-valhalla-300/10 w-full m-0 p-6 py-4">
+	<div class="box-head dark:bg-valhalla-300/10 info-label w-full m-0 p-6 py-4">
 		<h2>Position {position.id}</h2>
 	</div>
 	<div class="my-2 p-6 px-2 md:px-6 text-sm">

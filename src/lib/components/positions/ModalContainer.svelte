@@ -3,6 +3,19 @@
 	import { positionDetailsModal, positionDetailsDialog } from '$lib/stores/positionDetailsModal.js';
 	import PositionModal from './PositionModal.svelte';
 	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
+
+	let deg = 0;
+
+	onMount(() => {
+		const intervalId = setInterval(() => {
+			deg = (deg + 1) % 360;
+		}, 500 / 6); //
+
+		return () => {
+			clearInterval(intervalId);
+		};
+	});
 
 	$: if (browser) document.body.classList.toggle('noscroll', $positionDetailsDialog.expanded);
 </script>
@@ -26,28 +39,34 @@
 		<div class="fixed inset-0 overflow-y-auto">
 			<div class="flex min-h-full items-center justify-center p-0 md:p-4 text-center">
 				<Transition
-					enter="transition-all"
-					enterFrom="opacity-0 scale-95"
-					enterTo="opacity-100 scale-100"
-					leave="transition-all"
-					leaveFrom="opacity-100 scale-100"
-					leaveTo="opacity-0 scale-95"
+					enter="  transition-all"
+					enterFrom=" opacity-0 scale-95"
+					enterTo=" opacity-100 scale-100"
+					leave=" transition-all"
+					leaveFrom=" opacity-100 scale-100"
+					leaveTo="enter opacity-0 scale-95"
 				>
-					<div
-						class="box p-0 w-full max-w-md transform overflow-hidden rounded-2xl text-left align-middle transition-all"
-						use:positionDetailsDialog.modal
-					>
-						{#if $positionDetailsModal}
-							<PositionModal position={$positionDetailsModal} />
-						{/if}
-						<div class="mt-4 text-right dark:bg-valhalla-900/80">
-							<button
-								type="button"
-								class="rounded-none w-full bg-gradient-to-br from-secondary-800 to-secondary-900 py-3 ring-0 outline-none dark:text-secondary-50 font-semibold shadow-[inset_0_12px_12px_0_rgb(0,0,0,0.05)] shadow-secondary-700/5 hover:shadow-secondary-700/10 transition-all"
-								on:click={positionDetailsDialog.close}
-							>
-								Close
-							</button>
+					<div class="relative group">
+						<div
+							style="background: linear-gradient({deg}deg, var(--tw-gradient-stops));"
+							class="absolute -inset-1 bg-gradient-to-r from-primary-600 to-secondary-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition-all"
+						/>
+						<div
+							class="relative dark:border-valhalla-400/60 box lg:w-[468px] m-0 p-0 w-full max-w-md transform overflow-hidden rounded-2xl text-left align-middle transition-all"
+							use:positionDetailsDialog.modal
+						>
+							{#if $positionDetailsModal}
+								<PositionModal position={$positionDetailsModal} />
+							{/if}
+							<div class="mt-4 text-right dark:bg-valhalla-900/80">
+								<button
+									type="button"
+									class="rounded-none w-full bg-gradient-to-br from-secondary-800 to-secondary-900 py-3 ring-0 outline-none dark:text-secondary-50 font-semibold shadow-[inset_0_12px_12px_0_rgb(0,0,0,0.05)] shadow-secondary-700/5 hover:shadow-secondary-700/10 transition-all"
+									on:click={positionDetailsDialog.close}
+								>
+									Close
+								</button>
+							</div>
 						</div>
 					</div>
 				</Transition>
