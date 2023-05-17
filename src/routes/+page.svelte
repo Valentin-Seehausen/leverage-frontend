@@ -5,6 +5,7 @@
 	import { toast } from '@zerodevx/svelte-toast';
 	import { requestFunds, userUsdc } from '$lib/stores/usdc';
 	import CheckBox from '$lib/components/CheckBox.svelte';
+	import { minCollateral } from '$lib/config/constants';
 
 	const addArbitrumGoerli = async () => {
 		const client = await getWalletClient();
@@ -19,7 +20,9 @@
 	};
 
 	$: onboardingCompleted =
-		$account.chainId === arbitrumGoerli.id && $account.balance > 0 && $userUsdc.balance > 0;
+		$account.chainId === arbitrumGoerli.id &&
+		$account.balance > 0 &&
+		$userUsdc.balance > minCollateral;
 
 	/**
 	 * @param {string} elementId
@@ -343,7 +346,7 @@
 
 					<div class="relative pl-16">
 						<dt class="text-base font-semibold leading-7 text-white/85">
-							<CheckBox text="4." showCheckbox={$userUsdc.balance > 0} />
+							<CheckBox text="4." showCheckbox={$userUsdc.balance > minCollateral} />
 							Get some test USDC
 						</dt>
 						<dd class="mt-2 text-base leading-7 dark:text-white/70">
@@ -351,7 +354,7 @@
 							free.
 						</dd>
 						<dd class="mt-2 text-base leading-7 dark:text-white/70">
-							{#if $userUsdc.balance > 0}
+							{#if $userUsdc.balance > minCollateral}
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									fill="none"
