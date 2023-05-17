@@ -3,6 +3,7 @@
  * @property {boolean} [showSymbol]
  * @property {boolean} [showPlus]
  * @property {string} [symbol]
+ * @property {string} [prefix]
  */
 
 import { formatUnits } from 'viem';
@@ -19,9 +20,13 @@ export const formatValue = (value, decimals, precision = 2, options) => {
 		showSymbol: true,
 		showPlus: false,
 		locale: 'en-US',
-		currency: 'USD'
+		currency: 'USD',
+		prefix: ''
 	};
-	const mergedOptions = { ...defaultOptions, ...options };
+	const mergedOptions = {
+		...defaultOptions,
+		...options
+	};
 
 	const formattedValue = formatUnits(value, decimals);
 
@@ -32,13 +37,15 @@ export const formatValue = (value, decimals, precision = 2, options) => {
 		maximumFractionDigits: 2
 	};
 
-	const formattedNumber = new Intl.NumberFormat(mergedOptions.locale, numberFormatOptions).format(
-		Math.abs(+formattedValue)
-	);
+	const formattedNumber =
+		mergedOptions.prefix +
+		new Intl.NumberFormat(mergedOptions.locale, numberFormatOptions).format(
+			Math.abs(+formattedValue)
+		);
 
-	const prefix = mergedOptions.showPlus && value > 0 ? '+' : value < 0 ? '-' : '';
+	const secondPrefix = mergedOptions.showPlus && value > 0 ? '+' : value < 0 ? '-' : '';
 
-	return prefix + formattedNumber;
+	return secondPrefix + formattedNumber;
 };
 
 /**
