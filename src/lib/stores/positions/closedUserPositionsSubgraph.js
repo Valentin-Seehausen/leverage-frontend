@@ -47,6 +47,8 @@ export const closedUserPositionsSubgraph = derived(
 						orderDirection: desc
 					) {
 						id
+						openTransactionHash
+						closeTransactionHash
 						collateral
 						shares
 						isLong
@@ -81,6 +83,8 @@ export const closedUserPositionsSubgraph = derived(
 					/** @type{Position} */
 					return {
 						id: position.id,
+						openTransactionHash: position.openTransactionHash,
+						closeTransactionHash: position.closeTransactionHash,
 						collateral: BigInt(position.collateral),
 						shares: BigInt(position.shares),
 						isOpen: position.isOpen,

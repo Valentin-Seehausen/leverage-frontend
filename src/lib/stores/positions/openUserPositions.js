@@ -65,6 +65,7 @@ export const openUserPositionsFromEvents = derived(
 			onLogs: (log) => {
 				log.forEach(
 					({
+						transactionHash,
 						args: {
 							collateral,
 							positionId,
@@ -80,6 +81,7 @@ export const openUserPositionsFromEvents = derived(
 						/** @type{Position} */
 						const newPosition = {
 							id: positionId.toString(),
+							openTransactionHash: transactionHash || '',
 							collateral: collateral,
 							shares: shares,
 							leverage: leverage,
@@ -130,6 +132,7 @@ export const openUserPositionsFromSubgraph = derived(
 						orderDirection: desc
 					) {
 						id
+						openTransactionHash
 						collateral
 						shares
 						isOpen
@@ -150,6 +153,7 @@ export const openUserPositionsFromSubgraph = derived(
 				const parsedPositions = result.data.positions.map((/** @type {any} */ position) => {
 					return {
 						id: position.id,
+						openTransactionHash: position.openTransactionHash,
 						collateral: BigInt(position.collateral),
 						shares: BigInt(position.shares),
 						isOpen: position.isOpen,

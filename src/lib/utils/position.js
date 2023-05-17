@@ -3,6 +3,8 @@ import { formatUnits } from 'viem';
 /**
  * @typedef {Object} Position
  * @property {string} id
+ * @property {string} openTransactionHash
+ * @property {string} [closeTransactionHash]
  * @property {boolean} isOpen
  * @property {boolean} isLong
  * @property {bigint} collateral

@@ -36,16 +36,19 @@ export const closedUserPositionsEvents = derived(
 			eventName: 'PositionClosed',
 			onLogs: (log) => {
 				closedUserPositionsSubgraphUpdater.requestUpdate();
-				log.forEach(({ args: { positionId, pnlShares, closePrice, closeDate } }) => {
-					const newClosedPosition = {
-						id: positionId,
-						closePrice: closePrice,
-						closeDate: closeDate,
-						pnlShares: pnlShares
-					};
-					positions = [...positions, newClosedPosition];
-					set(positions);
-				});
+				log.forEach(
+					({ transactionHash, args: { positionId, pnlShares, closePrice, closeDate } }) => {
+						const newClosedPosition = {
+							id: positionId,
+							openTransactionHash: transactionHash || '',
+							closePrice: closePrice,
+							closeDate: closeDate,
+							pnlShares: pnlShares
+						};
+						positions = [...positions, newClosedPosition];
+						set(positions);
+					}
+				);
 			}
 		});
 		return unwatch;

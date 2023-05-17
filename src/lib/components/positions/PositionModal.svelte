@@ -40,7 +40,13 @@
 				</span>
 			</div>
 			<div class="info-label">
-				{dayjs.unix(position.openDate).format('DD.MM.YY HH:mm')}
+				<a
+					href={`https://goerli.arbiscan.io/tx/${position.openTransactionHash}`}
+					target="_blank"
+					class="underline hover:no-underline"
+				>
+					{dayjs.unix(position.openDate).format('DD.MM.YY HH:mm')}
+				</a>
 			</div>
 		</div>
 
@@ -163,8 +169,14 @@
 			<div class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between">
 				<div class=" info-label">
 					Closed <span class="text-xs">
-						{dayjs.unix(position.closeDate).fromNow()}
-					</span>
+						<a
+							href={`https://goerli.arbiscan.io/tx/${position.closeTransactionHash}`}
+							target="_blank"
+							class="underline hover:no-underline"
+						>
+							{dayjs.unix(position.closeDate).fromNow()}
+						</a></span
+					>
 				</div>
 				<div class="info-label">
 					{dayjs.unix(position.closeDate).format('DD.MM.YY HH:mm')}
