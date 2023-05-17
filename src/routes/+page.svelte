@@ -47,7 +47,12 @@
 					Hyperbolic Finance
 				</h1>
 				<p class="mt-6 text-lg leading-8 dark:text-slate-400">
-					Redefining the Future of Crypto Derivatives
+					Leading the Future with Advanced Math-Driven Crypto Derivatives
+				</p>
+				<p class="mt-6 text-lg leading-8 dark:text-slate-400">
+					Embrace the new wave of trading. We're spearheading the next iteration of
+					professional-grade blockchain products, moving beyond quadratic formulas to more complex
+					and powerful mathematics. Get started with us, as we redefine the future of trading.
 				</p>
 				<div class="mt-10 flex items-center justify-center gap-x-6">
 					{#if onboardingCompleted}
@@ -89,14 +94,16 @@
 <div class="bg-gradient-to-tr from-primary-900 py-24 sm:py-32" id="anchor-learn-more">
 	<div class="mx-auto max-w-7xl px-6 lg:px-8">
 		<div class="mx-auto max-w-2xl lg:text-center">
-			<h2 class="text-base font-semibold leading-7 text-cyan-200">Trade capital efficient</h2>
+			<h2 class="text-base font-semibold leading-7 text-cyan-200/50">The New Era of Trading</h2>
 			<p class="mt-2 text-3xl font-bold tracking-tight text-white/85 sm:text-4xl">
-				Smart Derivatives: The Future of Trading
+				Smart Derivatives - Capitalizing on Efficiency
 			</p>
 			<p class="mt-6 text-lg leading-8 dark:text-white/70">
-				After a year of in-depth analysis and strategic planning, we introduce Smart Derivatives.
-				Tailored to the blockchain. Unbeatable in terms of cost. Engineered with mechanisms to
-				ensure protocol health. Adjustable and scalable.
+				Following an intensive year of rigorous research and strategic development, we're thrilled
+				to unveil Smart Derivatives, the new epoch in blockchain trading. Exquisitely crafted for
+				the blockchain landscape, it excels in cost-effectiveness, underpinned by robust mechanisms
+				that underscore the importance of protocol health. This is more than just trading—it's a
+				flexible, scalable solution that catapults trading into a revolutionized future.
 			</p>
 		</div>
 		<div class="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
@@ -123,11 +130,11 @@
 								/>
 							</svg>
 						</div>
-						Revolutionary Blockchain Derivatives
+						The Future is Decentralized
 					</dt>
 					<dd class="mt-2 text-base leading-7 dark:text-white/70">
-						We've decentralized derivatives and cut out the middleman, passing the savings directly
-						to you. This isn't just a market opportunity—it's the future of trading.
+						In our world, derivatives are decentralized and the middleman obsolete. We pass the
+						savings directly to you, turning a market opportunity into a trading revolution.
 					</dd>
 				</div>
 				<div class="relative pl-16">
@@ -150,11 +157,12 @@
 								/>
 							</svg>
 						</div>
-						Cost-Efficient
+						Hyper-Efficient Trading
 					</dt>
 					<dd class="mt-2 text-base leading-7 dark:text-white/70">
-						By eliminating liquidity providers, we've managed to reduce margin trading fees by up to
-						90%. Experience the cost-effective solution for traders of all levels.
+						We've shattered the cost barriers of trading by eliminating liquidity providers,
+						reducing margin trading fees by up to 90%. Experience unparalleled efficiency that's
+						accessible to traders of all levels.
 					</dd>
 				</div>
 				<div class="relative pl-16">
@@ -177,11 +185,12 @@
 								/>
 							</svg>
 						</div>
-						User-Friendly Interface
+						User-Centric Design
 					</dt>
 					<dd class="mt-2 text-base leading-7 dark:text-white/70">
-						Hyperbolic Finance is designed with user experience in mind. Buy tokens for long or
-						short positions with ease, without worrying about complexities.
+						Navigating the world of trading has never been easier with Hyperbolic Finance. Our
+						user-friendly interface allows you to buy tokens for long or short positions without the
+						usual complexities.
 					</dd>
 				</div>
 				<div class="relative pl-16">
@@ -204,12 +213,68 @@
 								/>
 							</svg>
 						</div>
-						Secure and Resilient Protocol
+						Security First, Resilience Always
 					</dt>
 					<dd class="mt-2 text-base leading-7 dark:text-white/70">
-						Our protocol is designed to prioritize security and health, ensuring a safe environment
-						for your trades. Unlike traditional systems, we eliminate clearing house risk, providing
-						a more resilient and reliable trading experience.
+						Our protocol is designed with a laser focus on security and resilience, ensuring a safe
+						environment for your trades. We've left the traditional clearing house risk behind,
+						offering you a more reliable trading experience.
+					</dd>
+				</div>
+				<div class="relative pl-16">
+					<dt class="text-base font-semibold leading-7 text-white/85">
+						<div
+							class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-cyan-700"
+						>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								fill="none"
+								viewBox="0 0 24 24"
+								stroke-width="1.5"
+								stroke="currentColor"
+								class="w-6 h-6"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"
+								/>
+							</svg>
+						</div>
+						Fueling Efficiency
+					</dt>
+					<dd class="mt-2 text-base leading-7 dark:text-white/70">
+						Our smart contracts are more than just complex math and simple code – they're a
+						testament to optimal functionality. With our gas-efficient approach, you only pay the
+						bare minimum for every transaction.
+					</dd>
+				</div>
+				<div class="relative pl-16">
+					<dt class="text-base font-semibold leading-7 text-white/85">
+						<div
+							class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-cyan-700"
+						>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								fill="none"
+								viewBox="0 0 24 24"
+								stroke-width="1.5"
+								stroke="currentColor"
+								class="w-6 h-6"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941"
+								/>
+							</svg>
+						</div>
+						Pushing the Boundaries of Liquidation
+					</dt>
+					<dd class="mt-2 text-base leading-7 dark:text-white/70">
+						Say goodbye to unnecessary fees that deplete your margins. With us, positions can stay
+						open to their maximum potential, offering you the best attainable liquidation price
+						across all protocols.
 					</dd>
 				</div>
 			</dl>
@@ -234,7 +299,11 @@
 					Onboarding
 				</h1>
 				<p class="mt-6 text-lg leading-8 dark:text-slate-400">
-					Our Plattform is live for test users. Follow these simple steps to get started.
+					Embrace the future of leveraged trading with Hyperbolic Finance – the embodiment of cost
+					efficiency, user-centric design, and relentless security.
+				</p>
+				<p class="mt-6 text-lg leading-8 dark:text-slate-400">
+					Follow these simple steps to get started.
 				</p>
 			</div>
 			<div class="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
