@@ -52,7 +52,7 @@
 							class="absolute -inset-1 bg-gradient-to-r from-primary-600 to-secondary-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition-all"
 						/>
 						<div
-							class="relative dark:border-valhalla-400/60 box w-full m-0 p-0 max-w-md transform overflow-hidden rounded-2xl text-left align-middle transition-all"
+							class="box from-valhalla-800/90 to-valhalla-700/90 md:from-valhalla-800/90 md:to-valhalla-900/90 relative dark:border-valhalla-400/60 w-full m-0 p-0 max-w-md transform overflow-hidden rounded-2xl text-left align-middle transition-all"
 							use:positionDetailsDialog.modal
 						>
 							{#if $positionDetailsModal}
