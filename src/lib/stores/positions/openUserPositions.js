@@ -3,11 +3,19 @@ import { account } from '$lib/stores/wallet';
 import { graphClientStore } from '$lib/stores/graph';
 import { derived, get } from 'svelte/store';
 import { currentPriceTweened } from '$lib/stores/priceFeed';
-import { calculateSharesPnlPercentage } from '$lib/utils/position';
+import {
+	calculatePayoutAssets,
+	calculatePayoutShares,
+	calculatePnlAssets,
+	calculatePnlAssetsPercentage,
+	calculatePnlShares,
+	calculateSharesPnlPercentage
+} from '$lib/utils/position';
 import { closedUserPositionsEvents } from './closedUserPositionsEvents';
 import { client } from '../client';
 import { addresses } from '../addresses';
 import { parseAbi } from 'viem';
+import { liquidityPoolRatio } from '../liquidityPool';
 
 // This file contains four stores:
 // - openUserPositionsFromEvents
@@ -198,8 +206,16 @@ export const openUserPositionsCombined = derived(
 
 // Filter out closed positions
 export const openUserPositions = derived(
-	[openUserPositionsCombined, closedUserPositionsEvents, currentPriceTweened],
-	([$openUserPositionsCombined, $closedUserPositionsEvents, $currentPriceTweened], set) => {
+	[openUserPositionsCombined, closedUserPositionsEvents, currentPriceTweened, liquidityPoolRatio],
+	(
+		[
+			$openUserPositionsCombined,
+			$closedUserPositionsEvents,
+			$currentPriceTweened,
+			$liquidityPoolRatio
+		],
+		set
+	) => {
 		let positions = $openUserPositionsCombined.positions;
 
 		// Finally filter out closed positions
@@ -207,9 +223,14 @@ export const openUserPositions = derived(
 			positions = positions.filter((p) => p.id !== position.id.toString());
 		});
 
-		// Set pnlSharesPercentage
-		positions.map((position) => {
+		// Calculate pnl and payout
+		positions = positions.map((position) => {
 			position.pnlSharesPercentage = calculateSharesPnlPercentage(position, $currentPriceTweened);
+			position.pnlShares = calculatePnlShares(position);
+			position.payoutShares = calculatePayoutShares(position);
+			position.payoutAssets = calculatePayoutAssets(position, $liquidityPoolRatio);
+			position.pnlAssets = calculatePnlAssets(position);
+			position.pnlAssetsPercentage = calculatePnlAssetsPercentage(position);
 			return position;
 		});
 
