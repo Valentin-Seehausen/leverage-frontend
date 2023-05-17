@@ -21,14 +21,13 @@
 
 <div class="">
 	<!-- Medium and Large Table Head -->
-	<div class="hidden md:flex py-5 font-semibold info-label">
+	<div class="hidden md:flex pb-5 font-semibold info-label">
 		<div class="pl-3 w-1/6">Type</div>
 		<div class="w-1/6 text-right">Leverage</div>
 		<div class="w-1/6 text-right">Collateral</div>
 		<div class="w-1/6 text-right">Entry Price</div>
 		{#if show === 'open'}
-			<div class="w-1/6 text-right hidden md:block">Liquidation Price</div>
-			<div class="w-1/6 text-right hidden md:block pr-3">Take Profit Price</div>
+			<div class="w-1/3 text-right hidden md:block pr-3">Current PnL</div>
 		{:else if show === 'closed'}
 			<div class="w-1/6 text-right">Close Price</div>
 			<div class="w-1/6 text-right pr-3">PnL</div>
@@ -37,12 +36,12 @@
 
 	<!-- Mobile Table Head -->
 	<div class="flex md:hidden py-3 text-sm font-semibold info-label">
-		<div class="pl-1 w-1/3">Dir. Lev.<br />Collateral</div>
-		<div class="w-1/3 text-right">Open Price</div>
+		<div class="pl-3 w-1/3">Position</div>
+		<div class="w-1/3 text-right" />
 		{#if show === 'open'}
-			<div class="w-1/3 text-right pr-1">Open Date<br />PNL</div>
+			<div class="w-1/3 text-right pr-3">PNL</div>
 		{:else if show === 'closed'}
-			<div class="w-1/3 pr-1 text-right">Close Date<br />PNL</div>
+			<div class="w-1/3 pr-3 text-right">PNL</div>
 		{/if}
 	</div>
 
@@ -59,13 +58,16 @@
 				on:keypress={() => openPositionModal(position)}
 				transition:slide|local
 			>
-				<div class="py-2 hidden md:flex">
+				<div class="py-2 hidden md:flex items-center">
 					<div class="pl-2 w-1/6">
-						<span class={`font-bold text-lg ${position.isLong ? 'text-green-600' : 'text-red-700'}`}
-							>{position.isLong ? 'LONG' : 'SHORT'}</span
-						>
+						<div class={`font-bold text-lg ${position.isLong ? 'text-green-600' : 'text-red-700'}`}>
+							{position.isLong ? 'Long' : 'Short'}
+						</div>
+						<div class="text-xs info-label">
+							{dayjs.unix(position.isOpen ? position.openDate : position.closeDate).fromNow()}
+						</div>
 					</div>
-					<div class="w-1/6 text-right">
+					<div class="w-1/6 text-right info-label">
 						<span class="font-mono"
 							>{formatValue(position.leverage, leverageDecimals, 0, { showSymbol: false })}x</span
 						>
@@ -73,18 +75,20 @@
 					<div class="w-1/6 text-right">
 						<span class="font-mono">{formatValue(position.collateral, usdcDecimals, 2)}</span>
 					</div>
-					<div class="w-1/6 text-right">
+					<div class="w-1/6 info-label text-right">
 						<span class="font-mono">{formatValue(position.entryPrice, priceFeedDecimals, 2)}</span>
 					</div>
 					{#if position.isOpen}
-						<div class="w-1/6 text-right">
-							<span class="font-mono">
-								{formatValue(position.liquidationPrice, priceFeedDecimals, 2)}
+						<div
+							class={`w-1/3 text-right pr-3 font-semibold ${
+								position.pnlSharesPercentage >= 0 ? 'dark:text-green-600' : 'dark:text-red-700'
+							}`}
+						>
+							<span>
+								{formatValue(position.pnlAssets, usdcDecimals, 2)}
 							</span>
-						</div>
-						<div class="w-1/6 text-right pr-3">
-							<span class="font-mono">
-								{formatValue(position.takeProfitPrice, priceFeedDecimals, 2)}
+							<span class="text-xs">
+								({formatPercentage(position.pnlAssetsPercentage, { decimals: 0 })})
 							</span>
 						</div>
 					{:else}
@@ -96,44 +100,53 @@
 							<span
 								class={`font-extrabold ${
 									position.pnlSharesPercentage >= 0 ? 'dark:text-green-600' : 'dark:text-red-700'
-								}`}>{formatPercentage(position.pnlSharesPercentage)}</span
+								}`}
 							>
+								{formatPercentage(position.pnlSharesPercentage)}
+							</span>
 						</div>
 					{/if}
 				</div>
 
 				<!-- Mobile View -->
 				<div class="py-2 flex md:hidden text-sm">
-					<div class="pl-1 w-1/3">
-						<span class={`font-bold ${position.isLong ? 'text-green-600' : 'text-red-700'}`}>
-							{position.isLong ? 'L' : 'S'}
-						</span>
-						<span class="font-mono">
-							{formatValue(position.leverage, leverageDecimals, 0, { showSymbol: false })}x
-						</span>
-
-						<br />
-
-						<span class="font-mono">{formatValue(position.collateral, usdcDecimals, 0)}</span>
+					<div class="pl-3 w-1/3">
+						<div class={`font-bold ${position.isLong ? 'text-green-600' : 'text-red-700'}`}>
+							{position.isLong ? 'Long' : 'Short'}
+						</div>
+						<div class="text-xs info-label">
+							{dayjs.unix(position.isOpen ? position.openDate : position.closeDate).fromNow()}
+						</div>
+						<div class="font-mono info-label text-xs">
+							from {formatValue(position.entryPrice, priceFeedDecimals, 0)}
+						</div>
 					</div>
 
 					<div class="w-1/3 text-right">
-						<span class="font-mono info-label text-sm"
-							>{formatValue(position.entryPrice, priceFeedDecimals, 0)}</span
-						>
+						<div class="font-mono">{formatValue(position.collateral, usdcDecimals, 2)}</div>
+
+						<div class="font-mono info-label text-xs">
+							{formatValue(position.leverage, leverageDecimals, 0, { showSymbol: false })}x
+						</div>
+
+						{#if !position.isOpen}
+							<div class="font-mono info-label text-xs">
+								to {formatValue(position.closePrice, priceFeedDecimals, 0)}
+							</div>
+						{/if}
 					</div>
 
-					<div class="w-1/3 text-right pr-1">
-						<span class="text-sm info-label"
-							>{dayjs
-								.unix(position.isOpen ? position.openDate : position.closeDate)
-								.fromNow()}</span
-						>
-						<span
-							class={`font-semibold ${
-								position.pnlSharesPercentage >= 0 ? 'dark:text-green-600' : 'dark:text-red-700'
-							}`}>{formatPercentage(position.pnlSharesPercentage, { decimals: 0 })}</span
-						>
+					<div
+						class={`w-1/3 text-right pr-3 font-semibold ${
+							position.pnlSharesPercentage >= 0 ? 'dark:text-green-600' : 'dark:text-red-700'
+						}`}
+					>
+						<span>
+							{formatValue(position.pnlAssets, usdcDecimals, 2)}
+						</span>
+						<span class="text-xs">
+							({formatPercentage(position.pnlAssetsPercentage, { decimals: 0 })})
+						</span>
 					</div>
 				</div>
 			</div>

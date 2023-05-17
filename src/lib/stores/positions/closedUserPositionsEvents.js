@@ -3,6 +3,7 @@ import { derived } from 'svelte/store';
 import { addresses } from '../addresses';
 import { parseAbi } from 'viem';
 import { client } from '../client';
+import { closedUserPositionsSubgraphUpdater } from './closedUserPositionsSubgraph';
 
 /**
  * @typedef {Object} PositionClosedEvent
@@ -34,16 +35,20 @@ export const closedUserPositionsEvents = derived(
 			args: { trader: $account.address },
 			eventName: 'PositionClosed',
 			onLogs: (log) => {
-				log.forEach(({ args: { positionId, pnlShares, closePrice, closeDate } }) => {
-					const newClosedPosition = {
-						id: positionId,
-						closePrice: closePrice,
-						closeDate: closeDate,
-						pnlShares: pnlShares
-					};
-					positions = [...positions, newClosedPosition];
-					set(positions);
-				});
+				closedUserPositionsSubgraphUpdater.requestUpdate();
+				log.forEach(
+					({ transactionHash, args: { positionId, pnlShares, closePrice, closeDate } }) => {
+						const newClosedPosition = {
+							id: positionId,
+							openTransactionHash: transactionHash || '',
+							closePrice: closePrice,
+							closeDate: closeDate,
+							pnlShares: pnlShares
+						};
+						positions = [...positions, newClosedPosition];
+						set(positions);
+					}
+				);
 			}
 		});
 		return unwatch;

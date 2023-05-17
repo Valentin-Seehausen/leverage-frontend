@@ -3,11 +3,19 @@ import { account } from '$lib/stores/wallet';
 import { graphClientStore } from '$lib/stores/graph';
 import { derived, get } from 'svelte/store';
 import { currentPriceTweened } from '$lib/stores/priceFeed';
-import { calculateSharesPnlPercentage } from '$lib/utils/position';
+import {
+	calculatePayoutAssets,
+	calculatePayoutShares,
+	calculatePnlAssets,
+	calculatePnlAssetsPercentage,
+	calculatePnlShares,
+	calculateSharesPnlPercentage
+} from '$lib/utils/position';
 import { closedUserPositionsEvents } from './closedUserPositionsEvents';
 import { client } from '../client';
 import { addresses } from '../addresses';
 import { parseAbi } from 'viem';
+import { liquidityPoolRatio } from '../liquidityPool';
 
 // This file contains four stores:
 // - openUserPositionsFromEvents
@@ -57,6 +65,7 @@ export const openUserPositionsFromEvents = derived(
 			onLogs: (log) => {
 				log.forEach(
 					({
+						transactionHash,
 						args: {
 							collateral,
 							positionId,
@@ -72,6 +81,7 @@ export const openUserPositionsFromEvents = derived(
 						/** @type{Position} */
 						const newPosition = {
 							id: positionId.toString(),
+							openTransactionHash: transactionHash || '',
 							collateral: collateral,
 							shares: shares,
 							leverage: leverage,
@@ -86,7 +96,12 @@ export const openUserPositionsFromEvents = derived(
 							pnlShares: 0n,
 							pnlSharesPercentage: 0,
 							pnlAssets: 0n,
-							pnlAssetsPercentage: 0
+							pnlAssetsPercentage: 0,
+							openLpRatio: shares / collateral,
+							closeLpRatio: 0n,
+							closeLpRatioBefore: 0n,
+							payoutShares: 0n,
+							payoutAssets: 0n
 						};
 
 						positions = [...positions, newPosition];
@@ -117,6 +132,7 @@ export const openUserPositionsFromSubgraph = derived(
 						orderDirection: desc
 					) {
 						id
+						openTransactionHash
 						collateral
 						shares
 						isOpen
@@ -137,6 +153,7 @@ export const openUserPositionsFromSubgraph = derived(
 				const parsedPositions = result.data.positions.map((/** @type {any} */ position) => {
 					return {
 						id: position.id,
+						openTransactionHash: position.openTransactionHash,
 						collateral: BigInt(position.collateral),
 						shares: BigInt(position.shares),
 						isOpen: position.isOpen,
@@ -193,8 +210,16 @@ export const openUserPositionsCombined = derived(
 
 // Filter out closed positions
 export const openUserPositions = derived(
-	[openUserPositionsCombined, closedUserPositionsEvents, currentPriceTweened],
-	([$openUserPositionsCombined, $closedUserPositionsEvents, $currentPriceTweened], set) => {
+	[openUserPositionsCombined, closedUserPositionsEvents, currentPriceTweened, liquidityPoolRatio],
+	(
+		[
+			$openUserPositionsCombined,
+			$closedUserPositionsEvents,
+			$currentPriceTweened,
+			$liquidityPoolRatio
+		],
+		set
+	) => {
 		let positions = $openUserPositionsCombined.positions;
 
 		// Finally filter out closed positions
@@ -202,9 +227,14 @@ export const openUserPositions = derived(
 			positions = positions.filter((p) => p.id !== position.id.toString());
 		});
 
-		// Set pnlSharesPercentage
-		positions.map((position) => {
+		// Calculate pnl and payout
+		positions = positions.map((position) => {
 			position.pnlSharesPercentage = calculateSharesPnlPercentage(position, $currentPriceTweened);
+			position.pnlShares = calculatePnlShares(position);
+			position.payoutShares = calculatePayoutShares(position);
+			position.payoutAssets = calculatePayoutAssets(position, $liquidityPoolRatio);
+			position.pnlAssets = calculatePnlAssets(position);
+			position.pnlAssetsPercentage = calculatePnlAssetsPercentage(position);
 			return position;
 		});
 

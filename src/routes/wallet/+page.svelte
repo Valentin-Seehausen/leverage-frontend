@@ -1,8 +1,10 @@
 <script>
+	import HouseKeepingButton from '$lib/components/HouseKeepingButton.svelte';
 	import WalletConnectButton from '$lib/components/WalletConnectButton.svelte';
 </script>
 
 <div class="p-3 mb-3">
+	<HouseKeepingButton />
 	<h1 class="headline">Connect your wallet</h1>
 </div>
 <div class="p-3 pt-48 pb-12 mb-3 flex justify-center">

@@ -1,7 +1,7 @@
 import { queryStore, gql } from '@urql/svelte';
 import { account } from '$lib/stores/wallet';
 import { graphClientStore } from '$lib/stores/graph';
-import { derived } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
 
 /**
  * @typedef {import('$lib/utils/position').Position} Position
@@ -16,10 +16,26 @@ const initialPositionStoreState = {
 	error: null
 };
 
+export const closedUserPositionsSubgraphUpdater = (() => {
+	const { subscribe, update } = writable(0);
+
+	return {
+		subscribe,
+		requestUpdate: () => {
+			setTimeout(() => {
+				update((n) => n + 1);
+			}, 20000); // 20 seconds, thats how long TheGraph needs to update
+		}
+	};
+})();
+
 export const closedUserPositionsSubgraph = derived(
-	[account, graphClientStore],
-	([$account, $graphClientStore], set) => {
+	[account, graphClientStore, closedUserPositionsSubgraphUpdater],
+	([$account, $graphClientStore, $closedUserPositionsSubgraphUpdater], set) => {
 		if (!$account.address) return;
+
+		// When this stores updates, we want to update the subgraph and overwrite the closed positions from event
+		$closedUserPositionsSubgraphUpdater;
 
 		const unsubscribe = queryStore({
 			client: $graphClientStore,
@@ -31,6 +47,8 @@ export const closedUserPositionsSubgraph = derived(
 						orderDirection: desc
 					) {
 						id
+						openTransactionHash
+						closeTransactionHash
 						collateral
 						shares
 						isLong
@@ -43,14 +61,20 @@ export const closedUserPositionsSubgraph = derived(
 						leverage
 						openDate
 						closeDate
+						payoutShares
 						pnlShares
 						pnlSharesPercentage
+						payoutAssets
 						pnlAssets
 						pnlAssetsPercentage
+						openLpRatio
+						closeLpRatio
+						closeLpRatioBefore
 					}
 				}
 			`,
-			variables: { trader: $account.address.toLowerCase() || '' }
+			variables: { trader: $account.address.toLowerCase() || '' },
+			requestPolicy: 'cache-and-network'
 		}).subscribe((result) => {
 			if (result.error) {
 				set({ loading: false, error: result.error, positions: [] });
@@ -59,6 +83,8 @@ export const closedUserPositionsSubgraph = derived(
 					/** @type{Position} */
 					return {
 						id: position.id,
+						openTransactionHash: position.openTransactionHash,
+						closeTransactionHash: position.closeTransactionHash,
 						collateral: BigInt(position.collateral),
 						shares: BigInt(position.shares),
 						isOpen: position.isOpen,
@@ -70,10 +96,15 @@ export const closedUserPositionsSubgraph = derived(
 						leverage: BigInt(position.leverage),
 						openDate: position.openDate,
 						closeDate: position.closeDate,
+						payoutShares: BigInt(position.payoutShares),
 						pnlShares: BigInt(position.pnlShares),
 						pnlSharesPercentage: Number(position.pnlSharesPercentage),
+						payoutAssets: BigInt(position.payoutAssets),
 						pnlAssets: BigInt(position.pnlAssets),
-						pnlAssetsPercentage: Number(position.pnlAssetsPercentage)
+						pnlAssetsPercentage: Number(position.pnlAssetsPercentage),
+						openLpRatio: BigInt(position.openLpRatio),
+						closeLpRatio: BigInt(position.closeLpRatio),
+						closeLpRatioBefore: BigInt(position.closeLpRatioBefore)
 					};
 				});
 				set({ loading: false, error: null, positions: newClosedPositions });

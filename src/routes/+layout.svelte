@@ -1,8 +1,6 @@
 <script>
 	import { SvelteToast } from '@zerodevx/svelte-toast';
 
-	import HouseKeepingButton from '$lib/components/HouseKeepingButton.svelte';
-
 	import Nav from './Nav.svelte';
 	import '../app.postcss';
 	import { Client, setContextClient, cacheExchange, fetchExchange } from '@urql/svelte';
@@ -42,12 +40,6 @@
 		/>
 	</div>
 	<div class="">
-		<div class="lg:flex">
-			<div class="flex-1 lg:flex">
-				<HouseKeepingButton />
-			</div>
-		</div>
-
 		<main class:modalOpen={$positionDetailsDialog.expanded}>
 			<slot />
 		</main>

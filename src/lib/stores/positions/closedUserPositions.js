@@ -54,6 +54,7 @@ export const closedUserPositions = derived(
 		positions = $closedUserPositionsSubgraph.positions;
 
 		// Check if new closed positions are in open positions and thus have to be added to the list
+		// the data from openUserPositions (entryPrice, collateral, etc.) is needed to populate the data here
 		$closedUserPositionsEvents.forEach((closedPositionEvent) => {
 			const matchingOpenPosition = $openUserPositionsCombined.positions.find(
 				(p) => p.id === closedPositionEvent.id.toString()
@@ -61,10 +62,19 @@ export const closedUserPositions = derived(
 
 			if (!matchingOpenPosition) return;
 
+			// If this position is already in the list, skip it as subgraph takes precedence
+			if (
+				$closedUserPositionsSubgraph.positions.find(
+					(p) => p.id === closedPositionEvent.id.toString()
+				)
+			)
+				return;
+
 			const newClosedPosition = {
 				...matchingOpenPosition,
 				closePrice: closedPositionEvent.closePrice,
 				closeDate: Number(closedPositionEvent.closeDate),
+				payoutShares: closedPositionEvent.pnlShares + matchingOpenPosition.shares,
 				pnlShares: closedPositionEvent.pnlShares,
 				isOpen: false,
 				pnlSharesPercentage: closedPositionEvent.pnlShares < 0 ? -100 : 100
@@ -72,7 +82,9 @@ export const closedUserPositions = derived(
 
 			if ($liquidityPoolRatio > 0) {
 				if (newClosedPosition.pnlShares > 0n) {
-					newClosedPosition.pnlAssets = closedPositionEvent.pnlShares / $liquidityPoolRatio;
+					newClosedPosition.payoutAssets = newClosedPosition.payoutShares / $liquidityPoolRatio;
+					newClosedPosition.pnlAssets =
+						newClosedPosition.payoutAssets - newClosedPosition.collateral;
 					newClosedPosition.pnlAssetsPercentage = parseFloat(
 						(
 							(newClosedPosition.pnlAssets * 10000n) /
@@ -81,12 +93,14 @@ export const closedUserPositions = derived(
 						).toString()
 					);
 				} else {
+					newClosedPosition.payoutAssets = 0n;
 					newClosedPosition.pnlAssets = -newClosedPosition.collateral;
 					newClosedPosition.pnlAssetsPercentage = -100;
 				}
+				newClosedPosition.closeLpRatio = $liquidityPoolRatio;
 			}
 
-			positions = [...positions, newClosedPosition];
+			positions = [newClosedPosition, ...positions];
 		});
 		set({ positions, loading: false, error: null });
 	},

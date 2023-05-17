@@ -12,12 +12,33 @@
 		}
 	}
 	.info-label {
-		@apply dark:text-slate-400;
+		@apply dark:text-valhalla-200/70;
+	}
+	.info-label-secondary {
+		@apply dark:text-valhalla-200/50;
 	}
 	.box {
-		@apply p-2 relative md:p-6 m-3 md:mx-4 xl:mx-5 2xl:mx-9 my-12 border rounded-lg dark:border-valhalla-400/40 
+		@apply relative overflow-hidden m-3 md:mx-4 xl:mx-5 2xl:mx-9 my-12 border rounded-lg dark:border-valhalla-400/40 
 		bg-gradient-to-br from-valhalla-800/80 to-valhalla-700/70 md:from-valhalla-800/90 md:to-valhalla-900/90 
-		shadow-[inset_8px_12px_12px_-4px_rgb(14,137,127,0.05),0_8px_10px_-6px_rgba(43,30,85,0.3)] transition-all;
+		shadow-[inset_8px_12px_12px_-4px_rgb(14,137,127,0.05),0_8px_10px_-6px_rgba(43,30,85,0.3)] 
+		hover:shadow-[inset_8px_12px_12px_-4px_rgb(14,137,127,0.1),0_8px_12px_-3px_rgba(43,30,85,0.6)]
+		 transition-all;
+	}
+	.box-head {
+		@apply dark:bg-valhalla-300/10 dark:text-valhalla-200/80 w-full m-0 p-6 py-4 tracking-wide font-semibold;
+	}
+	.box-action {
+		@apply mt-4 text-right dark:bg-valhalla-900/80;
+		button {
+			@apply rounded-none w-full bg-gradient-to-br from-secondary-800 to-secondary-900 hover:from-secondary-700
+			 hover:to-secondary-800 py-3 ring-0 outline-none dark:text-secondary-50 font-semibold 
+			 shadow-[inset_0_12px_12px_0_rgb(0,0,0,0.05)] shadow-secondary-700/5 hover:shadow-secondary-700/10 
+			 text-sm tracking-wide transition-all;
+			text-shadow: 1px 1px 2px theme(colors.secondary.900);
+		}
+	}
+	.box-content {
+		@apply p-3 md:p-6;
 	}
 	.user-input {
 		@apply dark:bg-slate-800 dark:hover:bg-gray-700 dark:focus:bg-gray-700 dark:border-slate-600 
