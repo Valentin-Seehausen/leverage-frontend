@@ -37,7 +37,7 @@
 			/>
 		</Transition>
 		<div class="fixed inset-0 overflow-y-auto">
-			<div class="flex min-h-full items-center justify-center p-0 md:p-4 text-center">
+			<div class="flex min-h-full items-center justify-center p-4 md:p-4 text-center">
 				<Transition
 					enter="  transition-all"
 					enterFrom=" opacity-0 scale-95"
@@ -46,13 +46,13 @@
 					leaveFrom=" opacity-100 scale-100"
 					leaveTo="enter opacity-0 scale-95"
 				>
-					<div class="relative group">
+					<div class="relative group flex-initial">
 						<div
 							style="background: linear-gradient({deg}deg, var(--tw-gradient-stops));"
 							class="absolute -inset-1 bg-gradient-to-r from-primary-600 to-secondary-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition-all"
 						/>
 						<div
-							class="relative dark:border-valhalla-400/60 box lg:w-[468px] m-0 p-0 w-full max-w-md transform overflow-hidden rounded-2xl text-left align-middle transition-all"
+							class="relative dark:border-valhalla-400/60 box w-full m-0 p-0 max-w-md transform overflow-hidden rounded-2xl text-left align-middle transition-all"
 							use:positionDetailsDialog.modal
 						>
 							{#if $positionDetailsModal}
