@@ -14,9 +14,7 @@
 			<div class="box">
 				<TradingViewWidget />
 			</div>
-			<div class="box">
-				<PositionBalance />
-			</div>
+			<PositionBalance />
 		</div>
 		<div class="basis-1/3 xl:basis-1/4">
 			<OpenPositionForm />

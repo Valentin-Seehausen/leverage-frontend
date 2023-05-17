@@ -58,14 +58,8 @@
 							{#if $positionDetailsModal}
 								<PositionModal position={$positionDetailsModal} />
 							{/if}
-							<div class="mt-4 text-right dark:bg-valhalla-900/80">
-								<button
-									type="button"
-									class="rounded-none w-full bg-gradient-to-br from-secondary-800 to-secondary-900 py-3 ring-0 outline-none dark:text-secondary-50 font-semibold shadow-[inset_0_12px_12px_0_rgb(0,0,0,0.05)] shadow-secondary-700/5 hover:shadow-secondary-700/10 transition-all"
-									on:click={positionDetailsDialog.close}
-								>
-									Close
-								</button>
+							<div class="box-action">
+								<button type="button" on:click={positionDetailsDialog.close}> Close </button>
 							</div>
 						</div>
 					</div>

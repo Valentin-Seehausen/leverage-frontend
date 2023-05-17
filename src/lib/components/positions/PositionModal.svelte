@@ -25,13 +25,13 @@
 		? 0n
 		: position.payoutShares / $liquidityPoolRatio - position.collateral;
 	$: currentAssetPnlPercentage = position.isOpen
-		? 0n
+		? 0
 		: Number((currentAssetPnl * 10000n) / position.collateral) / 100;
 	$: closeSharePrice = position.isOpen ? 0n : 10n ** 18n / position.closeLpRatio;
 </script>
 
 <div>
-	<div class="box-head dark:bg-valhalla-300/10 info-label w-full m-0 p-6 py-4">
+	<div class="box-head">
 		<h2>Position {position.id}</h2>
 	</div>
 	<div class="my-2 p-6 px-3 md:px-6 text-sm">
