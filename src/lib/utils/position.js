@@ -14,10 +14,15 @@ import { formatUnits } from 'viem';
  * @property {bigint} closePrice
  * @property {number} openDate
  * @property {number} closeDate
+ * @property {bigint} payoutShares
  * @property {bigint} pnlShares
  * @property {number} pnlSharesPercentage
+ * @property {bigint} payoutAssets
  * @property {bigint} pnlAssets
  * @property {number} pnlAssetsPercentage
+ * @property {bigint} openLpRatio
+ * @property {bigint} closeLpRatio
+ * @property {bigint} closeLpRatioBefore
  */
 
 /**

@@ -86,7 +86,12 @@ export const openUserPositionsFromEvents = derived(
 							pnlShares: 0n,
 							pnlSharesPercentage: 0,
 							pnlAssets: 0n,
-							pnlAssetsPercentage: 0
+							pnlAssetsPercentage: 0,
+							openLpRatio: shares / collateral,
+							closeLpRatio: 0n,
+							closeLpRatioBefore: 0n,
+							payoutShares: 0n,
+							payoutAssets: 0n
 						};
 
 						positions = [...positions, newPosition];

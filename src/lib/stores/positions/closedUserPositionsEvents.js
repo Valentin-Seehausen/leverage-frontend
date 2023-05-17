@@ -3,6 +3,7 @@ import { derived } from 'svelte/store';
 import { addresses } from '../addresses';
 import { parseAbi } from 'viem';
 import { client } from '../client';
+import { closedUserPositionsSubgraphUpdater } from './closedUserPositionsSubgraph';
 
 /**
  * @typedef {Object} PositionClosedEvent
@@ -34,6 +35,7 @@ export const closedUserPositionsEvents = derived(
 			args: { trader: $account.address },
 			eventName: 'PositionClosed',
 			onLogs: (log) => {
+				closedUserPositionsSubgraphUpdater.requestUpdate();
 				log.forEach(({ args: { positionId, pnlShares, closePrice, closeDate } }) => {
 					const newClosedPosition = {
 						id: positionId,
