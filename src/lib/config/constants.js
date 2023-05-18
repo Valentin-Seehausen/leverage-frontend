@@ -18,4 +18,4 @@ export const graphEndpointArbitrumGoerliDev =
 	'https://api.studio.thegraph.com/query/46177/hyperbolic-finance-dev/v0.3.1';
 
 export const arbitrumGoerliChainId = 421613;
-export const minBalance = parseEther('0.0001');
+export const minBalance = parseEther('0.0003');
