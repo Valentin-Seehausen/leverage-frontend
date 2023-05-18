@@ -1,5 +1,5 @@
 <script>
-	import { fetchBalance, getWalletClient } from '@wagmi/core';
+	import { getWalletClient } from '@wagmi/core';
 	import { account, connectWallet } from '$lib/stores/wallet';
 	import { arbitrumGoerli } from 'viem/chains';
 	import { toast } from '@zerodevx/svelte-toast';
@@ -8,6 +8,7 @@
 	import GlowingBackground from '$lib/components/GlowingBackground.svelte';
 	import { formatEther } from 'viem';
 	import { formatValue } from '$lib/utils/format';
+	import { client } from '$lib/stores/client';
 
 	const addArbitrumGoerli = async () => {
 		const client = await getWalletClient();
@@ -26,6 +27,7 @@
 	let requestError = '';
 
 	$: balance = $account.balance;
+	let requestingAccountBalance = false;
 
 	const requestFunds = async () => {
 		if (requestedFundsBefore) return;
@@ -45,19 +47,23 @@
 
 		if (error) {
 			requestError = error;
+			return;
 		}
 
 		userUsdc.requestUpdate();
 
 		if ($account.address) {
+			requestingAccountBalance = true;
 			balance = 0n;
-			fetchBalance({ address: $account.address }).then((balanceResult) => {
-				balance = balanceResult.value;
+			client.publicClient.getBalance({ address: $account.address }).then((balanceResult) => {
+				balance = balanceResult;
+				requestingAccountBalance = false;
 			});
 		}
 	};
 
-	$: fetchingBalances = $account.fetchingBalance || $userUsdc.fetchingBalance;
+	$: fetchingBalances =
+		$account.fetchingBalance || $userUsdc.fetchingBalance || requestingAccountBalance;
 	$: balancesSuffice = balance >= minBalance && $userUsdc.balance >= minCollateral;
 	$: $account.isConnected && !fetchingBalances && !balancesSuffice && requestFunds();
 
@@ -199,7 +205,8 @@
 						</svg>
 						You have a balance of {formatEther(balance)} ETH and {formatValue(
 							$userUsdc.balance,
-							usdcDecimals
+							usdcDecimals,
+							0
 						)} of our TestUSDC.
 					</div>
 
