@@ -16,6 +16,7 @@ export const metaMaskConnector = new MetaMaskConnector({
  * @property {string} shortAddress
  * @property {number | undefined} chainId
  * @property {bigint} balance
+ * @property {boolean} fetchingBalance
  */
 
 /** @type {AccountStoreState} */
@@ -24,7 +25,8 @@ const initialState = {
 	address: undefined,
 	shortAddress: '',
 	chainId: undefined,
-	balance: 0n
+	balance: 0n,
+	fetchingBalance: false
 };
 
 export const connectWallet = async () => {
@@ -52,13 +54,15 @@ export const account = derived(
 				...state,
 				address: getAddress(account.address),
 				isConnected: account.isConnected,
-				shortAddress: truncateEthAddress(account.address || '')
+				shortAddress: truncateEthAddress(account.address || ''),
+				fetchingBalance: true
 			};
 			set(state);
 			fetchBalance({ address: account.address }).then((balanceResult) => {
 				state = {
 					...state,
-					balance: balanceResult.value
+					balance: balanceResult.value,
+					fetchingBalance: false
 				};
 				set(state);
 			});

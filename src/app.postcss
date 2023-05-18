@@ -37,6 +37,9 @@
 			text-shadow: 1px 1px 2px theme(colors.secondary.900);
 		}
 	}
+	.text-free-glow {
+		text-shadow: 1px 1px 5px theme(colors.valhalla.900), 1px 1px 14px theme(colors.secondary.600);
+	}
 	.box-content {
 		@apply p-3 md:p-6;
 	}
@@ -51,7 +54,7 @@
 	}
 	.user-button {
 		@apply px-3.5 py-2 bg-gray-700/80 dark:hover:bg-gray-700 dark:focus:bg-gray-600 
-		 dark:text-gray-100/90 rounded-md text-sm shadow-sm h-11
+		 dark:text-gray-100/90 rounded-md text-sm shadow-sm h-11 cursor-pointer
 		 placeholder-gray-400 focus:outline-none focus:border-secondary-500 focus:ring-1 focus:ring-secondary-800
       dark:disabled:bg-gray-800 dark:disabled:text-gray-500 dark:disabled:border-gray-200 dark:disabled:shadow-none
       invalid:border-red-500 invalid:text-red-600
