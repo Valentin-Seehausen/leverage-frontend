@@ -34,7 +34,7 @@
 	</div>
 	<div class="my-2 p-6 px-3 md:px-6 text-sm">
 		<div class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between">
-			<div class=" info-label">
+			<div class="info-label">
 				Opened <span class="text-xs">
 					{dayjs.unix(position.openDate).fromNow()}
 				</span>
@@ -52,7 +52,7 @@
 
 		<div class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between">
 			<div class="info-label">Direction</div>
-			<div class=" ">
+			<div class="">
 				<span class={` ${position.isLong ? 'text-green-600' : 'text-red-700'}`}
 					>{position.isLong ? 'LONG' : 'SHORT'}</span
 				>
@@ -60,29 +60,29 @@
 		</div>
 
 		<div class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between">
-			<div class=" info-label">Leverage</div>
-			<div class=" info-label">
+			<div class="info-label">Leverage</div>
+			<div class="info-label">
 				{formatValue(position.leverage, leverageDecimals, 0, { showSymbol: false })}x
 			</div>
 		</div>
 
 		<div class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between">
-			<div class=" info-label">Entry Price</div>
-			<div class="info-label">
+			<div class="info-label">Entry Price</div>
+			<div class="info-label text-right font-mono">
 				{formatValue(position.entryPrice, priceFeedDecimals)}
 			</div>
 		</div>
 
 		<div class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between text-xs">
-			<div class=" info-label-secondary">Take Profit Price</div>
-			<div class="info-label-secondary">
+			<div class="info-label-secondary">Take Profit Price</div>
+			<div class="info-label-secondary text-right font-mono">
 				{formatValue(position.takeProfitPrice, priceFeedDecimals)}
 			</div>
 		</div>
 
 		<div class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between text-xs">
-			<div class=" info-label-secondary">Liquidation Price</div>
-			<div class="info-label-secondary">
+			<div class="info-label-secondary">Liquidation Price</div>
+			<div class="info-label-secondary text-right font-mono">
 				{formatValue(position.liquidationPrice, priceFeedDecimals)}
 			</div>
 		</div>
@@ -92,15 +92,15 @@
 		/>
 
 		<div class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between">
-			<div class=" info-label">Collateral</div>
-			<div class=" text-right">
+			<div class="info-label">Collateral</div>
+			<div class="text-right text font-mono">
 				{formatValue(position.collateral, usdcDecimals)}
 			</div>
 		</div>
 
 		<div class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between">
-			<div class=" info-label">HYP Acquired</div>
-			<div class="text-right">
+			<div class="info-label">HYP Acquired</div>
+			<div class="text-right font-mono">
 				HYP {formatValue(position.shares, liquidityPoolDecimals, 2, { showSymbol: false })}
 			</div>
 		</div>
@@ -109,7 +109,7 @@
 			class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between text-xs info-label-secondary"
 		>
 			<div class="">HYP/USDC</div>
-			<div class="text-right">
+			<div class="text-right font-mono">
 				Price: {formatValue(openSharePrice, usdcDecimals)}
 			</div>
 		</div>
@@ -120,15 +120,15 @@
 
 		{#if position.isOpen}
 			<div class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between">
-				<div class=" info-label">Current Price</div>
-				<div class=" info-label">
+				<div class="info-label">Current Price</div>
+				<div class="info-label text-right font-mono">
 					{formatValue($currentPriceTweened, priceFeedDecimals)}
 				</div>
 			</div>
 
 			<div class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between">
-				<div class=" info-label">Virtual PnL</div>
-				<div class=" ">
+				<div class="info-label">Virtual PnL</div>
+				<div class="text-right font-mono">
 					<span
 						class={`${
 							position.pnlSharesPercentage >= 0 ? 'dark:text-green-600' : 'dark:text-red-700'
@@ -138,8 +138,8 @@
 			</div>
 
 			<div class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between">
-				<div class=" info-label">HYP Payout</div>
-				<div class=" ">
+				<div class="info-label">HYP Payout</div>
+				<div class="text-right font-mono">
 					<span>
 						HYP {formatValue(position.payoutShares, liquidityPoolDecimals, 2, {
 							showSymbol: false
@@ -149,10 +149,10 @@
 			</div>
 
 			<div class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between">
-				<div class=" info-label">
+				<div class="info-label">
 					Current Value<br />
 				</div>
-				<div class=" ">
+				<div class="text-right font-mono">
 					<span>{formatValue(position.payoutAssets, usdcDecimals)}</span>
 				</div>
 			</div>
@@ -161,13 +161,13 @@
 				class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between text-xs info-label-secondary"
 			>
 				<div class="">HYP/USDC</div>
-				<div class="text-right">
+				<div class="text-right font-mono">
 					Price: {formatValue(currentSharePrice, usdcDecimals)}
 				</div>
 			</div>
 		{:else}
 			<div class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between">
-				<div class=" info-label">
+				<div class="info-label">
 					Closed <span class="text-xs">
 						<a
 							href={`https://goerli.arbiscan.io/tx/${position.closeTransactionHash}`}
@@ -184,14 +184,14 @@
 			</div>
 
 			<div class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between">
-				<div class=" info-label">Close Price</div>
-				<div class="info-label">
+				<div class="info-label">Close Price</div>
+				<div class="info-label text-right font-mono">
 					{formatValue(position.closePrice, priceFeedDecimals)}
 				</div>
 			</div>
 
 			<div class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between">
-				<div class=" info-label">
+				<div class="info-label">
 					Payout
 					<span
 						class={`text-xs ${
@@ -202,14 +202,14 @@
 					</span>
 				</div>
 
-				<div class="info-label">
+				<div class="info-label text-right font-mono">
 					HYP {formatValue(position.payoutShares, liquidityPoolDecimals, 2, { showSymbol: false })}
 				</div>
 			</div>
 
 			<div class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between">
-				<div class=" info-label">Value at Close</div>
-				<div class="info-label">
+				<div class="info-label">Value at Close</div>
+				<div class="info-label text-right font-mono">
 					{formatValue(position.payoutAssets, usdcDecimals)}
 				</div>
 			</div>
@@ -218,7 +218,7 @@
 				class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between text-xs info-label-secondary"
 			>
 				<div class="">HYP/USDC</div>
-				<div class="text-right">
+				<div class="text-right font-mono">
 					Price: {formatValue(closeSharePrice, usdcDecimals)}
 				</div>
 			</div>
@@ -228,9 +228,9 @@
 			/>
 
 			<div class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between font-semibold">
-				<div class=" info-label">Total PnL</div>
+				<div class="info-label">Total PnL</div>
 				<div
-					class={` ${
+					class={`text-right font-mono ${
 						position.pnlAssetsPercentage >= 0 ? 'dark:text-green-600' : 'dark:text-red-700'
 					}`}
 				>
@@ -247,9 +247,11 @@
 			/>
 
 			<div class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between text-xs">
-				<div class=" info-label">Hypothetical current PnL</div>
+				<div class="info-label">Hypothetical current PnL</div>
 				<div
-					class={`text-right ${currentAssetPnl >= 0 ? 'dark:text-green-600' : 'dark:text-red-700'}`}
+					class={`text-right font-mono ${
+						currentAssetPnl >= 0 ? 'dark:text-green-600' : 'dark:text-red-700'
+					}`}
 				>
 					{formatValue(
 						position.payoutShares / $liquidityPoolRatio - position.collateral,
@@ -266,7 +268,7 @@
 				class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between text-xs info-label-secondary"
 			>
 				<div class="">HYP/USDC</div>
-				<div class="text-right">
+				<div class="text-right font-mono">
 					Price: {formatValue(currentSharePrice, usdcDecimals)}
 				</div>
 			</div>

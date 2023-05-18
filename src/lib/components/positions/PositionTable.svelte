@@ -68,7 +68,7 @@
 						</div>
 					</div>
 					<div class="w-1/6 text-right info-label">
-						<span class="font-mono"
+						<span
 							>{formatValue(position.leverage, leverageDecimals, 0, { showSymbol: false })}x</span
 						>
 					</div>
@@ -80,7 +80,7 @@
 					</div>
 					{#if position.isOpen}
 						<div
-							class={`w-1/3 text-right pr-3 font-semibold ${
+							class={`w-1/3 text-right font-mono pr-3 font-semibold ${
 								position.pnlSharesPercentage >= 0 ? 'dark:text-green-600' : 'dark:text-red-700'
 							}`}
 						>
@@ -92,11 +92,11 @@
 							</span>
 						</div>
 					{:else}
-						<div class="w-1/6 text-right">
+						<div class="w-1/6 text-right info-label font-mono">
 							<span class="font-mono">{formatValue(position.closePrice, priceFeedDecimals, 2)}</span
 							>
 						</div>
-						<div class="w-1/6 text-right pr-3">
+						<div class="w-1/6 text-right pr-3 font-mono">
 							<span
 								class={`font-extrabold ${
 									position.pnlSharesPercentage >= 0 ? 'dark:text-green-600' : 'dark:text-red-700'
@@ -117,7 +117,7 @@
 						<div class="text-xs info-label">
 							{dayjs.unix(position.isOpen ? position.openDate : position.closeDate).fromNow()}
 						</div>
-						<div class="font-mono info-label text-xs">
+						<div class="info-label text-xs">
 							from {formatValue(position.entryPrice, priceFeedDecimals, 0)}
 						</div>
 					</div>
@@ -125,27 +125,28 @@
 					<div class="w-1/3 text-right">
 						<div class="font-mono">{formatValue(position.collateral, usdcDecimals, 2)}</div>
 
-						<div class="font-mono info-label text-xs">
+						<div class="info-label text-xs">
 							{formatValue(position.leverage, leverageDecimals, 0, { showSymbol: false })}x
 						</div>
 
 						{#if !position.isOpen}
-							<div class="font-mono info-label text-xs">
+							<div class="info-label text-xs">
 								to {formatValue(position.closePrice, priceFeedDecimals, 0)}
 							</div>
 						{/if}
 					</div>
 
 					<div
-						class={`w-1/3 text-right pr-3 font-semibold ${
-							position.pnlSharesPercentage >= 0 ? 'dark:text-green-600' : 'dark:text-red-700'
+						class={`w-1/3 text-right pr-3 font-mono font-semibold ${
+							position.pnlAssetsPercentage >= 0 ? 'dark:text-green-600' : 'dark:text-red-700'
 						}`}
 					>
 						<span>
 							{formatValue(position.pnlAssets, usdcDecimals, 2)}
 						</span>
+						<br />
 						<span class="text-xs">
-							({formatPercentage(position.pnlAssetsPercentage, { decimals: 0 })})
+							{formatPercentage(position.pnlAssetsPercentage, { decimals: 0 })}
 						</span>
 					</div>
 				</div>
