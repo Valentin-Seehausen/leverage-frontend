@@ -1,4 +1,4 @@
-import { readContract, waitForTransaction, writeContract } from '@wagmi/core';
+import { getWalletClient, readContract, waitForTransaction, writeContract } from '@wagmi/core';
 
 import { account } from './wallet';
 import { get, writable } from 'svelte/store';
@@ -7,11 +7,13 @@ import { toast } from '@zerodevx/svelte-toast';
 import { addresses } from './addresses';
 import { fetchSignerOrWarn } from '$lib/utils/signer';
 import { parseAbi } from 'viem';
+import { usdcDecimals } from '$lib/config/constants';
 
 const createUserUsdcStore = () => {
 	const initialState = {
 		balance: 0n,
-		allowance: 0n
+		allowance: 0n,
+		fetchingBalance: false
 	};
 	let state = initialState;
 	/** @type {import('viem').Address | undefined} */
@@ -21,6 +23,8 @@ const createUserUsdcStore = () => {
 	const fetchValues = () => {
 		if (!userAddress) return;
 
+		state.fetchingBalance = true;
+		set(state);
 		readContract({
 			address: get(addresses).addresses.usdc,
 			abi: parseAbi(['function balanceOf(address) view returns (uint256)']),
@@ -28,6 +32,7 @@ const createUserUsdcStore = () => {
 			args: [userAddress]
 		}).then((balance) => {
 			state.balance = balance;
+			state.fetchingBalance = false;
 			set(state);
 		});
 
@@ -126,4 +131,19 @@ export const requestFunds = async () => {
 	userUsdc.requestUpdate();
 
 	return;
+};
+
+export const addUsdcToWallet = async () => {
+	const walletClient = await getWalletClient();
+
+	if (!walletClient) return;
+
+	await walletClient.watchAsset({
+		type: 'ERC20',
+		options: {
+			address: get(addresses).addresses.usdc,
+			decimals: usdcDecimals,
+			symbol: 'USDCT'
+		}
+	});
 };
