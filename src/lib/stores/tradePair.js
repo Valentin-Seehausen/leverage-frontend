@@ -3,10 +3,10 @@ import { userUsdc, getAllowance, increaseAllowance } from './usdc';
 import { leverageDecimals } from '$lib/config/constants';
 import { closeablePositions } from './positions/closeablePositions';
 import { get } from 'svelte/store';
-import { toast } from '@zerodevx/svelte-toast';
 import { fetchSignerOrWarn } from '$lib/utils/signer';
 import { parseAbi, parseUnits } from 'viem';
 import { addresses } from './addresses';
+import { transactionLog } from './transactionLog';
 
 /**
  * Opens a position at TradePair via Signer
@@ -34,19 +34,9 @@ export const openPosition = async (collateral, leverage, isLong) => {
 		args: [collateral, parsedLeverage, isLong]
 	});
 
-	const txToast = toast.push('Waiting for Open Position Transaction...', {
-		initial: 0,
-		classes: ['info']
-	});
+	transactionLog.add({ hash: tx.hash, message: 'Open Position' });
 
 	await waitForTransaction(tx);
-
-	toast.pop(txToast);
-
-	toast.push('Position Opened', {
-		duration: 2000,
-		classes: ['success']
-	});
 
 	userUsdc.requestUpdate();
 };
@@ -64,19 +54,9 @@ export const closeCloseablePositions = async () => {
 		args: [ids]
 	});
 
-	const txToast = toast.push('Waiting for House Keeping Transaction...', {
-		initial: 0,
-		classes: ['info']
-	});
+	transactionLog.add({ hash: tx.hash, message: 'House Keeping' });
 
 	await waitForTransaction(tx);
-
-	toast.pop(txToast);
-
-	toast.push('House Keeping successful', {
-		duration: 2000,
-		classes: ['success']
-	});
 
 	closeablePositions.reset();
 };

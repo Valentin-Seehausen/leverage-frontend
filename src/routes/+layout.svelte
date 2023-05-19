@@ -6,6 +6,7 @@
 	import { Client, setContextClient, cacheExchange, fetchExchange } from '@urql/svelte';
 	import { positionDetailsDialog } from '$lib/stores/positionDetailsModal';
 	import ModalContainer from '$lib/components/positions/ModalContainer.svelte';
+	import TransactionLog from '$lib/components/TransactionLog.svelte';
 
 	// Toast Options
 	/** @type {import("@zerodevx/svelte-toast/stores").SvelteToastOptions} */
@@ -23,6 +24,10 @@
 
 <Nav />
 <ModalContainer />
+<div class="fixed md:hidden top-6 right-6 z-10">
+	<TransactionLog />
+</div>
+
 <div class="min-h-screen isolate">
 	<!-- Upper Scroll background -->
 	<div class="fixed inset-x-0 -z-10 transform-gpu blur-3xl sm:-top-80" aria-hidden="true">

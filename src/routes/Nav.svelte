@@ -27,6 +27,7 @@
 		<img alt="Hyperbolic Finance Logo" src={logo} class="w-10 h-10 mr-3 inline" />
 		<span class="hidden lg:inline">Hyperbolic Finance</span>
 	</a>
+
 	<a class="nav-button" href="/trading">Trading</a>
 	<a class="nav-button" href="/liquidity-pool">Liquidity Pool</a>
 	<WalletConnectButton />
