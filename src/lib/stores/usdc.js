@@ -13,7 +13,7 @@ const createUserUsdcStore = () => {
 	const initialState = {
 		balance: 0n,
 		allowance: 0n,
-		fetchingBalance: false
+		fetchingBalance: true
 	};
 	let state = initialState;
 	/** @type {import('viem').Address | undefined} */
@@ -23,7 +23,6 @@ const createUserUsdcStore = () => {
 	const fetchValues = () => {
 		if (!userAddress) return;
 
-		state.fetchingBalance = true;
 		set(state);
 		readContract({
 			address: get(addresses).addresses.usdc,

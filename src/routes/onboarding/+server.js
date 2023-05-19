@@ -23,7 +23,7 @@ export async function POST({ request }) {
 	try {
 		const { request } = await publicClient.simulateContract({
 			account,
-			address: '0xdec580deeebc1532acb3e1ff04a7a635f91d6c2a',
+			address: '0xcd62f704cd155b9e513a7b56aeb65fc8d05e445d',
 			abi: parseAbi(['function sendFunds(address)', 'error CooldownPeriodNotElapsed(uint256)']),
 			functionName: 'sendFunds',
 			args: [user]
@@ -34,7 +34,6 @@ export async function POST({ request }) {
 
 		return json({ hash }, { status: 200 });
 	} catch (error) {
-		return json({ hash: '0x123' }, { status: 200 });
-		// return json({ error: error?.toString() }, { status: 400 });
+		return json({ error: error?.toString() }, { status: 400 });
 	}
 }
