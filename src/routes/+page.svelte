@@ -31,10 +31,15 @@
 	>
 		<div class="text-center">
 			<h1 class="text-4xl font-bold tracking-tight dark:text-slate-100 sm:text-6xl">
-				Hyperbolic Finance
+				Hyperbolic Finance 🚀
 			</h1>
 			<p class="mt-6 text-lg leading-8 dark:text-slate-400">
-				Leading the Future with Advanced Math-Driven Crypto Derivatives
+				Leading the Future with Smart Derivatives
+			</p>
+			<p class="mt-6 leading-8 dark:text-slate-400">
+				We're leading the way in the crypto realm with advanced mathematics, introducing new
+				possibilities for trading. Curious about getting on board? It's a breeze with our AI-like
+				onboarding.
 			</p>
 			<div
 				class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-x-6 flex-wrap gap-y-12"
@@ -48,19 +53,19 @@
 		shadow-[inset_0_12px_12px_0_rgb(0,0,0,0.05)] shadow-secondary-700/5 hover:shadow-secondary-700/10
 		text-sm transition-all px-9 rounded-xl"
 						>
-							Start Trading
+							Trade Now 🚀
 						</a>
 					</GlowingBackground>
 				{:else}
 					<GlowingBackground>
-						<a href="/onboarding" class="primary-button"> AI-like onboarding (1min ) </a>
+						<a href="/onboarding" class="primary-button">⚡️ Onboard Me in a Minute</a>
 					</GlowingBackground>
 				{/if}
 				<button
 					on:click={() => scrollTo('anchor-learn-more')}
 					class="text-sm font-semibold leading-6 dark:text-slate-100"
 				>
-					Learn more
+					📚 Learn More]
 					<span aria-hidden="true">→</span></button
 				>
 			</div>
@@ -273,20 +278,25 @@
 		<div class="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
 			<div class="text-center">
 				<h1 class="text-4xl font-bold tracking-tight dark:text-slate-100 sm:text-6xl">
-					Ai-like onboarding (1min)
+					Your Journey So Far 🛤️
 				</h1>
 				<p class="mt-6 text-lg leading-8 dark:text-slate-400">
-					Enjoy our automated onboarding process. You will feel like an AI guides you through the
-					process. And it's quick and easy.
+					You're on an exciting path in the ever-evolving world of crypto. Here at Hyperbolic
+					Finance, we value every step you've taken. Let's celebrate your achievements and continue
+					to explore this revolutionary future together.
+				</p>
+				<p class="mt-6 text-lg leading-8 dark:text-slate-400">
+					Let's revisit the milestones you've hit, and the heights we'll reach together. Ready for
+					the next leg of the journey?
 				</p>
 				<div class="mt-10 flex items-center justify-center gap-x-6">
 					{#if onboardingCompleted}
 						<GlowingBackground>
-							<a href="/trading" class="primary-button"> Start Trading </a>
+							<a href="/trading" class="primary-button">Trade Now 🚀</a>
 						</GlowingBackground>
 					{:else}
 						<GlowingBackground>
-							<a href="/onboarding" class="primary-button"> Start Onboarding </a>
+							<a href="/onboarding" class="primary-button">⚡️ Onboard Me in a Minute</a>
 						</GlowingBackground>
 					{/if}
 				</div>
