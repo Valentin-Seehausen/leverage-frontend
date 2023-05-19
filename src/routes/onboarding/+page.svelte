@@ -118,10 +118,8 @@
 	bind:clientHeight={screenHeight}
 	class="min-h-screen flex flex-col justify-center items-center content-center gap-6 px-6 pt-[30vh] pb-[40vh] text-center"
 >
-	<div class="text-free-glow text-lg font-semibold" transition:fade|local>Ready for takeoff 🚀</div>
-	<div class="info-label" transition:fade|local>
-		Let's kick things off by connecting your MetaMask:
-	</div>
+	<div class="text-free-glow text-lg font-semibold" in:fade|local>Ready for takeoff 🚀</div>
+	<div class="info-label" in:fade|local>Let's kick things off by connecting your MetaMask:</div>
 
 	{#if !$account.isConnected}
 		<div class="self-center my-3">
