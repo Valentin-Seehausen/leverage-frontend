@@ -70,6 +70,7 @@ const brandColors = {
 		900: '#7b3313',
 		950: '#421708'
 	},
+	// Green
 	bilbao: {
 		50: '#f0fdf0',
 		100: '#dcfcde',
@@ -83,6 +84,7 @@ const brandColors = {
 		900: '#14531b',
 		950: '#052e0b'
 	},
+	// Reg
 	tamarillo: {
 		50: '#fef2f3',
 		100: '#ffe1e4',
