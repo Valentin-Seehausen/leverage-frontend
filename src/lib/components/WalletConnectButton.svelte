@@ -8,7 +8,7 @@
 	{#if $transactionLog.length > 0}
 		<TransactionLog />
 	{:else}
-		<button class="user-button w-32" on:click={connectWallet}>
+		<button class="user-button" on:click={connectWallet}>
 			{$account.shortAddress}
 		</button>
 	{/if}

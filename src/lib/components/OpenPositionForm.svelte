@@ -11,11 +11,14 @@
 	import { formatValue } from '$lib/utils/format';
 	import { parseUnits } from 'viem';
 	import { slide } from 'svelte/transition';
+	import { previewPosition } from '$lib/stores/previewPosition';
+	import { onDestroy } from 'svelte';
 
 	let inputCollateral = '100';
 	$: inputCollateral = inputCollateral.replace(/[^0-9]/g, '');
 	// @ts-ignore
 	$: collateral = BigInt(parseUnits(inputCollateral, usdcDecimals)) || 0n;
+	$: previewPosition.set({ collateral, isLong });
 	let leverage = 5;
 	let isLong = true;
 
@@ -38,6 +41,10 @@
 
 	$: allowanceIsSufficient = $userUsdc.allowance >= collateral;
 	$: balanceIsSufficient = $userUsdc.balance >= collateral;
+
+	onDestroy(() => {
+		previewPosition.set({ collateral: 0n, isLong: true });
+	});
 </script>
 
 <div class="box">

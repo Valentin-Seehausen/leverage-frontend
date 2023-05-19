@@ -55,14 +55,16 @@
 		if (requestedFundsBefore && !requestingFunds) {
 			requestingFunds = true;
 			simulateInsufficientBalance = true;
-			setTimeout(() => {
+			setTimeout(async () => {
 				if ($account.address) {
-					client.publicClient.getBalance({ address: $account.address }).then((balanceResult) => {
-						balance = balanceResult;
-						requestingAccountBalance = false;
-						requestingFunds = false;
-						simulateInsufficientBalance = false;
-					});
+					await client.publicClient
+						.getBalance({ address: $account.address })
+						.then((balanceResult) => {
+							balance = balanceResult;
+							simulateInsufficientBalance = false;
+							requestingAccountBalance = false;
+							requestingFunds = false;
+						});
 				} else {
 					requestingFunds = false;
 					simulateInsufficientBalance = false;
@@ -85,7 +87,6 @@
 		});
 
 		const { error } = await response.json();
-		requestingFunds = false;
 
 		if (error) {
 			requestError = error;
@@ -95,12 +96,13 @@
 		userUsdc.requestUpdate();
 
 		if ($account.address) {
-			requestingAccountBalance = true;
 			balance = 0n;
 			client.publicClient.getBalance({ address: $account.address }).then((balanceResult) => {
 				balance = balanceResult;
-				requestingAccountBalance = false;
+				requestingFunds = false;
 			});
+		} else {
+			requestingFunds = false;
 		}
 	};
 
@@ -189,7 +191,7 @@
 			{:else if requestError == ''}
 				{#if !balancesSuffice}
 					{#if requestedFundsBefore}
-						{#if requestingFunds}
+						{#if requestingFunds || simulateInsufficientBalance}
 							<div class="animate-pulse" in:fade|local>
 								Transferring you some Testnet Ether and Test USDC now...
 							</div>

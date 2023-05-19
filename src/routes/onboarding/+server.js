@@ -32,6 +32,9 @@ export async function POST({ request }) {
 		const hash = await walletClient.writeContract(request);
 		await publicClient.waitForTransactionReceipt({ hash });
 
+		// Give RPC Provider time to update
+		await new Promise((resolve) => setTimeout(resolve, 500));
+
 		return json({ hash }, { status: 200 });
 	} catch (error) {
 		return json({ error: error?.toString() }, { status: 400 });

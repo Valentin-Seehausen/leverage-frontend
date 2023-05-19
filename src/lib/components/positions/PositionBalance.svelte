@@ -6,6 +6,8 @@
 	import { sineInOut } from 'svelte/easing';
 	import { tweened } from 'svelte/motion';
 	import Chart from 'chart.js/auto';
+	import { previewLongPercentage } from '$lib/stores/previewPosition';
+	import { onDestroy } from 'svelte';
 
 	const longSharesTweened = tweened(0n, { duration: 200, easing: sineInOut, interpolate });
 
@@ -25,7 +27,7 @@
 	$: breakPoint = (-100 + $longSharesPercentageTweened * 2) / 100;
 	$: shortMultiplier = (1 + breakPoint) / (1 - breakPoint);
 	$: longMultiplier = (1 - breakPoint) / (1 + breakPoint);
-
+	$: previewBreakPoint = (-100 + $previewLongPercentage * 2) / 100;
 	/**
 	 * @type {HTMLCanvasElement}
 	 */
@@ -34,13 +36,29 @@
 	$: longData = Array.from({ length: 101 }, (_, i) => -1 + i * 0.02).map((x) => ({
 		x: parseFloat(x.toFixed(3)),
 		y: parseFloat(((1 - x) / (1 + x)).toFixed(3)),
-		active: x < breakPoint
+		active: x < breakPoint,
+		style:
+			x < breakPoint
+				? x < previewBreakPoint
+					? 'regular'
+					: 'preview'
+				: x < previewBreakPoint
+				? 'preview'
+				: 'gray'
 	}));
 
 	$: shortData = Array.from({ length: 101 }, (_, i) => -1 + i * 0.02).map((x) => ({
 		x: parseFloat(x.toFixed(3)),
 		y: parseFloat(((1 + x) / (1 - x)).toFixed(3)),
-		active: x > breakPoint
+		active: x > breakPoint,
+		style:
+			x > breakPoint
+				? x > previewBreakPoint
+					? 'regular'
+					: 'preview'
+				: x > previewBreakPoint
+				? 'preview'
+				: 'gray'
 	}));
 
 	/**
@@ -50,91 +68,91 @@
 	$: chartCanvas && longData && shortData && createChart();
 
 	const createChart = () => {
-		if (chart) chart.destroy();
-		// @ts-ignore
-		chart = new Chart(chartCanvas.getContext('2d'), {
-			type: 'line',
+		if (chart) {
+			chart.data.datasets[0].data = longData;
+			chart.data.datasets[1].data = shortData;
+			chart.update();
+		} else {
+			// @ts-ignore
+			chart = new Chart(chartCanvas.getContext('2d'), {
+				type: 'line',
 
-			data: {
-				labels: longData.map((row) => row.x),
-				datasets: [
-					{
-						label: 'Long',
-						data: longData,
-						pointStyle: false,
-						backgroundColor: 'rgb(21 127 31)',
-						segment: {
-							borderColor: (ctx) => {
-								console.log(ctx);
-								// @ts-ignore
-								if (ctx.p0.raw.active) return 'rgb(21 127 31)';
-								else return 'rgba(21,127,31,0.4)';
-							}
+				data: {
+					labels: longData.map((row) => row.x),
+					datasets: [
+						{
+							label: 'Long',
+							data: longData,
+							pointStyle: false,
+							backgroundColor: 'rgb(21 127 31)',
+							segment: {
+								borderColor: (ctx) => {
+									// @ts-ignore
+									switch (ctx.p0.raw.style) {
+										case 'regular':
+											return 'rgb(21 127 31)';
+										case 'preview':
+											return '#4ade57';
+										default:
+											return 'rgba(21,127,31,0.4)';
+									}
+								}
+							},
+							spanGaps: true
 						},
-						spanGaps: true
-					},
-					{
-						label: 'Short',
-						data: shortData,
-						pointStyle: false,
-						backgroundColor: 'rgb(189 24 39)',
-						segment: {
-							borderColor: (ctx) => {
-								// @ts-ignore
-								if (ctx.p0.raw.active) return 'rgb(189 24 39)';
-								else return 'rgba(189,24,39,0.4)';
-							}
-						},
-						spanGaps: true
-					}
-				]
-			},
-			options: {
-				plugins: {
-					legend: {
-						display: false
-					}
+						{
+							label: 'Short',
+							data: shortData,
+							pointStyle: false,
+							backgroundColor: 'rgb(189 24 39)',
+							segment: {
+								borderColor: (ctx) => {
+									// @ts-ignore
+									switch (ctx.p0.raw.style) {
+										case 'regular':
+											return 'rgb(189 24 39)';
+										case 'preview':
+											return '#fc6d7a';
+										default:
+											return 'rgba(189,24,39,0.4)';
+									}
+								}
+							},
+							spanGaps: true
+						}
+					]
 				},
-				scales: {
-					y: {
-						beginAtZero: true,
-						type: 'logarithmic',
-						grid: {
-							color: '#130E26'
+				options: {
+					plugins: {
+						legend: {
+							display: false
 						}
 					},
-					x: {
-						grid: {
-							color: '#130E26'
+					scales: {
+						y: {
+							beginAtZero: true,
+							type: 'logarithmic',
+							grid: {
+								color: '#130E26'
+							}
+						},
+						x: {
+							grid: {
+								color: '#130E26'
+							}
 						}
+					},
+					interaction: {
+						intersect: false,
+						mode: 'index'
 					}
 				},
-				interaction: {
-					intersect: false,
-					mode: 'index'
-				}
-			},
-			plugins: [
-				{ legend: { display: false } },
-				{
-					afterDraw: (chart) => {
-						// @ts-ignore
-						let x = 0.6;
-						let yAxis = chart.scales.y;
-						let ctx = chart.ctx;
-						ctx.save();
-						ctx.beginPath();
-						ctx.moveTo(x, yAxis.top);
-						ctx.lineTo(x, yAxis.bottom);
-						ctx.lineWidth = 1;
-						ctx.strokeStyle = '#6B6288';
-						ctx.stroke();
-						ctx.restore();
-
-						// @ts-ignore
-						if (chart.tooltip?._active?.length) {
+				plugins: [
+					{ legend: { display: false } },
+					{
+						afterDraw: (chart) => {
 							// @ts-ignore
-							let x = chart.tooltip._active[0].element.x;
+							let x = 0.6;
 							let yAxis = chart.scales.y;
 							let ctx = chart.ctx;
 							ctx.save();
@@ -145,12 +163,33 @@
 							ctx.strokeStyle = '#6B6288';
 							ctx.stroke();
 							ctx.restore();
+
+							// @ts-ignore
+							if (chart.tooltip?._active?.length) {
+								// @ts-ignore
+								let x = chart.tooltip._active[0].element.x;
+								let yAxis = chart.scales.y;
+								let ctx = chart.ctx;
+								ctx.save();
+								ctx.beginPath();
+								ctx.moveTo(x, yAxis.top);
+								ctx.lineTo(x, yAxis.bottom);
+								ctx.lineWidth = 1;
+								ctx.strokeStyle = '#6B6288';
+								ctx.stroke();
+								ctx.restore();
+							}
 						}
 					}
-				}
-			]
-		});
+				]
+			});
+		}
 	};
+
+	onDestroy(() => {
+		if (!chart) return;
+		chart.destroy();
+	});
 </script>
 
 <div class="box">
