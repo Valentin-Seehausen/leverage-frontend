@@ -20,6 +20,8 @@ const initValue = {
 	shortSharesPercentage: 0,
 	totalShares: 0n,
 	totalCollateral: 0n,
+	longMultiplier: 0,
+	shortMultiplier: 0,
 	loading: true,
 	/** @type {import("@urql/svelte").CombinedError | null} */ error: null
 };

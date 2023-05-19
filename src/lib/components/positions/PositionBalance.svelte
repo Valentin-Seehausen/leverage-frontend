@@ -34,13 +34,13 @@
 	$: longData = Array.from({ length: 101 }, (_, i) => -1 + i * 0.02).map((x) => ({
 		x: parseFloat(x.toFixed(3)),
 		y: parseFloat(((1 - x) / (1 + x)).toFixed(3)),
-		active: breakPoint > 0.5 ? x > breakPoint : x < breakPoint
+		active: x < breakPoint
 	}));
 
 	$: shortData = Array.from({ length: 101 }, (_, i) => -1 + i * 0.02).map((x) => ({
 		x: parseFloat(x.toFixed(3)),
 		y: parseFloat(((1 + x) / (1 - x)).toFixed(3)),
-		active: breakPoint > 0.5 ? x > breakPoint : x < breakPoint
+		active: x > breakPoint
 	}));
 
 	/**
