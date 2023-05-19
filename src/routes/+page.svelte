@@ -27,7 +27,7 @@
 
 <div class="bg-gradient-to-br from-valhalla-600 relative">
 	<div
-		class="mx-auto max-w-2xl content-section px-3 sm:px-6 lg:px-8 py-48 sm:py-48 md:py-[35vh] lg:py-[40vh]"
+		class="mx-auto max-w-2xl content-section px-3 sm:px-6 lg:px-8 py-48 sm:py-48 md:py-[30vh] lg:py-[30vh]"
 	>
 		<div class="text-center">
 			<h1 class="text-4xl font-bold tracking-tight dark:text-slate-100 sm:text-6xl">
