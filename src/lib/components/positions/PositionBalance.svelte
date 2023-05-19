@@ -23,20 +23,21 @@
 	}
 
 	$: breakPoint = (-100 + $longSharesPercentageTweened * 2) / 100;
-	$: console.log(breakPoint);
+	$: shortMultiplier = (1 + breakPoint) / (1 - breakPoint);
+	$: longMultiplier = (1 - breakPoint) / (1 + breakPoint);
 
 	/**
 	 * @type {HTMLCanvasElement}
 	 */
 	let chartCanvas;
 
-	$: long = Array.from({ length: 101 }, (_, i) => -1 + i * 0.02).map((x) => ({
+	$: longData = Array.from({ length: 101 }, (_, i) => -1 + i * 0.02).map((x) => ({
 		x: parseFloat(x.toFixed(3)),
 		y: parseFloat(((1 - x) / (1 + x)).toFixed(3)),
 		active: breakPoint > 0.5 ? x > breakPoint : x < breakPoint
 	}));
 
-	$: short = Array.from({ length: 101 }, (_, i) => -1 + i * 0.02).map((x) => ({
+	$: shortData = Array.from({ length: 101 }, (_, i) => -1 + i * 0.02).map((x) => ({
 		x: parseFloat(x.toFixed(3)),
 		y: parseFloat(((1 + x) / (1 - x)).toFixed(3)),
 		active: breakPoint > 0.5 ? x > breakPoint : x < breakPoint
@@ -46,7 +47,7 @@
 	 * @type {Chart<"line", { x: number; y: number; active: boolean; }[], number>}
 	 */
 	let chart;
-	$: chartCanvas && long && short && createChart();
+	$: chartCanvas && longData && shortData && createChart();
 
 	const createChart = () => {
 		if (chart) chart.destroy();
@@ -55,18 +56,17 @@
 			type: 'line',
 
 			data: {
-				labels: long.map((row) => row.x),
+				labels: longData.map((row) => row.x),
 				datasets: [
 					{
 						label: 'Long',
-						data: long,
+						data: longData,
 						pointStyle: false,
 						backgroundColor: 'rgb(21 127 31)',
 						segment: {
 							borderColor: (ctx) => {
 								console.log(ctx);
 								// @ts-ignore
-
 								if (ctx.p0.raw.active) return 'rgb(21 127 31)';
 								else return 'rgba(21,127,31,0.4)';
 							}
@@ -75,11 +75,12 @@
 					},
 					{
 						label: 'Short',
-						data: short,
+						data: shortData,
 						pointStyle: false,
 						backgroundColor: 'rgb(189 24 39)',
 						segment: {
 							borderColor: (ctx) => {
+								// @ts-ignore
 								if (ctx.p0.raw.active) return 'rgb(189 24 39)';
 								else return 'rgba(189,24,39,0.4)';
 							}
@@ -183,13 +184,23 @@
 
 				<div class="flex flex-row mt-3">
 					<div class="">
+						Long
+						<br />
 						HYP {formatValue($longSharesTweened, liquidityPoolDecimals, 2, { showSymbol: false })}
+						<br />
+						Multiplier: {longMultiplier.toFixed(2)}x
 					</div>
 					<div class="grow text-right">
+						Short
+						<br />
 						HYP {formatValue($shortSharesTweened, liquidityPoolDecimals, 2, { showSymbol: false })}
+						<br />
+						Multiplier: {shortMultiplier.toFixed(2)}x
 					</div>
 				</div>
 			</div>
+
+			<div />
 		{/if}
 	</div>
 </div>
