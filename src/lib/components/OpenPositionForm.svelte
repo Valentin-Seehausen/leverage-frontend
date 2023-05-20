@@ -130,42 +130,40 @@
 		</label>
 
 		<div class="my-6 md:max-lg:px-2 px-2 text-sm">
-			<div class="flex flex-row">
-				<div class="basis-2/3 info-label">Take Profit Price:</div>
-				<div class="basis-1/3 text-right">{formatValue(takeProfitPrice, priceFeedDecimals)}</div>
+			<div class="flex flex-row justify-between gap-3">
+				<div class="info-label">Take Profit Price:</div>
+				<div class="text-right">{formatValue(takeProfitPrice, priceFeedDecimals)}</div>
 			</div>
-			<div class="flex flex-row">
-				<div class="basis-2/3 info-label">Entry Price:</div>
-				<div class="basis-1/3 text-right">
+			<div class="flex flex-row justify-between gap-3">
+				<div class="info-label">Entry Price:</div>
+				<div class="text-right">
 					{formatValue($currentPriceTweened, priceFeedDecimals)}
 				</div>
 			</div>
-			<div class="flex flex-row">
-				<div class="basis-2/3 info-label">Liquidation Price:</div>
-				<div class="basis-1/3 text-right">{formatValue(liquidationPrice, priceFeedDecimals)}</div>
+			<div class="flex flex-row justify-between gap-3">
+				<div class="info-label">Liquidation Price:</div>
+				<div class="text-right">{formatValue(liquidationPrice, priceFeedDecimals)}</div>
 			</div>
 
-			<div
-				class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between my-6 border-t dark:border-slate-500"
-			/>
+			<div class="flex flex-row justify-between my-9 border-t dark:border-slate-500/40" />
 
-			<div class="flex flex-row">
-				<div class="basis-2/3 info-label">Minted HYP:</div>
-				<div class="basis-1/3 text-right">
+			<div class="flex flex-row justify-between gap-3">
+				<div class="info-label">Minted HYP:</div>
+				<div class="text-right">
 					HYP {formatValue($previewShares, liquidityPoolDecimals, 2, { showSymbol: false })}
 				</div>
 			</div>
 
-			<div class="flex flex-row">
-				<div class="basis-2/3 info-label">HYP/USDC:</div>
-				<div class="basis-1/3 text-right">
+			<div class="flex flex-row justify-between gap-3">
+				<div class="info-label">HYP/USDC:</div>
+				<div class="text-right">
 					{formatValue($liquidityPoolPrice, usdcDecimals)}
 				</div>
 			</div>
 
-			<div class="flex flex-row">
-				<div class="basis-2/3 info-label">Multiplier Effect:</div>
-				<div class="basis-1/3 text-right">
+			<div class="flex flex-row justify-between gap-3">
+				<div class="info-label">Multiplier Effect:</div>
+				<div class="text-right">
 					{#if isLong}
 						{$positionBalance.longMultiplier.toFixed(2)} &rarr; {$previewLongMultiplier.toFixed(2)}
 					{:else}
