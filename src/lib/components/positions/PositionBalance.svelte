@@ -36,7 +36,7 @@
 	$: previewBreakPoint = (-100 + $previewLongPercentage * 2) / 100;
 
 	$: longData = Array.from({ length: 101 }, (_, i) => -1 + i * 0.02).map((x) => ({
-		x: parseFloat(x.toFixed(3)),
+		x: parseFloat((0.5 + (x * 1) / 2).toFixed(2)),
 		y: parseFloat(((1 - x) / (1 + x)).toFixed(3)),
 		style:
 			x < breakPoint
@@ -49,7 +49,7 @@
 	}));
 
 	$: shortData = Array.from({ length: 101 }, (_, i) => -1 + i * 0.02).map((x) => ({
-		x: parseFloat(x.toFixed(3)),
+		x: parseFloat((0.5 + (x * 1) / 2).toFixed(2)),
 		y: parseFloat(((1 + x) / (1 - x)).toFixed(3)),
 		style:
 			x > breakPoint
@@ -168,7 +168,7 @@
 					},
 					scales: {
 						y: {
-							// beginAtZero: true,
+							beginAtZero: true,
 							// @ts-ignore
 							type: 'logarithmic',
 							grid: {
