@@ -1,7 +1,13 @@
 <script>
 	import { liquidityPoolDecimals } from '$lib/config/constants';
 	import { positionBalance } from '$lib/stores/positionBalance';
-	import { previewLongPercentage } from '$lib/stores/previewPosition';
+	import {
+		previewLongMultiplier,
+		previewLongPercentage,
+		previewPosition,
+		previewShares,
+		previewShortMultiplier
+	} from '$lib/stores/previewPosition';
 	import { formatValue } from '$lib/utils/format';
 	import { interpolateBigInts as interpolate } from '$lib/utils/interpolateBigInts';
 	import Chart from 'chart.js/auto';
@@ -227,28 +233,32 @@
 				<div class="relative dark:bg-slate-600 rounded h-8">
 					<div
 						class="absolute font-semibold left-0 h-full bg-green-700 dark:text-slate-100 text-xs text-left leading-8 px-3"
-						style={`width: ${$previewLongPercentage}%`}
+						style={`width: ${$longSharesPercentageTweened}%`}
 					>
-						{$previewLongPercentage.toFixed(2)}%
+						{$longSharesPercentageTweened.toFixed(2)}%
 					</div>
 
-					{#if $previewLongPercentage < $longSharesPercentageTweened}
+					{#if $previewLongPercentage > $longSharesPercentageTweened}
 						<div
-							class="absolute font-semibold left-0 h-full bg-green-400 dark:text-slate-100 text-xs text-left leading-8 px-3 z-10"
-							style={`width: ${
-								$longSharesPercentageTweened - $previewLongPercentage
-							}%; left: ${$previewLongPercentage}%`}
-						>
-							-{($longSharesPercentageTweened - $previewLongPercentage).toFixed(2)}%
-						</div>
-					{:else if $previewLongPercentage > $longSharesPercentageTweened}
-						<div
-							class="absolute font-semibold left-0 h-full bg-red-400 dark:text-slate-100 text-xs text-left leading-8 px-3 z-10"
+							class="absolute font-semibold left-0 h-full bg-green-400 dark:text-slate-100 text-xs text-right leading-8 px-3 z-10"
 							style={`width: ${
 								$previewLongPercentage - $longSharesPercentageTweened
 							}%; left: ${$longSharesPercentageTweened}%`}
 						>
-							+{($previewLongPercentage - $longSharesPercentageTweened).toFixed(2)}%
+							<span class="absolute right-3 w-32">
+								&rarr; {($previewLongPercentage - $longSharesPercentageTweened).toFixed(2)}%
+							</span>
+						</div>
+					{:else if $previewLongPercentage < $longSharesPercentageTweened}
+						<div
+							class="absolute font-semibold left-0 h-full bg-red-500 dark:text-slate-100 text-xs text-left leading-8 px-3 z-10"
+							style={`width: ${
+								$longSharesPercentageTweened - $previewLongPercentage
+							}%; left: ${$previewLongPercentage}%`}
+						>
+							<span class="absolute left-3 w-32">
+								{($longSharesPercentageTweened - $previewLongPercentage).toFixed(2)}% &larr;
+							</span>
 						</div>
 					{/if}
 
@@ -267,15 +277,27 @@
 						Long
 						<br />
 						HYP {formatValue($longSharesTweened, liquidityPoolDecimals, 2, { showSymbol: false })}
+						{#if $previewShares && $previewPosition.isLong}
+							&rarr; {formatValue($previewShares, liquidityPoolDecimals, 2, { showSymbol: false })}
+						{/if}
 						<br />
-						Multiplier: {longMultiplier.toFixed(2)}x
+						Multiplier: {longMultiplier.toFixed(2)}
+						{#if $previewLongMultiplier !== longMultiplier}
+							&rarr; {$previewLongMultiplier.toFixed(2)}
+						{/if}
 					</div>
 					<div class="grow text-right">
 						Short
 						<br />
 						HYP {formatValue($shortSharesTweened, liquidityPoolDecimals, 2, { showSymbol: false })}
+						{#if $previewShares && !$previewPosition.isLong}
+							&rarr; {formatValue($previewShares, liquidityPoolDecimals, 2, { showSymbol: false })}
+						{/if}
 						<br />
-						Multiplier: {shortMultiplier.toFixed(2)}x
+						Multiplier: {shortMultiplier.toFixed(2)}
+						{#if $previewShortMultiplier !== shortMultiplier}
+							&rarr; {$previewShortMultiplier.toFixed(2)}
+						{/if}
 					</div>
 				</div>
 			</div>

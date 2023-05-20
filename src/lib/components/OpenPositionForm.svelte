@@ -22,7 +22,7 @@
 	import { liquidityPoolPrice } from '$lib/stores/liquidityPool';
 	import { positionBalance } from '$lib/stores/positionBalance';
 
-	let inputCollateral = '100';
+	let inputCollateral = '';
 	$: inputCollateral = inputCollateral.replace(/[^0-9]/g, '');
 	// @ts-ignore
 	$: collateral = BigInt(parseUnits(inputCollateral, usdcDecimals)) || 0n;
@@ -142,9 +142,11 @@
 				<div class="basis-2/3 info-label">Multiplier Effect:</div>
 				<div class="basis-1/3 text-right">
 					{#if isLong}
-						{$positionBalance.longMultiplier.toFixed(2)} -> {$previewLongMultiplier.toFixed(2)}
+						{$positionBalance.longMultiplier.toFixed(2)} &rarr; {$previewLongMultiplier.toFixed(2)}
 					{:else}
-						{$positionBalance.shortMultiplier.toFixed(2)} -> {$previewShortMultiplier.toFixed(2)}
+						{$positionBalance.shortMultiplier.toFixed(2)} &rarr; {$previewShortMultiplier.toFixed(
+							2
+						)}
 					{/if}
 				</div>
 			</div>
