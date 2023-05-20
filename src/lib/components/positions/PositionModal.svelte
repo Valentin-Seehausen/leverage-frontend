@@ -87,7 +87,7 @@
 		</div>
 
 		<div
-			class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between my-6 border-t dark:border-slate-500"
+			class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between my-6 border-t dark:border-slate-500/40"
 		/>
 
 		<div class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between">
@@ -114,7 +114,7 @@
 		</div>
 
 		<div
-			class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between my-6 border-t dark:border-slate-500"
+			class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between my-6 border-t dark:border-slate-500/40"
 		/>
 
 		{#if position.isOpen}
@@ -223,7 +223,7 @@
 			</div>
 
 			<div
-				class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between my-6 border-t dark:border-slate-500"
+				class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between my-6 border-t dark:border-slate-500/40"
 			/>
 
 			<div class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between font-semibold">
@@ -242,7 +242,7 @@
 		{/if}
 		{#if $liquidityPoolRatio > 0 && (position.isOpen || position.pnlShares > 0)}
 			<div
-				class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between my-6 border-t dark:border-slate-500"
+				class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between my-6 border-t dark:border-slate-500/40"
 			/>
 
 			<div class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between text-xs">

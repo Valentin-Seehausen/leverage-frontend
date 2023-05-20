@@ -1,13 +1,8 @@
 import { derived } from 'svelte/store';
 import { connect, watchAccount, getWalletClient, watchNetwork, fetchBalance } from '@wagmi/core';
 import truncateEthAddress from 'truncate-eth-address';
-import { isInitialized } from './client';
-import { MetaMaskConnector } from '@wagmi/core/connectors/metaMask';
+import { isInitialized, metaMaskConnector } from './client';
 import { getAddress } from 'viem';
-
-export const metaMaskConnector = new MetaMaskConnector({
-	options: { shimDisconnect: true }
-});
 
 /**
  * @typedef {Object} AccountStoreState
@@ -31,7 +26,7 @@ const initialState = {
 
 export const connectWallet = async () => {
 	if (await getWalletClient()) return;
-	connect({
+	await connect({
 		connector: metaMaskConnector
 	});
 };
@@ -49,6 +44,8 @@ export const account = derived(
 				set(state);
 				return;
 			}
+
+			localStorage.setItem('connectedBefore', 'true');
 
 			state = {
 				...state,

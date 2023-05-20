@@ -6,7 +6,7 @@ import { MetaMaskConnector } from '@wagmi/core/connectors/metaMask';
 import { ALCHEMY_ARBITRUM_GOERLI_KEY } from '$lib/config/keys.json';
 import { readable } from 'svelte/store';
 
-const metaMaskConnector = new MetaMaskConnector({
+export const metaMaskConnector = new MetaMaskConnector({
 	options: { shimDisconnect: true }
 });
 
