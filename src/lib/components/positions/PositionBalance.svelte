@@ -9,12 +9,12 @@
 	import { previewLongPercentage } from '$lib/stores/previewPosition';
 	import { onDestroy } from 'svelte';
 
-	const longSharesTweened = tweened(0n, { duration: 200, easing: sineInOut, interpolate });
+	const longSharesTweened = tweened(10n, { duration: 200, easing: sineInOut, interpolate });
 
-	const shortSharesTweened = tweened(0n, { duration: 200, easing: sineInOut, interpolate });
+	const shortSharesTweened = tweened(10n, { duration: 200, easing: sineInOut, interpolate });
 
-	const longSharesPercentageTweened = tweened(0, { duration: 200, easing: sineInOut });
-	const shortSharesPercentageTweened = tweened(0, { duration: 200, easing: sineInOut });
+	const longSharesPercentageTweened = tweened(50, { duration: 200, easing: sineInOut });
+	const shortSharesPercentageTweened = tweened(50, { duration: 200, easing: sineInOut });
 
 	$: {
 		longSharesTweened.set($positionBalance.longShares);
@@ -28,15 +28,10 @@
 	$: shortMultiplier = (1 + breakPoint) / (1 - breakPoint);
 	$: longMultiplier = (1 - breakPoint) / (1 + breakPoint);
 	$: previewBreakPoint = (-100 + $previewLongPercentage * 2) / 100;
-	/**
-	 * @type {HTMLCanvasElement}
-	 */
-	let chartCanvas;
 
 	$: longData = Array.from({ length: 101 }, (_, i) => -1 + i * 0.02).map((x) => ({
 		x: parseFloat(x.toFixed(3)),
 		y: parseFloat(((1 - x) / (1 + x)).toFixed(3)),
-		active: x < breakPoint,
 		style:
 			x < breakPoint
 				? x < previewBreakPoint
@@ -50,7 +45,6 @@
 	$: shortData = Array.from({ length: 101 }, (_, i) => -1 + i * 0.02).map((x) => ({
 		x: parseFloat(x.toFixed(3)),
 		y: parseFloat(((1 + x) / (1 - x)).toFixed(3)),
-		active: x > breakPoint,
 		style:
 			x > breakPoint
 				? x > previewBreakPoint
@@ -62,19 +56,25 @@
 	}));
 
 	/**
-	 * @type {Chart<"line", { x: number; y: number; active: boolean; }[], number>}
+	 * @type {Chart}
 	 */
 	let chart;
-	$: chartCanvas && longData && shortData && createChart();
+	/**
+	 * @type {HTMLCanvasElement}
+	 */
+	let chartCanvas;
+	$: chartCanvas && longData && shortData && createChart(chartCanvas);
 
-	const createChart = () => {
+	/**
+	 * @param {HTMLCanvasElement} canvas
+	 */
+	const createChart = (canvas) => {
 		if (chart) {
 			chart.data.datasets[0].data = longData;
 			chart.data.datasets[1].data = shortData;
 			chart.update();
 		} else {
-			// @ts-ignore
-			chart = new Chart(chartCanvas.getContext('2d'), {
+			chart = new Chart(canvas, {
 				type: 'line',
 
 				data: {
@@ -131,6 +131,7 @@
 					scales: {
 						y: {
 							beginAtZero: true,
+							// @ts-ignore
 							type: 'logarithmic',
 							grid: {
 								color: '#130E26'
@@ -148,22 +149,15 @@
 					}
 				},
 				plugins: [
-					{ legend: { display: false } },
 					{
+						id: 'jo',
+						afterUpdate: (chart) => {
+							console.log('JO', chart);
+						}
+					},
+					{
+						id: 'hover-line',
 						afterDraw: (chart) => {
-							// @ts-ignore
-							let x = 0.6;
-							let yAxis = chart.scales.y;
-							let ctx = chart.ctx;
-							ctx.save();
-							ctx.beginPath();
-							ctx.moveTo(x, yAxis.top);
-							ctx.lineTo(x, yAxis.bottom);
-							ctx.lineWidth = 1;
-							ctx.strokeStyle = '#6B6288';
-							ctx.stroke();
-							ctx.restore();
-
 							// @ts-ignore
 							if (chart.tooltip?._active?.length) {
 								// @ts-ignore
@@ -202,14 +196,35 @@
 			<p>Error: {$positionBalance.error.message}</p>
 		{:else}
 			<canvas bind:this={chartCanvas} id="positionBalanceChart" />
+
 			<div class="pl-[57px] pr-[15px]">
 				<div class="relative dark:bg-slate-600 rounded h-8">
 					<div
 						class="absolute font-semibold left-0 h-full bg-green-700 dark:text-slate-100 text-xs text-left leading-8 px-3"
-						style={`width: ${$longSharesPercentageTweened}%`}
+						style={`width: ${$previewLongPercentage}%`}
 					>
-						{$longSharesPercentageTweened.toFixed(2)}%
+						{$previewLongPercentage.toFixed(2)}%
 					</div>
+
+					{#if $previewLongPercentage < $longSharesPercentageTweened}
+						<div
+							class="absolute font-semibold left-0 h-full bg-green-400 dark:text-slate-100 text-xs text-left leading-8 px-3 z-10"
+							style={`width: ${
+								$longSharesPercentageTweened - $previewLongPercentage
+							}%; left: ${$previewLongPercentage}%`}
+						>
+							-{($longSharesPercentageTweened - $previewLongPercentage).toFixed(2)}%
+						</div>
+					{:else if $previewLongPercentage > $longSharesPercentageTweened}
+						<div
+							class="absolute font-semibold left-0 h-full bg-red-400 dark:text-slate-100 text-xs text-left leading-8 px-3 z-10"
+							style={`width: ${
+								$previewLongPercentage - $longSharesPercentageTweened
+							}%; left: ${$longSharesPercentageTweened}%`}
+						>
+							+{($previewLongPercentage - $longSharesPercentageTweened).toFixed(2)}%
+						</div>
+					{/if}
 
 					<div
 						class="absolute font-semibold right-0 h-full bg-red-700 dark:text-slate-100 text-xs text-right leading-8 px-3"

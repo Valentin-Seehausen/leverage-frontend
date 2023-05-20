@@ -32,8 +32,8 @@ export const positionBalance = readable(initValue, (set) => {
 
 	const updatePercentages = () => {
 		const totalShares = BigInt(state.longShares) + BigInt(state.shortShares);
-		let longSharesPercentage = 0;
-		let shortSharesPercentage = 0;
+		let longSharesPercentage = 50;
+		let shortSharesPercentage = 50;
 		if (totalShares == 0n) {
 			if (BigInt(state.longShares) > 0) longSharesPercentage = 100;
 			else if (BigInt(state.shortShares) > 0) shortSharesPercentage = 100;
@@ -55,8 +55,8 @@ export const positionBalance = readable(initValue, (set) => {
 			);
 		}
 		const totalCollateral = BigInt(state.longCollateral) + BigInt(state.shortCollateral);
-		let longCollateralPercentage = 0;
-		let shortCollateralPercentage = 0;
+		let longCollateralPercentage = 50;
+		let shortCollateralPercentage = 50;
 		if (totalCollateral > 0n) {
 			longCollateralPercentage = parseFloat(
 				formatUnits(
