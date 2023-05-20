@@ -90,7 +90,13 @@
 					Max: {formatValue($userUsdc.balance, usdcDecimals)}
 				</button>
 			</div>
-			<input class="user-input" type="text" bind:value={inputCollateral} />
+			<input
+				class="user-input"
+				type="text"
+				bind:value={inputCollateral}
+				class:invalid={inputCollateral &&
+					(!balanceIsSufficient || !allowanceIsSufficient || collateral < minCollateral)}
+			/>
 
 			{#if !balanceIsSufficient && inputCollateral}
 				<div transition:slide|local class="text-sm dark:text-red-600 info-label text-left mt-1">
