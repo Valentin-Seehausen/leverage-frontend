@@ -25,7 +25,6 @@
 
 	// These values are only available when the position is closed
 	$: closeSharePrice = position.isOpen ? 0n : 10n ** 18n / position.closeLpRatio;
-	$: console.log(position);
 </script>
 
 <div>

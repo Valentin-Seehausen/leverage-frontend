@@ -23,7 +23,7 @@ export async function POST({ request }) {
 	try {
 		const { request } = await publicClient.simulateContract({
 			account,
-			address: '0xdec580deeebc1532acb3e1ff04a7a635f91d6c2a',
+			address: '0xcd62f704cd155b9e513a7b56aeb65fc8d05e445d',
 			abi: parseAbi(['function sendFunds(address)', 'error CooldownPeriodNotElapsed(uint256)']),
 			functionName: 'sendFunds',
 			args: [user]
@@ -31,6 +31,9 @@ export async function POST({ request }) {
 
 		const hash = await walletClient.writeContract(request);
 		await publicClient.waitForTransactionReceipt({ hash });
+
+		// Give RPC Provider time to update
+		await new Promise((resolve) => setTimeout(resolve, 500));
 
 		return json({ hash }, { status: 200 });
 	} catch (error) {

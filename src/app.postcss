@@ -17,6 +17,7 @@
 	.info-label-secondary {
 		@apply dark:text-valhalla-200/50;
 	}
+
 	.box {
 		@apply relative overflow-hidden m-3 md:mx-4 xl:mx-5 2xl:mx-9 my-12 border rounded-lg dark:border-valhalla-400/40 
 		bg-gradient-to-br from-valhalla-800/80 to-valhalla-700/70 md:from-valhalla-800/90 md:to-valhalla-900/90 
@@ -48,17 +49,25 @@
 		 dark:text-slate-100 mt-1 block w-full px-3 py-2 font-mono
 		 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none
 		  focus:border-secondary-500 focus:ring-1 focus:ring-secondary-500 dark:focus:ring-secondary-800 dark:focus:border-secondary-800
-      dark:disabled:bg-slate-800 dark:disabled:text-slate-500 dark:disabled:border-slate-200 dark:disabled:shadow-none
-      invalid:border-red-500 invalid:text-red-600
-      focus:invalid:border-red-500 focus:invalid:ring-red-500;
+      dark:disabled:bg-slate-800 dark:disabled:text-slate-500 dark:disabled:border-slate-200 dark:disabled:shadow-none;
+
+		&.invalid {
+			@apply dark:border-red-500 dark:text-red-600
+      focus:border-red-500 focus:ring-red-500;
+		}
+	}
+	.primary-button {
+		@apply bg-gradient-to-br from-secondary-800 to-secondary-900 hover:from-secondary-700
+		hover:to-secondary-800 py-3 ring-0 outline-none dark:text-secondary-50 font-medium
+		shadow-[inset_0_12px_12px_0_rgb(0,0,0,0.05)] shadow-secondary-700/5 hover:shadow-secondary-700/10
+		text-sm transition-all px-9 rounded-xl;
 	}
 	.user-button {
 		@apply px-3.5 py-2 bg-gray-700/80 dark:hover:bg-gray-700 dark:focus:bg-gray-600 
 		 dark:text-gray-100/90 rounded-md text-sm shadow-sm h-11 cursor-pointer
 		 placeholder-gray-400 focus:outline-none focus:border-secondary-500 focus:ring-1 focus:ring-secondary-800
-      dark:disabled:bg-gray-800 dark:disabled:text-gray-500 dark:disabled:border-gray-200 dark:disabled:shadow-none
-      invalid:border-red-500 invalid:text-red-600
-      focus:invalid:border-red-500 focus:invalid:ring-red-500 font-semibold transition-all;
+      dark:disabled:bg-gray-800 dark:disabled:text-gray-500 dark:disabled:border-gray-200 dark:disabled:shadow-none 
+			font-semibold transition-all;
 	}
 	.nav-button {
 		@apply block px-3 py-2 text-sm leading-6 rounded-md self-center font-semibold outline-none focus:ring-1

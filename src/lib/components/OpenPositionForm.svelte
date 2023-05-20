@@ -1,6 +1,7 @@
 <script>
 	import {
 		leverageDecimals,
+		liquidityPoolDecimals,
 		minCollateral,
 		priceFeedDecimals,
 		usdcDecimals
@@ -11,11 +12,21 @@
 	import { formatValue } from '$lib/utils/format';
 	import { parseUnits } from 'viem';
 	import { slide } from 'svelte/transition';
+	import {
+		previewLongMultiplier,
+		previewShortMultiplier,
+		previewPosition,
+		previewShares
+	} from '$lib/stores/previewPosition';
+	import { onDestroy } from 'svelte';
+	import { liquidityPoolPrice } from '$lib/stores/liquidityPool';
+	import { positionBalance } from '$lib/stores/positionBalance';
 
-	let inputCollateral = '100';
+	let inputCollateral = '';
 	$: inputCollateral = inputCollateral.replace(/[^0-9]/g, '');
 	// @ts-ignore
 	$: collateral = BigInt(parseUnits(inputCollateral, usdcDecimals)) || 0n;
+	$: previewPosition.set({ collateral, isLong });
 	let leverage = 5;
 	let isLong = true;
 
@@ -38,6 +49,10 @@
 
 	$: allowanceIsSufficient = $userUsdc.allowance >= collateral;
 	$: balanceIsSufficient = $userUsdc.balance >= collateral;
+
+	onDestroy(() => {
+		previewPosition.set({ collateral: 0n, isLong: true });
+	});
 </script>
 
 <div class="box">
@@ -75,7 +90,32 @@
 					Max: {formatValue($userUsdc.balance, usdcDecimals)}
 				</button>
 			</div>
-			<input class="user-input" type="text" bind:value={inputCollateral} />
+			<input
+				class="user-input"
+				type="text"
+				bind:value={inputCollateral}
+				class:invalid={inputCollateral &&
+					(!balanceIsSufficient || !allowanceIsSufficient || collateral < minCollateral)}
+			/>
+
+			{#if !balanceIsSufficient && inputCollateral}
+				<div transition:slide|local class="text-sm dark:text-red-600 info-label text-left mt-1">
+					You need {formatValue(collateral, usdcDecimals, 0)} USDC to open this position. Currently you
+					only have {formatValue($userUsdc.balance, usdcDecimals, 0, {
+						showSymbol: false
+					})} USDC.
+				</div>
+			{:else if !allowanceIsSufficient && inputCollateral}
+				<div transition:slide|local class="text-sm dark:text-red-600 info-label text-left mt-1">
+					You need to increase your allowance to open this position.
+				</div>
+			{/if}
+
+			{#if collateral < minCollateral && inputCollateral}
+				<div transition:slide|local class="text-sm dark:text-red-600 info-label text-left mt-1">
+					Minimum collateral is 100 USDC.
+				</div>
+			{/if}
 		</label>
 
 		<label class="block mb-6 md:mb-9">
@@ -104,26 +144,38 @@
 				<div class="basis-2/3 info-label">Liquidation Price:</div>
 				<div class="basis-1/3 text-right">{formatValue(liquidationPrice, priceFeedDecimals)}</div>
 			</div>
+
+			<div
+				class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between my-6 border-t dark:border-slate-500"
+			/>
+
+			<div class="flex flex-row">
+				<div class="basis-2/3 info-label">Minted HYP:</div>
+				<div class="basis-1/3 text-right">
+					HYP {formatValue($previewShares, liquidityPoolDecimals, 2, { showSymbol: false })}
+				</div>
+			</div>
+
+			<div class="flex flex-row">
+				<div class="basis-2/3 info-label">HYP/USDC:</div>
+				<div class="basis-1/3 text-right">
+					{formatValue($liquidityPoolPrice, usdcDecimals)}
+				</div>
+			</div>
+
+			<div class="flex flex-row">
+				<div class="basis-2/3 info-label">Multiplier Effect:</div>
+				<div class="basis-1/3 text-right">
+					{#if isLong}
+						{$positionBalance.longMultiplier.toFixed(2)} &rarr; {$previewLongMultiplier.toFixed(2)}
+					{:else}
+						{$positionBalance.shortMultiplier.toFixed(2)} &rarr; {$previewShortMultiplier.toFixed(
+							2
+						)}
+					{/if}
+				</div>
+			</div>
 		</div>
-
-		{#if !balanceIsSufficient}
-			<div transition:slide|local class="text-sm info-label text-center mt-6">
-				You need {formatValue(collateral, usdcDecimals, 0)} USDC to open this position. Currently you
-				only have {formatValue($userUsdc.balance, usdcDecimals, 0, {
-					showSymbol: false
-				})} USDC.
-			</div>
-		{:else if !allowanceIsSufficient}
-			<div transition:slide|local class="text-sm info-label text-center mt-6">
-				You need to increase your allowance to open this position.
-			</div>
-		{/if}
-
-		{#if collateral < minCollateral}
-			<div transition:slide|local class="text-sm info-label text-center mt-6">
-				Minimum collateral is 100 USDC.
-			</div>
-		{/if}
 	</div>
 
 	<div class="box-action">

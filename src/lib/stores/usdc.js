@@ -3,17 +3,17 @@ import { getWalletClient, readContract, waitForTransaction, writeContract } from
 import { account } from './wallet';
 import { get, writable } from 'svelte/store';
 
-import { toast } from '@zerodevx/svelte-toast';
 import { addresses } from './addresses';
 import { fetchSignerOrWarn } from '$lib/utils/signer';
 import { parseAbi } from 'viem';
 import { usdcDecimals } from '$lib/config/constants';
+import { transactionLog } from './transactionLog';
 
 const createUserUsdcStore = () => {
 	const initialState = {
 		balance: 0n,
 		allowance: 0n,
-		fetchingBalance: false
+		fetchingBalance: true
 	};
 	let state = initialState;
 	/** @type {import('viem').Address | undefined} */
@@ -23,7 +23,6 @@ const createUserUsdcStore = () => {
 	const fetchValues = () => {
 		if (!userAddress) return;
 
-		state.fetchingBalance = true;
 		set(state);
 		readContract({
 			address: get(addresses).addresses.usdc,
@@ -85,19 +84,9 @@ export const increaseAllowance = async (/** @type {bigint} */ amount) => {
 		args: [get(addresses).addresses.liquidityPool, amount]
 	});
 
-	const txToast = toast.push('Waiting for USDC Allowance Transaction...', {
-		initial: 0,
-		classes: ['info']
-	});
+	transactionLog.add({ hash: tx.hash, message: 'Approve TestUSDC' });
 
 	await waitForTransaction(tx);
-
-	toast.pop(txToast);
-
-	toast.push('Allowance Increased', {
-		duration: 2000,
-		classes: ['success']
-	});
 
 	userUsdc.requestUpdate();
 
@@ -114,19 +103,9 @@ export const requestFunds = async () => {
 		functionName: 'requestFunds'
 	});
 
-	const txToast = toast.push('Requesting Test USDC...', {
-		initial: 0,
-		classes: ['info']
-	});
+	transactionLog.add({ hash: tx.hash, message: 'Requesting Funds' });
 
 	await waitForTransaction(tx);
-
-	toast.pop(txToast);
-
-	toast.push('Test USDC received!', {
-		duration: 2000,
-		classes: ['success']
-	});
 
 	userUsdc.requestUpdate();
 

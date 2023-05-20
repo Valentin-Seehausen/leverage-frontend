@@ -1,5 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
+	import { fade } from 'svelte/transition';
 
 	let deg = 0;
 
@@ -16,6 +17,7 @@
 
 <div class="relative group flex-initial">
 	<div
+		transition:fade|local
 		style="background: linear-gradient({deg}deg, var(--tw-gradient-stops));"
 		class="absolute -inset-2 bg-gradient-to-r from-primary-600 to-secondary-600 rounded-lg blur-xl opacity-50 group-hover:opacity-80 transition-all"
 	/>

@@ -2,12 +2,13 @@ import { waitForTransaction, watchContractEvent, writeContract } from '@wagmi/co
 import { derived, get } from 'svelte/store';
 import { isInitialized } from './client';
 import { account } from './wallet';
-import { toast } from '@zerodevx/svelte-toast';
 import { userUsdc } from '$lib/stores/usdc';
 import { addresses } from './addresses';
 import { fetchSignerOrWarn } from '$lib/utils/signer';
 import { readContract } from '@wagmi/core';
 import liquidityPoolAbi from '$lib/abis/LiquidityPool';
+import { transactionLog } from './transactionLog';
+import { liquidityPoolMultiplier } from '$lib/config/constants';
 
 /**
  * This store is used to run the other contract reading stores after a liquidity pool update
@@ -110,6 +111,19 @@ export const liquidityPoolRatio = derived(
 	0n
 );
 
+export const liquidityPoolPrice = derived(
+	[liquidityPoolRatio],
+	([$liquidityPoolRatio], set) => {
+		if ($liquidityPoolRatio == 0n) {
+			set(0n);
+			return;
+		}
+
+		set(liquidityPoolMultiplier / $liquidityPoolRatio);
+	},
+	0n
+);
+
 export const userAssets = derived(
 	[userShares, liquidityPoolRatio],
 	([$userShares, $liquidityPoolRatio], set) => {
@@ -133,19 +147,9 @@ export const redeem = async (/** @type {bigint} */ shares) => {
 		args: [shares]
 	});
 
-	const txToast = toast.push('Waiting for Withdraw Transaction...', {
-		initial: 0,
-		classes: ['info']
-	});
+	transactionLog.add({ hash: tx.hash, message: 'Withdrawing Funds' });
 
 	await waitForTransaction(tx);
-
-	toast.pop(txToast);
-
-	toast.push('Withdraw Successful', {
-		duration: 2000,
-		classes: ['success']
-	});
 
 	userUsdc.requestUpdate();
 };
