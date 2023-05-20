@@ -168,7 +168,7 @@
 					},
 					scales: {
 						y: {
-							beginAtZero: true,
+							// beginAtZero: true,
 							// @ts-ignore
 							type: 'logarithmic',
 							grid: {
@@ -176,6 +176,11 @@
 							}
 						},
 						x: {
+							ticks: {
+								callback: (value) => {
+									return value + '%';
+								}
+							},
 							grid: {
 								color: '#130E26'
 							}
@@ -192,6 +197,7 @@
 						afterDraw: (chart) => {
 							// @ts-ignore
 							if (chart.tooltip?._active?.length) {
+								// thin vertical line
 								// @ts-ignore
 								let x = chart.tooltip._active[0].element.x;
 								let yAxis = chart.scales.y;
@@ -201,6 +207,16 @@
 								ctx.moveTo(x, yAxis.top);
 								ctx.lineTo(x, yAxis.bottom);
 								ctx.lineWidth = 1;
+								ctx.strokeStyle = '#6B6288';
+								ctx.stroke();
+
+								// Fat line between long and short
+								ctx.beginPath();
+								// @ts-ignore
+								ctx.moveTo(x, chart.tooltip._active[0].element.y);
+								// @ts-ignore
+								ctx.lineTo(x, chart.tooltip._active[1].element.y);
+								ctx.lineWidth = 4;
 								ctx.strokeStyle = '#6B6288';
 								ctx.stroke();
 								ctx.restore();
