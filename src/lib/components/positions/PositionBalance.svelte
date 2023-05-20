@@ -207,7 +207,7 @@
 								ctx.moveTo(x, yAxis.top);
 								ctx.lineTo(x, yAxis.bottom);
 								ctx.lineWidth = 1;
-								ctx.strokeStyle = '#6B6288';
+								ctx.strokeStyle = 'rgba(197,249,244,0.3)';
 								ctx.stroke();
 
 								// Fat line between long and short
@@ -217,7 +217,7 @@
 								// @ts-ignore
 								ctx.lineTo(x, chart.tooltip._active[1].element.y);
 								ctx.lineWidth = 4;
-								ctx.strokeStyle = '#6B6288';
+								ctx.strokeStyle = 'rgba(197,249,244,0.3)';
 								ctx.stroke();
 								ctx.restore();
 							}
