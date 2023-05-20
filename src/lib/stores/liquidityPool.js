@@ -8,6 +8,7 @@ import { fetchSignerOrWarn } from '$lib/utils/signer';
 import { readContract } from '@wagmi/core';
 import liquidityPoolAbi from '$lib/abis/LiquidityPool';
 import { transactionLog } from './transactionLog';
+import { liquidityPoolMultiplier } from '$lib/config/constants';
 
 /**
  * This store is used to run the other contract reading stores after a liquidity pool update
@@ -106,6 +107,19 @@ export const liquidityPoolRatio = derived(
 		}
 
 		set($totalSupply / $totalAssets);
+	},
+	0n
+);
+
+export const liquidityPoolPrice = derived(
+	[liquidityPoolRatio],
+	([$liquidityPoolRatio], set) => {
+		if ($liquidityPoolRatio == 0n) {
+			set(0n);
+			return;
+		}
+
+		set(liquidityPoolMultiplier / $liquidityPoolRatio);
 	},
 	0n
 );

@@ -1,6 +1,7 @@
 <script>
 	import {
 		leverageDecimals,
+		liquidityPoolDecimals,
 		minCollateral,
 		priceFeedDecimals,
 		usdcDecimals
@@ -11,8 +12,15 @@
 	import { formatValue } from '$lib/utils/format';
 	import { parseUnits } from 'viem';
 	import { slide } from 'svelte/transition';
-	import { previewPosition } from '$lib/stores/previewPosition';
+	import {
+		previewLongMultiplier,
+		previewShortMultiplier,
+		previewPosition,
+		previewShares
+	} from '$lib/stores/previewPosition';
 	import { onDestroy } from 'svelte';
+	import { liquidityPoolPrice } from '$lib/stores/liquidityPool';
+	import { positionBalance } from '$lib/stores/positionBalance';
 
 	let inputCollateral = '100';
 	$: inputCollateral = inputCollateral.replace(/[^0-9]/g, '');
@@ -110,6 +118,35 @@
 			<div class="flex flex-row">
 				<div class="basis-2/3 info-label">Liquidation Price:</div>
 				<div class="basis-1/3 text-right">{formatValue(liquidationPrice, priceFeedDecimals)}</div>
+			</div>
+
+			<div
+				class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between my-6 border-t dark:border-slate-500"
+			/>
+
+			<div class="flex flex-row">
+				<div class="basis-2/3 info-label">Minted HYP:</div>
+				<div class="basis-1/3 text-right">
+					HYP {formatValue($previewShares, liquidityPoolDecimals, 2, { showSymbol: false })}
+				</div>
+			</div>
+
+			<div class="flex flex-row">
+				<div class="basis-2/3 info-label">HYP/USDC:</div>
+				<div class="basis-1/3 text-right">
+					{formatValue($liquidityPoolPrice, usdcDecimals)}
+				</div>
+			</div>
+
+			<div class="flex flex-row">
+				<div class="basis-2/3 info-label">Multiplier Effect:</div>
+				<div class="basis-1/3 text-right">
+					{#if isLong}
+						{$positionBalance.longMultiplier.toFixed(2)} -> {$previewLongMultiplier.toFixed(2)}
+					{:else}
+						{$positionBalance.shortMultiplier.toFixed(2)} -> {$previewShortMultiplier.toFixed(2)}
+					{/if}
+				</div>
 			</div>
 		</div>
 

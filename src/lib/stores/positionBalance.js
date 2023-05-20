@@ -34,6 +34,8 @@ export const positionBalance = readable(initValue, (set) => {
 		const totalShares = BigInt(state.longShares) + BigInt(state.shortShares);
 		let longSharesPercentage = 50;
 		let shortSharesPercentage = 50;
+		let longMultiplier = 1;
+		let shortMultiplier = 1;
 		if (totalShares == 0n) {
 			if (BigInt(state.longShares) > 0) longSharesPercentage = 100;
 			else if (BigInt(state.shortShares) > 0) shortSharesPercentage = 100;
@@ -72,6 +74,9 @@ export const positionBalance = readable(initValue, (set) => {
 					10
 				)
 			);
+
+			longMultiplier = shortSharesPercentage / longSharesPercentage;
+			shortMultiplier = longSharesPercentage / shortSharesPercentage;
 		} else {
 			if (BigInt(state.longCollateral) > 0) longCollateralPercentage = 100;
 			else if (BigInt(state.shortCollateral) > 0) shortCollateralPercentage = 100;
@@ -85,7 +90,9 @@ export const positionBalance = readable(initValue, (set) => {
 			totalShares,
 			longCollateralPercentage,
 			shortCollateralPercentage,
-			totalCollateral
+			totalCollateral,
+			longMultiplier,
+			shortMultiplier
 		};
 	};
 

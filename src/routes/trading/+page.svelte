@@ -17,7 +17,7 @@
 			<PositionBalance />
 		</div>
 		<div class="basis-1/3 xl:basis-1/4">
-			<div class="md:sticky top-32">
+			<div class="lg:sticky top-32">
 				<OpenPositionForm />
 				<DevPanel />
 			</div>

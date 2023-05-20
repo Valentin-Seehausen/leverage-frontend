@@ -1,13 +1,13 @@
 <script>
 	import { liquidityPoolDecimals } from '$lib/config/constants';
 	import { positionBalance } from '$lib/stores/positionBalance';
+	import { previewLongPercentage } from '$lib/stores/previewPosition';
 	import { formatValue } from '$lib/utils/format';
 	import { interpolateBigInts as interpolate } from '$lib/utils/interpolateBigInts';
+	import Chart from 'chart.js/auto';
+	import { onDestroy } from 'svelte';
 	import { sineInOut } from 'svelte/easing';
 	import { tweened } from 'svelte/motion';
-	import Chart from 'chart.js/auto';
-	import { previewLongPercentage } from '$lib/stores/previewPosition';
-	import { onDestroy } from 'svelte';
 
 	const longSharesTweened = tweened(10n, { duration: 200, easing: sineInOut, interpolate });
 
@@ -36,7 +36,7 @@
 			x < breakPoint
 				? x < previewBreakPoint
 					? 'regular'
-					: 'preview'
+					: 'previewInactive'
 				: x < previewBreakPoint
 				? 'preview'
 				: 'gray'
@@ -49,7 +49,7 @@
 			x > breakPoint
 				? x > previewBreakPoint
 					? 'regular'
-					: 'preview'
+					: 'previewInactive'
 				: x > previewBreakPoint
 				? 'preview'
 				: 'gray'
@@ -92,9 +92,25 @@
 										case 'regular':
 											return 'rgb(21 127 31)';
 										case 'preview':
-											return '#4ade57';
+											return '#86ef8f';
+										case 'previewInactive':
+											return '#22c530';
 										default:
 											return 'rgba(21,127,31,0.4)';
+									}
+								},
+								borderCapStyle: 'round',
+								borderWidth: (ctx) => {
+									// @ts-ignore
+									switch (ctx.p0.raw.style) {
+										case 'regular':
+											return 2;
+										case 'preview':
+											return 4;
+										case 'previewInactive':
+											return 2;
+										default:
+											return 2;
 									}
 								}
 							},
@@ -112,9 +128,25 @@
 										case 'regular':
 											return 'rgb(189 24 39)';
 										case 'preview':
-											return '#fc6d7a';
+											return '#fea3ab';
+										case 'previewInactive':
+											return '#f43f4f';
 										default:
 											return 'rgba(189,24,39,0.4)';
+									}
+								},
+								borderCapStyle: 'round',
+								borderWidth: (ctx) => {
+									// @ts-ignore
+									switch (ctx.p0.raw.style) {
+										case 'regular':
+											return 2;
+										case 'preview':
+											return 4;
+										case 'previewInactive':
+											return 2;
+										default:
+											return 2;
 									}
 								}
 							},
@@ -149,12 +181,6 @@
 					}
 				},
 				plugins: [
-					{
-						id: 'jo',
-						afterUpdate: (chart) => {
-							console.log('JO', chart);
-						}
-					},
 					{
 						id: 'hover-line',
 						afterDraw: (chart) => {

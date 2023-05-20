@@ -10,6 +10,13 @@ const initialState = {
 
 export const previewPosition = writable(initialState);
 
+export const previewShares = derived(
+	[previewPosition, liquidityPoolRatio],
+	([$previewPosition, $liquidityPoolRatio]) => {
+		return $previewPosition.collateral * $liquidityPoolRatio;
+	}
+);
+
 export const previewLongPercentage = derived(
 	[previewPosition, liquidityPoolRatio, positionBalance],
 	([$previewPosition, $liquidityPoolRatio, $positionBalance]) => {
@@ -28,5 +35,19 @@ export const previewLongPercentage = derived(
 			)
 		);
 		return newLongSharesPercentage;
+	}
+);
+
+export const previewShortMultiplier = derived(
+	[previewLongPercentage],
+	([$previewLongPercentage]) => {
+		return $previewLongPercentage / (100 - $previewLongPercentage);
+	}
+);
+
+export const previewLongMultiplier = derived(
+	[previewLongPercentage],
+	([$previewLongPercentage]) => {
+		return (100 - $previewLongPercentage) / $previewLongPercentage;
 	}
 );
