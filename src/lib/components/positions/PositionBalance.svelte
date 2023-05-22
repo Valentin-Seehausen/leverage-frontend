@@ -256,7 +256,7 @@
 
 					{#if $previewLongPercentage > $longSharesPercentageTweened}
 						<div
-							class="absolute font-semibold left-0 h-full bg-green-400 dark:text-slate-100 text-xs text-right leading-8 px-3 z-10"
+							class="absolute font-semibold left-0 h-full bg-green-400 dark:text-slate-100 text-xs text-right leading-8 z-10"
 							style={`width: ${
 								$previewLongPercentage - $longSharesPercentageTweened
 							}%; left: ${$longSharesPercentageTweened}%`}
@@ -267,7 +267,7 @@
 						</div>
 					{:else if $previewLongPercentage < $longSharesPercentageTweened}
 						<div
-							class="absolute font-semibold left-0 h-full bg-red-500 dark:text-slate-100 text-xs text-left leading-8 px-3 z-10"
+							class="absolute font-semibold left-0 h-full bg-red-500 dark:text-slate-100 text-xs text-left leading-8 z-10"
 							style={`width: ${
 								$longSharesPercentageTweened - $previewLongPercentage
 							}%; left: ${$previewLongPercentage}%`}
