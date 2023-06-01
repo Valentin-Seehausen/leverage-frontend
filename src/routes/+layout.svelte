@@ -95,6 +95,8 @@
 		</p>
 
 		<p class="mt-6">Trade responsibly, and welcome to the future of decentralized trading.</p>
+
+		<p class="mt-6"><a href="/imprint">Imprint and Dataprotection</a></p>
 	</div>
 </footer>
 
