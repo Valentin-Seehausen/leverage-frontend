@@ -87,6 +87,7 @@
 							<span>
 								{formatValue(position.pnlAssets, usdcDecimals, 2)}
 							</span>
+							<br />
 							<span class="text-xs">
 								({formatPercentage(position.pnlAssetsPercentage, { decimals: 0 })})
 							</span>
