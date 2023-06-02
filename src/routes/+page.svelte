@@ -65,7 +65,7 @@
 					on:click={() => scrollTo('anchor-learn-more')}
 					class="text-sm font-semibold leading-6 dark:text-slate-100"
 				>
-					📚 Learn More]
+					📚 Learn More
 					<span aria-hidden="true">→</span></button
 				>
 			</div>
