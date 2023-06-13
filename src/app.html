@@ -1,16 +1,27 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" href="%sveltekit.assets%/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		%sveltekit.head%
-	</head>
 
-	<body
-		data-sveltekit-preload-data="hover"
-		class="subpixel-antialiased dark:bg-valhalla-900 dark:text-valhalla-100/80 overflow-y-scroll relative"
-	>
-		<div style="display: contents">%sveltekit.body%</div>
-	</body>
+<head>
+	<meta charset="utf-8" />
+	<link rel="icon" href="%sveltekit.assets%/favicon.ico" />
+	<meta name="viewport" content="width=device-width" />
+	%sveltekit.head%
+	<!-- Hotjar Tracking Code for https://hyperbolic.trade -->
+	<script>
+		(function (h, o, t, j, a, r) {
+			h.hj = h.hj || function () { (h.hj.q = h.hj.q || []).push(arguments) };
+			h._hjSettings = { hjid: 3532797, hjsv: 6 };
+			a = o.getElementsByTagName('head')[0];
+			r = o.createElement('script'); r.async = 1;
+			r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv;
+			a.appendChild(r);
+		})(window, document, 'https://static.hotjar.com/c/hotjar-', '.js?sv=');
+	</script>
+</head>
+
+<body data-sveltekit-preload-data="hover"
+	class="subpixel-antialiased dark:bg-valhalla-900 dark:text-valhalla-100/80 overflow-y-scroll relative">
+	<div style="display: contents">%sveltekit.body%</div>
+</body>
+
 </html>
