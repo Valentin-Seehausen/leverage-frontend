@@ -9,8 +9,4 @@
 	<p class="mt-6 leading-8 dark:text-slate-400">
 		Contact email (replace as common): hello://hyperboliclabs.xyz
 	</p>
-	<h1 class="text-4xl font-bold tracking-tight dark:text-slate-100 sm:text-xl mt-6">
-		Dataprotection
-	</h1>
-	<p class="mt-6 leading-8 dark:text-slate-400">No data is stored. None.</p>
 </div>
