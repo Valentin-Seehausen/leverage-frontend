@@ -1,4 +1,4 @@
-<div class="text-center py-20">
+<div class="text-center py-20 mt-20">
 	<h1 class="text-4xl font-bold tracking-tight dark:text-slate-100 sm:text-xl">
 		Privacy Policy of Open Currency Technology Seehausen UG
 	</h1>

@@ -127,7 +127,7 @@
 		<p class="mt-6">Trade responsibly, and welcome to the future of decentralized trading.</p>
 
 		<p class="mt-6"><a href="/terms/imprint">Imprint</a></p>
-		<p class="mt-6"><a href="/terms/imprint">Data Policy</a></p>
+		<p class="mt-6"><a href="/terms/privacy">Data Privacy Policy</a></p>
 	</div>
 </footer>
 
