@@ -3,7 +3,6 @@
 
 	import Nav from './Nav.svelte';
 	import '../app.postcss';
-	import { Client, setContextClient, cacheExchange, fetchExchange } from '@urql/svelte';
 	import { positionDetailsDialog } from '$lib/stores/positionDetailsModal';
 	import ModalContainer from '$lib/components/positions/ModalContainer.svelte';
 	import TransactionLog from '$lib/components/TransactionLog.svelte';
@@ -13,13 +12,6 @@
 	const options = {
 		classes: ['log']
 	};
-
-	const client = new Client({
-		url: 'https://api.studio.thegraph.com/query/46177/p2p-leverage-operations/v0.0.4',
-		exchanges: [cacheExchange, fetchExchange]
-	});
-
-	setContextClient(client);
 </script>
 
 <Nav />
