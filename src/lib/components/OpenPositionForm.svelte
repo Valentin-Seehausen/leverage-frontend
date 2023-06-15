@@ -57,7 +57,7 @@
 
 <div class="box">
 	<div class="box-head">
-		<h2>Open Position</h2>
+		<h2>Open ETH Position</h2>
 	</div>
 	<div class="box-content">
 		<div class="flex w-full mb-6 md:mb-9">
