@@ -6,6 +6,7 @@
 	import { positionDetailsDialog } from '$lib/stores/positionDetailsModal';
 	import ModalContainer from '$lib/components/positions/ModalContainer.svelte';
 	import TransactionLog from '$lib/components/TransactionLog.svelte';
+	import Cookies from '$lib/components/Cookies.svelte';
 
 	// Toast Options
 	/** @type {import("@zerodevx/svelte-toast/stores").SvelteToastOptions} */
@@ -14,6 +15,7 @@
 	};
 </script>
 
+<Cookies />
 <Nav />
 <ModalContainer />
 <div class="fixed md:hidden top-6 right-6 z-10">
