@@ -7,7 +7,7 @@
 		<div class="text-sm info-label text-center mt-6 mb-3">Please provide us feedback for v0.3.</div>
 		<iframe
 			class="w-full h-96"
-			src="https://chilipepper.io/form/spicy-orange-jalapeno-f4476f4c-a0c8-4a6c-ad42-cb404a7547e6"
+			src="https://chilipepper.io/form/mild-yellow-cayennes-26842b76-d152-418d-a283-87515a5b0d75"
 			title="Hyperbolic Finance Feedback Form"
 		/>
 	</div>
