@@ -33,13 +33,11 @@
 			<h1 class="text-4xl font-bold tracking-tight dark:text-slate-100 sm:text-6xl">
 				Hyperbolic Finance 🚀
 			</h1>
-			<p class="mt-6 text-lg leading-8 dark:text-slate-400">
-				Leading the Future with Smart Derivatives
-			</p>
+			<p class="mt-6 text-lg leading-8 dark:text-slate-400">The protocol for P2P DeFi perpetuals</p>
 			<p class="mt-6 leading-8 dark:text-slate-400">
-				We're leading the way in the crypto realm with advanced mathematics, introducing new
-				possibilities for trading. Curious about getting on board? It's a breeze with our AI-like
-				onboarding.
+				You can now join the first test users on a new trading paradigm. By removing the need for
+				deep liquidity, we can offer perpetuals with a fraction of the tradition fees. Without
+				borrow fees and funding rates, you can trade at a fraction of the cost.
 			</p>
 			<div
 				class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-x-6 flex-wrap gap-y-12"
@@ -58,7 +56,15 @@
 					</GlowingBackground>
 				{:else}
 					<GlowingBackground>
-						<a href="/onboarding" class="primary-button">⚡️ Onboard Me in a Minute</a>
+						<a
+							href="/earliest-test-user"
+							class="bg-gradient-to-br from-secondary-800 to-secondary-900 hover:from-secondary-700
+		hover:to-secondary-800 py-3 ring-0 outline-none dark:text-secondary-50 font-medium
+		shadow-[inset_0_12px_12px_0_rgb(0,0,0,0.05)] shadow-secondary-700/5 hover:shadow-secondary-700/10
+		text-sm transition-all px-9 rounded-xl"
+						>
+							Join first 100 users 🚀
+						</a>
 					</GlowingBackground>
 				{/if}
 				<button
