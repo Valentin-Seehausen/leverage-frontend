@@ -5,7 +5,7 @@
 		new TradingView.widget({
 			width: '100%',
 			height: '100%',
-			symbol: 'BINANCE:BTCUSDC',
+			symbol: 'BINANCE:ETHUSDC',
 			interval: '15',
 			timezone: 'Etc/UTC',
 			theme: 'dark',
@@ -28,14 +28,14 @@
 	></script>
 </svelte:head>
 
-<div class="p-2 w-full h-[512px]">
+<div class="p-2 w-full h-[512px] overflow-x-hidden">
 	<div class="tradingview-widget-container">
 		<div id="tradingview_widget" />
 		<div class="tradingview-widget-copyright">
 			<a
-				href="https://www.tradingview.com/symbols/BTCUSDC/?exchange=BINANCE"
+				href="https://www.tradingview.com/symbols/ETHUSDC/?exchange=BINANCE"
 				rel="noopener"
-				target="_blank"><span class="blue-text">BTCUSDC chart</span></a
+				target="_blank"><span class="underline">ETHUSDC chart</span></a
 			> by TradingView
 		</div>
 	</div>

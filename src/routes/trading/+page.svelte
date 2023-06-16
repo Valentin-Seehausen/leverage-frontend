@@ -1,5 +1,6 @@
 <script>
 	import OpenPositionForm from '$lib/components/OpenPositionForm.svelte';
+	import FeedbackForm from '$lib/components/FeedbackForm.svelte';
 	import DevPanel from '$lib/components/DevPanel.svelte';
 	import PositionList from '$lib/components/positions/PositionList.svelte';
 	import TradingViewWidget from '$lib/components/TradingViewWidget.svelte';
@@ -20,6 +21,7 @@
 		<div class="basis-full lg:basis-1/3 xl:basis-1/4 order-first lg:order-last">
 			<div class="lg:sticky top-32">
 				<OpenPositionForm />
+				<FeedbackForm />
 				<DevPanel />
 			</div>
 		</div>
