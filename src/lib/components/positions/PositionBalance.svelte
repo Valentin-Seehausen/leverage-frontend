@@ -243,82 +243,88 @@
 		{:else if $positionBalance.error}
 			<p>Error: {$positionBalance.error.message}</p>
 		{:else}
-			<canvas bind:this={chartCanvas} id="positionBalanceChart" />
+			<div class="w-[96%] mx-auto">
+				<canvas bind:this={chartCanvas} id="positionBalanceChart" />
 
-			<div class="pl-[57px] pr-[15px]">
-				<div class="relative dark:bg-slate-600 rounded h-8">
-					<div
-						class="absolute font-semibold left-0 h-full bg-green-700 dark:text-slate-100 text-xs text-left leading-8 px-3"
-						style={`width: ${$longSharesPercentageTweened}%`}
-					>
-						{$longSharesPercentageTweened.toFixed(2)}%
-					</div>
-
-					{#if $previewLongPercentage > $longSharesPercentageTweened}
+				<div class="pl-[63px] pr-[15px]">
+					<div class="relative dark:bg-slate-600 rounded h-8">
 						<div
-							class="absolute font-semibold left-0 h-full bg-green-400 dark:text-slate-100 text-xs text-right leading-8 z-10"
-							style={`width: ${
-								$previewLongPercentage - $longSharesPercentageTweened
-							}%; left: ${$longSharesPercentageTweened}%`}
+							class="absolute font-semibold left-0 h-full bg-green-700 dark:text-slate-100 text-xs text-left leading-8 px-3"
+							style={`width: ${$longSharesPercentageTweened}%`}
 						>
-							<span class="absolute right-3 w-32">
-								&rarr; {($previewLongPercentage - $longSharesPercentageTweened).toFixed(2)}%
+							{$longSharesPercentageTweened.toFixed(2)}%
+						</div>
+
+						{#if $previewLongPercentage > $longSharesPercentageTweened}
+							<div
+								class="absolute font-semibold left-0 h-full bg-green-400 dark:text-slate-100 text-xs text-right leading-8 z-10"
+								style={`width: ${
+									$previewLongPercentage - $longSharesPercentageTweened
+								}%; left: ${$longSharesPercentageTweened}%`}
+							>
+								<span class="absolute right-3 w-32">
+									&rarr; {($previewLongPercentage - $longSharesPercentageTweened).toFixed(2)}%
+								</span>
+							</div>
+						{:else if $previewLongPercentage < $longSharesPercentageTweened}
+							<div
+								class="absolute font-semibold left-0 h-full bg-red-500 dark:text-slate-100 text-xs text-left leading-8 z-10"
+								style={`width: ${
+									$longSharesPercentageTweened - $previewLongPercentage
+								}%; left: ${$previewLongPercentage}%`}
+							>
+								<span class="absolute left-3 w-32">
+									{($longSharesPercentageTweened - $previewLongPercentage).toFixed(2)}% &larr;
+								</span>
+							</div>
+						{/if}
+
+						<div
+							class="absolute font-semibold right-0 h-full bg-red-700 dark:text-slate-100 text-xs text-right leading-8 px-3"
+							style={`width: ${$shortSharesPercentageTweened}%`}
+						>
+							<span class="absolute right-3">
+								{$shortSharesPercentageTweened.toFixed(2)}%
 							</span>
 						</div>
-					{:else if $previewLongPercentage < $longSharesPercentageTweened}
-						<div
-							class="absolute font-semibold left-0 h-full bg-red-500 dark:text-slate-100 text-xs text-left leading-8 z-10"
-							style={`width: ${
-								$longSharesPercentageTweened - $previewLongPercentage
-							}%; left: ${$previewLongPercentage}%`}
-						>
-							<span class="absolute left-3 w-32">
-								{($longSharesPercentageTweened - $previewLongPercentage).toFixed(2)}% &larr;
-							</span>
+					</div>
+
+					<div class="flex flex-row mt-3">
+						<div class="">
+							Long
+							<br />
+							HYP {formatValue($longSharesTweened, liquidityPoolDecimals, 2, { showSymbol: false })}
+							{#if $previewShares && $previewPosition.isLong}
+								&rarr; {formatValue($previewShares, liquidityPoolDecimals, 2, {
+									showSymbol: false
+								})}
+							{/if}
+							<br />
+							Multiplier: {longMultiplier.toFixed(2)}
+							{#if $previewLongMultiplier !== longMultiplier}
+								&rarr; {$previewLongMultiplier.toFixed(2)}
+							{/if}
 						</div>
-					{/if}
-
-					<div
-						class="absolute font-semibold right-0 h-full bg-red-700 dark:text-slate-100 text-xs text-right leading-8 px-3"
-						style={`width: ${$shortSharesPercentageTweened}%`}
-					>
-						<span class="absolute right-3">
-							{$shortSharesPercentageTweened.toFixed(2)}%
-						</span>
-					</div>
-				</div>
-
-				<div class="flex flex-row mt-3">
-					<div class="">
-						Long
-						<br />
-						HYP {formatValue($longSharesTweened, liquidityPoolDecimals, 2, { showSymbol: false })}
-						{#if $previewShares && $previewPosition.isLong}
-							&rarr; {formatValue($previewShares, liquidityPoolDecimals, 2, { showSymbol: false })}
-						{/if}
-						<br />
-						Multiplier: {longMultiplier.toFixed(2)}
-						{#if $previewLongMultiplier !== longMultiplier}
-							&rarr; {$previewLongMultiplier.toFixed(2)}
-						{/if}
-					</div>
-					<div class="grow text-right">
-						Short
-						<br />
-						HYP {formatValue($shortSharesTweened, liquidityPoolDecimals, 2, { showSymbol: false })}
-						{#if $previewShares && !$previewPosition.isLong}
-							&rarr; {formatValue($previewShares, liquidityPoolDecimals, 2, { showSymbol: false })}
-						{/if}
-						<br />
-						Multiplier: {shortMultiplier.toFixed(2)}
-						{#if $previewShortMultiplier !== shortMultiplier}
-							&rarr; {$previewShortMultiplier.toFixed(2)}
-						{/if}
+						<div class="grow text-right">
+							Short
+							<br />
+							HYP {formatValue($shortSharesTweened, liquidityPoolDecimals, 2, {
+								showSymbol: false
+							})}
+							{#if $previewShares && !$previewPosition.isLong}
+								&rarr; {formatValue($previewShares, liquidityPoolDecimals, 2, {
+									showSymbol: false
+								})}
+							{/if}
+							<br />
+							Multiplier: {shortMultiplier.toFixed(2)}
+							{#if $previewShortMultiplier !== shortMultiplier}
+								&rarr; {$previewShortMultiplier.toFixed(2)}
+							{/if}
+						</div>
 					</div>
 				</div>
 			</div>
-
-			<div />
 		{/if}
 	</div>
 </div>
