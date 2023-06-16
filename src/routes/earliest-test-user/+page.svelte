@@ -18,7 +18,7 @@
 				We reward you, because by providing early feedback, you help us improve our P2P trading
 				paradigm.
 			</p>
-			<div class="mt-6 leading-8 dark:text-slate-400 prose">
+			<div class="mt-6 leading-8 dark:text-slate-400">
 				Here is what you have to do to earn your role:
 
 				<div class="border-secondary-400 box bg-from-secondary-600 bg-to-secondary-800 px-6 py-3">
