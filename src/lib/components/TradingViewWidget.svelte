@@ -28,7 +28,7 @@
 	></script>
 </svelte:head>
 
-<div class="p-2 w-full h-[512px]">
+<div class="p-2 w-full h-[512px] overflow-x-hidden">
 	<div class="tradingview-widget-container">
 		<div id="tradingview_widget" />
 		<div class="tradingview-widget-copyright">
