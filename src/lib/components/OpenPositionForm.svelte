@@ -148,14 +148,14 @@
 			<div class="flex flex-row justify-between my-9 border-t dark:border-slate-500/40" />
 
 			<div class="flex flex-row justify-between gap-3">
-				<div class="info-label">Minted HYP:</div>
+				<div class="info-label">Minted POP:</div>
 				<div class="text-right">
-					HYP {formatValue($previewShares, liquidityPoolDecimals, 2, { showSymbol: false })}
+					POP {formatValue($previewShares, liquidityPoolDecimals, 2, { showSymbol: false })}
 				</div>
 			</div>
 
 			<div class="flex flex-row justify-between gap-3">
-				<div class="info-label">HYP/USDC:</div>
+				<div class="info-label">POP/USDC:</div>
 				<div class="text-right">
 					{formatValue($liquidityPoolPrice, usdcDecimals)}
 				</div>

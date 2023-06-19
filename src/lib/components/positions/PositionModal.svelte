@@ -98,16 +98,16 @@
 		</div>
 
 		<div class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between">
-			<div class="info-label">HYP Acquired</div>
+			<div class="info-label">POP Acquired</div>
 			<div class="text-right font-mono">
-				HYP {formatValue(position.shares, liquidityPoolDecimals, 2, { showSymbol: false })}
+				POP {formatValue(position.shares, liquidityPoolDecimals, 2, { showSymbol: false })}
 			</div>
 		</div>
 
 		<div
 			class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between text-xs info-label-secondary"
 		>
-			<div class="">HYP/USDC</div>
+			<div class="">POP/USDC</div>
 			<div class="text-right font-mono">
 				Price: {formatValue(openSharePrice, usdcDecimals)}
 			</div>
@@ -137,10 +137,10 @@
 			</div>
 
 			<div class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between">
-				<div class="info-label">HYP Payout</div>
+				<div class="info-label">POP Payout</div>
 				<div class="text-right font-mono">
 					<span>
-						HYP {formatValue(position.payoutShares, liquidityPoolDecimals, 2, {
+						POP {formatValue(position.payoutShares, liquidityPoolDecimals, 2, {
 							showSymbol: false
 						})}
 					</span>
@@ -159,7 +159,7 @@
 			<div
 				class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between text-xs info-label-secondary"
 			>
-				<div class="">HYP/USDC</div>
+				<div class="">POP/USDC</div>
 				<div class="text-right font-mono">
 					Price: {formatValue(currentSharePrice, usdcDecimals)}
 				</div>
@@ -202,7 +202,7 @@
 				</div>
 
 				<div class="info-label text-right font-mono">
-					HYP {formatValue(position.payoutShares, liquidityPoolDecimals, 2, { showSymbol: false })}
+					POP {formatValue(position.payoutShares, liquidityPoolDecimals, 2, { showSymbol: false })}
 				</div>
 			</div>
 
@@ -216,7 +216,7 @@
 			<div
 				class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between text-xs info-label-secondary"
 			>
-				<div class="">HYP/USDC</div>
+				<div class="">POP/USDC</div>
 				<div class="text-right font-mono">
 					Price: {formatValue(closeSharePrice, usdcDecimals)}
 				</div>
@@ -266,7 +266,7 @@
 			<div
 				class="flex flex-row gap-9 sm:gap-16 md:gap-24 lg:gap-32 justify-between text-xs info-label-secondary"
 			>
-				<div class="">HYP/USDC</div>
+				<div class="">POP/USDC</div>
 				<div class="text-right font-mono">
 					Price: {formatValue(currentSharePrice, usdcDecimals)}
 				</div>

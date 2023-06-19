@@ -293,7 +293,7 @@
 						<div class="">
 							Long
 							<br />
-							HYP {formatValue($longSharesTweened, liquidityPoolDecimals, 2, { showSymbol: false })}
+							POP {formatValue($longSharesTweened, liquidityPoolDecimals, 2, { showSymbol: false })}
 							{#if $previewShares && $previewPosition.isLong}
 								&rarr; {formatValue($previewShares, liquidityPoolDecimals, 2, {
 									showSymbol: false
@@ -308,7 +308,7 @@
 						<div class="grow text-right">
 							Short
 							<br />
-							HYP {formatValue($shortSharesTweened, liquidityPoolDecimals, 2, {
+							POP {formatValue($shortSharesTweened, liquidityPoolDecimals, 2, {
 								showSymbol: false
 							})}
 							{#if $previewShares && !$previewPosition.isLong}
