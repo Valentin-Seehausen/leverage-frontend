@@ -40,11 +40,12 @@
 	"dependencies": {
 		"@sveltejs/adapter-vercel": "^3.0.0",
 		"@urql/svelte": "^4.0.1",
-		"@wagmi/core": "^1.0.2",
+		"@wagmi/connectors": "^4.3.5",
+		"@wagmi/core": "^2.9.3",
 		"chart.js": "^4.3.0",
 		"dayjs": "^1.11.7",
 		"svelte-headlessui": "^0.0.15",
 		"truncate-eth-address": "^1.0.2",
-		"viem": "^0.3.22"
+		"viem": "^2.10.3"
 	}
 }

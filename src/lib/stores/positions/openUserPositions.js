@@ -12,10 +12,11 @@ import {
 	calculateSharesPnlPercentage
 } from '$lib/utils/position';
 import { closedUserPositionsEvents } from './closedUserPositionsEvents';
-import { client } from '../client';
+import { config } from '../client';
 import { addresses } from '../addresses';
 import { parseAbi } from 'viem';
 import { liquidityPoolRatio } from '../liquidityPool';
+import { watchContractEvent } from '@wagmi/core';
 
 // This file contains four stores:
 // - openUserPositionsFromEvents
@@ -55,7 +56,7 @@ export const openUserPositionsFromEvents = derived(
 		/** @type {Position[]} */
 		let positions = [];
 
-		const unwatch = client.publicClient.watchContractEvent({
+		const unwatch = watchContractEvent(config, {
 			address: get(addresses).addresses.tradePair,
 			abi: parseAbi([
 				'event PositionOpened(address indexed trader,uint256 positionId,uint256 collateral,uint256 shares,uint256 leverage,bool isLong,uint256 entryPrice,uint256 liquidationPrice,uint256 takeProfitPrice,uint256 openDate)'

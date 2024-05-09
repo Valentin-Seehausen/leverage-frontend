@@ -1,8 +1,8 @@
-import arbitrumGoerliAddresses from '$lib/addresses/contracts.arbitrum-goerli.json';
+import arbitrumSepoliaAddresses from '$lib/addresses/contracts.arbitrum-sepolia.json';
 import arbitrumGoerliDevAddresses from '$lib/addresses/dev.contracts.arbitrum-goerli.json';
 import {
 	dev,
-	graphEndpointArbitrumGoerli,
+	graphEndpointArbitrumSepolia,
 	graphEndpointArbitrumGoerliDev
 } from '$lib/config/constants';
 
@@ -35,8 +35,8 @@ const parseAddresses = (rawAddresses) => {
 
 const createAddressStore = () => {
 	const initState = {
-		addresses: parseAddresses(arbitrumGoerliAddresses),
-		graphEndpoint: graphEndpointArbitrumGoerli
+		addresses: parseAddresses(arbitrumSepoliaAddresses),
+		graphEndpoint: graphEndpointArbitrumSepolia
 	};
 	let state = initState;
 
@@ -47,8 +47,8 @@ const createAddressStore = () => {
 			state.addresses = parseAddresses(arbitrumGoerliDevAddresses);
 			state.graphEndpoint = graphEndpointArbitrumGoerliDev;
 		} else {
-			state.addresses = parseAddresses(arbitrumGoerliAddresses);
-			state.graphEndpoint = graphEndpointArbitrumGoerli;
+			state.addresses = parseAddresses(arbitrumSepoliaAddresses);
+			state.graphEndpoint = graphEndpointArbitrumSepolia;
 		}
 
 		set(state);

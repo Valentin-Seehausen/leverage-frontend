@@ -2,8 +2,9 @@ import { account } from '$lib/stores/wallet';
 import { derived } from 'svelte/store';
 import { addresses } from '../addresses';
 import { parseAbi } from 'viem';
-import { client } from '../client';
+import { config } from '../client';
 import { closedUserPositionsSubgraphUpdater } from './closedUserPositionsSubgraph';
+import { watchContractEvent } from '@wagmi/core';
 
 /**
  * @typedef {Object} PositionClosedEvent
@@ -27,7 +28,7 @@ export const closedUserPositionsEvents = derived(
 		/** @type {PositionClosedEvent[]} */
 		let positions = [];
 
-		const unwatch = client.publicClient.watchContractEvent({
+		const unwatch = watchContractEvent(config, {
 			address: $addresses.addresses.tradePair,
 			abi: parseAbi([
 				'event PositionClosed(address indexed trader,uint256 positionId,bool isLong,uint256 shares,uint256 entryPrice,uint256 leverage,int256 pnlShares,uint256 closePrice,uint256 closeDate)'

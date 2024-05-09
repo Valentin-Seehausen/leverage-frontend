@@ -8,6 +8,7 @@ import { fetchSignerOrWarn } from '$lib/utils/signer';
 import { parseAbi } from 'viem';
 import { usdcDecimals } from '$lib/config/constants';
 import { transactionLog } from './transactionLog';
+import { config } from './client';
 
 const createUserUsdcStore = () => {
 	const initialState = {
@@ -24,7 +25,7 @@ const createUserUsdcStore = () => {
 		if (!userAddress) return;
 
 		set(state);
-		readContract({
+		readContract(config, {
 			address: get(addresses).addresses.usdc,
 			abi: parseAbi(['function balanceOf(address) view returns (uint256)']),
 			functionName: 'balanceOf',
@@ -35,7 +36,7 @@ const createUserUsdcStore = () => {
 			set(state);
 		});
 
-		readContract({
+		readContract(config, {
 			address: get(addresses).addresses.usdc,
 			abi: parseAbi(['function allowance(address, address) view returns (uint256)']),
 			functionName: 'allowance',
@@ -65,7 +66,7 @@ export const userUsdc = createUserUsdcStore();
  * @param {import('viem').Address} userAddress
  */
 export const getAllowance = (userAddress) => {
-	return readContract({
+	return readContract(config, {
 		address: get(addresses).addresses.usdc,
 		abi: parseAbi(['function allowance(address, address) view returns (uint256)']),
 		functionName: 'allowance',
@@ -77,16 +78,16 @@ export const increaseAllowance = async (/** @type {bigint} */ amount) => {
 	const signer = await fetchSignerOrWarn();
 	if (!signer) return;
 
-	const tx = await writeContract({
+	const tx = await writeContract(config, {
 		address: get(addresses).addresses.usdc,
 		abi: parseAbi(['function increaseAllowance(address, uint256)']),
 		functionName: 'increaseAllowance',
 		args: [get(addresses).addresses.liquidityPool, amount]
 	});
 
-	transactionLog.add({ hash: tx.hash, message: 'Approve TestUSDC' });
+	transactionLog.add({ hash: tx, message: 'Approve TestUSDC' });
 
-	await waitForTransaction(tx);
+	await waitForTransaction(config, tx);
 
 	userUsdc.requestUpdate();
 
@@ -97,15 +98,15 @@ export const requestFunds = async () => {
 	const signer = await fetchSignerOrWarn();
 	if (!signer) return;
 
-	const tx = await writeContract({
+	const tx = await writeContract(config, {
 		address: get(addresses).addresses.faucet,
 		abi: parseAbi(['function requestFunds()']),
 		functionName: 'requestFunds'
 	});
 
-	transactionLog.add({ hash: tx.hash, message: 'Requesting Funds' });
+	transactionLog.add({ hash: tx, message: 'Requesting Funds' });
 
-	await waitForTransaction(tx);
+	await waitForTransaction(config, tx);
 
 	userUsdc.requestUpdate();
 
@@ -113,7 +114,7 @@ export const requestFunds = async () => {
 };
 
 export const addUsdcToWallet = async () => {
-	const walletClient = await getWalletClient();
+	const walletClient = await getWalletClient(config);
 
 	if (!walletClient) return;
 

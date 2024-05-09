@@ -7,6 +7,7 @@ import { fetchSignerOrWarn } from '$lib/utils/signer';
 import { parseAbi, parseUnits } from 'viem';
 import { addresses } from './addresses';
 import { transactionLog } from './transactionLog';
+import { config } from './client';
 
 /**
  * Opens a position at TradePair via Signer
@@ -27,16 +28,16 @@ export const openPosition = async (collateral, leverage, isLong) => {
 		await increaseAllowance(collateral * 100n);
 	}
 
-	const tx = await writeContract({
+	const tx = await writeContract(config, {
 		address: get(addresses).addresses.tradePair,
 		abi: parseAbi(['function openPosition(uint256, uint256, bool)']),
 		functionName: 'openPosition',
 		args: [collateral, parsedLeverage, isLong]
 	});
 
-	transactionLog.add({ hash: tx.hash, message: 'Open Position' });
+	transactionLog.add({ hash: tx, message: 'Open Position' });
 
-	await waitForTransaction(tx);
+	await waitForTransaction(config, tx);
 
 	userUsdc.requestUpdate();
 };
@@ -47,16 +48,16 @@ export const closeCloseablePositions = async () => {
 
 	const ids = get(closeablePositions);
 
-	const tx = await writeContract({
+	const tx = await writeContract(config, {
 		address: get(addresses).addresses.tradePair,
 		abi: parseAbi(['function closePositions(uint256[])']),
 		functionName: 'closePositions',
 		args: [ids]
 	});
 
-	transactionLog.add({ hash: tx.hash, message: 'House Keeping' });
+	transactionLog.add({ hash: tx, message: 'House Keeping' });
 
-	await waitForTransaction(tx);
+	await waitForTransaction(config, tx);
 
 	closeablePositions.reset();
 };

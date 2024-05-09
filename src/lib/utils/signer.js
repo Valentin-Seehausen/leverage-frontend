@@ -1,9 +1,10 @@
-import { arbitrumGoerliChainId } from '$lib/config/constants';
+import { arbitrumSepoliaChainId } from '$lib/config/constants';
+import { config } from '$lib/stores/client';
 import { getWalletClient, switchNetwork } from '@wagmi/core';
 import { toast } from '@zerodevx/svelte-toast';
 
 export const fetchSignerOrWarn = async () => {
-	let signer = await getWalletClient();
+	let signer = await getWalletClient(config);
 	if (!signer) {
 		toast.push('Please connect MetaMask', {
 			duration: 2000,
@@ -14,16 +15,16 @@ export const fetchSignerOrWarn = async () => {
 
 	const signerChainId = await signer.getChainId();
 
-	if (signerChainId != arbitrumGoerliChainId) {
-		const newNetwork = await switchNetwork({ chainId: arbitrumGoerliChainId });
-		if (newNetwork.id != arbitrumGoerliChainId) {
-			toast.push('Please switch to Arbitrum Goerli Testnet', {
+	if (signerChainId != arbitrumSepoliaChainId) {
+		const newNetwork = await switchNetwork({ chainId: arbitrumSepoliaChainId });
+		if (newNetwork.id != arbitrumSepoliaChainId) {
+			toast.push('Please switch to Arbitrum Sepolia Testnet', {
 				duration: 2000,
 				classes: ['error']
 			});
 			return;
 		}
-		signer = await getWalletClient();
+		signer = await getWalletClient(config);
 	}
 
 	return signer;
