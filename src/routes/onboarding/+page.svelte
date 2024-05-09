@@ -1,14 +1,14 @@
 <script>
-	import { getWalletClient } from '@wagmi/core';
+	import { getBalance, getWalletClient } from '@wagmi/core';
 	import { account, connectWallet } from '$lib/stores/wallet';
-	import { arbitrumGoerli } from 'viem/chains';
+	import { arbitrumSepolia } from 'viem/chains';
 	import { toast } from '@zerodevx/svelte-toast';
 	import { addUsdcToWallet, increaseAllowance, userUsdc } from '$lib/stores/usdc';
 	import { minBalance, minCollateral, usdcDecimals } from '$lib/config/constants';
 	import GlowingBackground from '$lib/components/GlowingBackground.svelte';
 	import { formatEther } from 'viem';
 	import { formatValue } from '$lib/utils/format';
-	import { client } from '$lib/stores/client';
+	import { config } from '$lib/stores/client';
 	import { fade } from 'svelte/transition';
 
 	// State
@@ -38,8 +38,8 @@
 
 	// Functions
 
-	const addArbitrumGoerli = async () => {
-		const walletclient = await getWalletClient();
+	const addArbitrumSepolia = async () => {
+		const walletclient = await getWalletClient(config);
 		if (!walletclient) {
 			toast.push('Connect MetaMask First', {
 				classes: ['info']
@@ -49,7 +49,7 @@
 
 		requestedNetworkChangeBefore = true;
 
-		await walletclient?.addChain({ chain: arbitrumGoerli });
+		await walletclient?.addChain({ chain: arbitrumSepolia });
 
 		// Add an artificial delay to give user time to understand what is happeneing
 		if (requestedFundsBefore && !requestingFunds) {
@@ -57,14 +57,12 @@
 			simulateInsufficientBalance = true;
 			setTimeout(async () => {
 				if ($account.address) {
-					await client.publicClient
-						.getBalance({ address: $account.address })
-						.then((balanceResult) => {
-							balance = balanceResult;
-							simulateInsufficientBalance = false;
-							requestingAccountBalance = false;
-							requestingFunds = false;
-						});
+					await getBalance(config, { address: $account.address }).then((balanceResult) => {
+						balance = balanceResult.value;
+						simulateInsufficientBalance = false;
+						requestingAccountBalance = false;
+						requestingFunds = false;
+					});
 				} else {
 					requestingFunds = false;
 					simulateInsufficientBalance = false;
@@ -97,8 +95,8 @@
 
 		if ($account.address) {
 			balance = 0n;
-			client.publicClient.getBalance({ address: $account.address }).then((balanceResult) => {
-				balance = balanceResult;
+			getBalance(config, { address: $account.address }).then((balanceResult) => {
+				balance = balanceResult.value;
 				requestingFunds = false;
 			});
 		} else {
@@ -145,17 +143,17 @@
 			Your MetaMask is ready to roll! 🎉
 		</div>
 
-		{#if $account.chainId != arbitrumGoerli.id}
+		{#if $account.chainId != arbitrumSepolia.id}
 			<div in:fade|local>Let's make sure your MetaMask is on the right network...🔗</div>
 			<div class="self-center my-3" in:fade|local>
 				<GlowingBackground>
-					<button on:click={addArbitrumGoerli} class="primary-button">
-						Switch to Arbitrum Goerli Testnet
+					<button on:click={addArbitrumSepolia} class="primary-button">
+						Switch to Arbitrum Sepolia Testnet
 					</button>
 				</GlowingBackground>
 			</div>
 
-			<!-- {#if $account.chainId != arbitrumGoerli.id} -->
+			<!-- {#if $account.chainId != arbitrumSepolia.id} -->
 		{:else}
 			{#if requestedNetworkChangeBefore}
 				<div class="info-label">Let's make sure your MetaMask is on the right network...🔗</div>
@@ -171,7 +169,7 @@
 				>
 					<path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
 				</svg>
-				Awesome! You're {#if requestedNetworkChangeBefore}now {/if} connected to the Arbitrum Goerli
+				Awesome! You're {#if requestedNetworkChangeBefore}now {/if} connected to the Arbitrum Sepolia
 				Testnet.
 			</div>
 
@@ -299,7 +297,7 @@
 				{/if}
 				<!-- $account.fetchingBalance -->
 			{/if}
-			<!-- {#if $account.chainId != arbitrumGoerli.id} -->
+			<!-- {#if $account.chainId != arbitrumSepolia.id} -->
 		{/if}
 		<!-- {#if !$account.isConnected} -->
 	{/if}

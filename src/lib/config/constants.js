@@ -15,10 +15,10 @@ export const devAddress = '0xfd08B2027F61893Ee2090E76eF157bdC56eF3e40';
 
 export const graphEndpointMumbai =
 	'https://api.studio.thegraph.com/query/46177/mumbai-p2p-leverage/v0.0.10';
-export const graphEndpointArbitrumGoerli =
-	'https://api.studio.thegraph.com/query/46177/hyperbolic-finance/v0.3.1';
+export const graphEndpointArbitrumSepolia =
+	'https://api.studio.thegraph.com/query/46177/hyperbolic-finance/version/latest';
 export const graphEndpointArbitrumGoerliDev =
 	'https://api.studio.thegraph.com/query/46177/hyperbolic-finance-dev/v0.3.1';
 
-export const arbitrumGoerliChainId = 421613;
+export const arbitrumSepoliaChainId = 421614;
 export const minBalance = parseEther('0.0009');

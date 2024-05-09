@@ -1,0 +1,10 @@
+{
+	"faucet": "0x266951D992Dcb5B4b5554f8B2B8B88E8547e3B76",
+	"liquidityPool": "0xb95dAd613673A15baDD68AfA034C02BBa3a79473",
+	"network": "arbitrum-sepolia",
+	"priceFeed": "0xd30e2101a97dcbAeBCBC04F14C3f624E67A35165",
+	"priceFeedAggregator": "0xf3138B59cAcbA1a4d7d24fA7b184c20B3941433e",
+	"startBlock": 42372322,
+	"tradePair": "0x6Eb435021463E305A88bf57DCC5DaC7498CA59f9",
+	"usdc": "0xeE4415F3a6BFcB336b6FCd81995D995E86E94C5B"
+}

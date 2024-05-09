@@ -4,6 +4,7 @@ import { get, readable } from 'svelte/store';
 import { formatUnits, parseAbi } from 'viem';
 import { addresses } from './addresses';
 import { watchContractEvent } from '@wagmi/core';
+import { config } from './client';
 
 // Position Balance gets fetched from subgraph and than updated from events
 
@@ -97,6 +98,7 @@ export const positionBalance = readable(initValue, (set) => {
 	};
 
 	const unwatchOpen = watchContractEvent(
+		config,
 		{
 			address: get(addresses).addresses.tradePair,
 			abi: parseAbi([
@@ -128,6 +130,7 @@ export const positionBalance = readable(initValue, (set) => {
 	);
 
 	const unwatchClose = watchContractEvent(
+		config,
 		{
 			address: get(addresses).addresses.tradePair,
 			abi: parseAbi([

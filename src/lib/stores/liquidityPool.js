@@ -1,6 +1,6 @@
 import { waitForTransaction, watchContractEvent, writeContract } from '@wagmi/core';
 import { derived, get } from 'svelte/store';
-import { isInitialized } from './client';
+import { config, isInitialized } from './client';
 import { account } from './wallet';
 import { userUsdc } from '$lib/stores/usdc';
 import { addresses } from './addresses';
@@ -21,6 +21,7 @@ export const liquitityPoolLastUpdate = derived(
 		if (!$isInitialized) return;
 
 		const unwatch = watchContractEvent(
+			config,
 			{
 				address: $addresses.addresses.liquidityPool,
 				abi: liquidityPoolAbi,
@@ -44,7 +45,7 @@ export const totalSupply = derived(
 	([$liquitityPoolLastUpdate, $addresses], set) => {
 		if ($liquitityPoolLastUpdate == 0n) return;
 
-		readContract({
+		readContract(config, {
 			address: $addresses.addresses.liquidityPool,
 			abi: liquidityPoolAbi,
 			functionName: 'totalSupply'
@@ -58,7 +59,7 @@ export const totalAssets = derived(
 	([$liquitityPoolLastUpdate, $addresses], set) => {
 		if ($liquitityPoolLastUpdate == 0n) return;
 
-		readContract({
+		readContract(config, {
 			address: $addresses.addresses.liquidityPool,
 			abi: liquidityPoolAbi,
 			functionName: 'totalAssets'
@@ -72,7 +73,7 @@ export const tradePairBalance = derived(
 	([$liquitityPoolLastUpdate, $addresses], set) => {
 		if ($liquitityPoolLastUpdate == 0n) return;
 
-		readContract({
+		readContract(config, {
 			address: $addresses.addresses.liquidityPool,
 			abi: liquidityPoolAbi,
 			functionName: 'balanceOf',
@@ -88,7 +89,7 @@ export const userShares = derived(
 		if ($liquitityPoolLastUpdate == 0n) return;
 		if (!$account.address) return;
 
-		readContract({
+		readContract(config, {
 			address: $addresses.addresses.liquidityPool,
 			abi: liquidityPoolAbi,
 			functionName: 'balanceOf',
@@ -147,9 +148,9 @@ export const redeem = async (/** @type {bigint} */ shares) => {
 		args: [shares]
 	});
 
-	transactionLog.add({ hash: tx.hash, message: 'Withdrawing Funds' });
+	transactionLog.add({ hash: tx, message: 'Withdrawing Funds' });
 
-	await waitForTransaction(tx);
+	await waitForTransaction(config, { hash: tx });
 
 	userUsdc.requestUpdate();
 };

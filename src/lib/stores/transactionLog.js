@@ -1,5 +1,6 @@
 import { waitForTransaction } from '@wagmi/core';
 import { writable } from 'svelte/store';
+import { config } from './client';
 
 // Define type transactionLog with params: hash-string and message-string
 /**
@@ -25,7 +26,7 @@ const createTransactionLogStore = () => {
 
 	/** @param {TransactionEntry} transaction */
 	const add = (transaction) => {
-		waitForTransaction({ hash: transaction.hash }).then(() => {
+		waitForTransaction(config, { hash: transaction.hash }).then(() => {
 			// remove hash from state array and set array
 			update((state) => {
 				return state.filter((h) => h.hash !== transaction.hash);

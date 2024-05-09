@@ -43,7 +43,7 @@
 				class="absolute w-56 right-0 top-12 box m-0 mt-1 p-3 dark:bg-valhalla-800"
 				transition:slide|local
 			>
-				{#each $transactionLog as tx (tx.hash)}
+				{#each $transactionLog as tx (tx)}
 					<div
 						class="border-b p-1 dark:border-valhalla-200/30 last:border-none"
 						animate:flip={{ duration: 200 }}

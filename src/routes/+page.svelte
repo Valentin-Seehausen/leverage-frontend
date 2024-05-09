@@ -1,12 +1,12 @@
 <script>
 	import { account } from '$lib/stores/wallet';
-	import { arbitrumGoerli } from 'viem/chains';
+	import { arbitrumSepolia } from 'viem/chains';
 	import { userUsdc } from '$lib/stores/usdc';
 	import { minCollateral } from '$lib/config/constants';
 	import GlowingBackground from '$lib/components/GlowingBackground.svelte';
 
 	$: onboardingCompleted =
-		$account.chainId === arbitrumGoerli.id &&
+		$account.chainId === arbitrumSepolia.id &&
 		$account.balance > 0 &&
 		$userUsdc.balance > minCollateral;
 

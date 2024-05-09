@@ -6,7 +6,7 @@ import { toast } from '@zerodevx/svelte-toast';
 
 import { fetchSignerOrWarn } from '$lib/utils/signer';
 import { addresses } from './addresses';
-import { isInitialized } from './client';
+import { isInitialized, config } from './client';
 import { parseAbi, parseUnits } from 'viem';
 import { interpolateBigInts } from '$lib/utils/interpolateBigInts';
 
@@ -15,7 +15,7 @@ export const currentPriceUpdate = derived(
 	([$isInitialized, $addresses], set) => {
 		if (!$isInitialized) return;
 
-		readContract({
+		readContract(config, {
 			address: $addresses.addresses.priceFeed,
 			abi: parseAbi([
 				'function latestRoundData() view returns (uint80 roundId ,int256 answer , uint256 startedAt, uint256 updatedAt, uint80 answeredInRound)'
@@ -26,6 +26,7 @@ export const currentPriceUpdate = derived(
 		});
 
 		const unwatch = watchContractEvent(
+			config,
 			{
 				address: $addresses.addresses.priceFeedAggregator,
 				abi: parseAbi([
@@ -83,7 +84,7 @@ export const toggleDevPrice = async () => {
 
 	const newPrice = get(currentPriceUpdate) == price1 ? price2 : price1;
 
-	const tx = await writeContract({
+	const tx = await writeContract(config, {
 		address: get(addresses).addresses.priceFeedAggregator,
 		abi: parseAbi(['function setNewPrice(int256 newPrice) public']),
 		functionName: 'setNewPrice',
@@ -95,7 +96,7 @@ export const toggleDevPrice = async () => {
 		classes: ['info']
 	});
 
-	await waitForTransaction(tx);
+	await waitForTransaction(config, tx);
 
 	toast.pop(txToast);
 
