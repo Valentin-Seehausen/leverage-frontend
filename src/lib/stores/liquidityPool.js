@@ -20,17 +20,14 @@ export const liquitityPoolLastUpdate = derived(
 	([$isInitialized, $addresses], set) => {
 		if (!$isInitialized) return;
 
-		const unwatch = watchContractEvent(
-			config,
-			{
-				address: $addresses.addresses.liquidityPool,
-				abi: liquidityPoolAbi,
-				eventName: 'Transfer'
-			},
-			(log) => {
+		const unwatch = watchContractEvent(config, {
+			address: $addresses.addresses.liquidityPool,
+			abi: liquidityPoolAbi,
+			eventName: 'Transfer',
+			onLogs: (log) => {
 				set(log[log.length - 1].blockNumber || 0n);
 			}
-		);
+		});
 
 		// set to 1 to trigger the first update
 		set(1n);
@@ -48,7 +45,8 @@ export const totalSupply = derived(
 		readContract(config, {
 			address: $addresses.addresses.liquidityPool,
 			abi: liquidityPoolAbi,
-			functionName: 'totalSupply'
+			functionName: 'totalSupply',
+			args: []
 		}).then((totalSupply) => set(totalSupply));
 	},
 	0n
@@ -62,7 +60,8 @@ export const totalAssets = derived(
 		readContract(config, {
 			address: $addresses.addresses.liquidityPool,
 			abi: liquidityPoolAbi,
-			functionName: 'totalAssets'
+			functionName: 'totalAssets',
+			args: []
 		}).then((totalAssets) => set(totalAssets));
 	},
 	0n
@@ -141,16 +140,16 @@ export const redeem = async (/** @type {bigint} */ shares) => {
 	const signer = await fetchSignerOrWarn();
 	if (!signer) return;
 
-	const tx = await writeContract({
+	const hash = await writeContract(config, {
 		address: get(addresses).addresses.liquidityPool,
 		abi: liquidityPoolAbi,
 		functionName: 'redeem',
 		args: [shares]
 	});
 
-	transactionLog.add({ hash: tx, message: 'Withdrawing Funds' });
+	transactionLog.add({ hash, message: 'Withdrawing Funds' });
 
-	await waitForTransaction(config, { hash: tx });
+	await waitForTransaction(config, { hash });
 
 	userUsdc.requestUpdate();
 };

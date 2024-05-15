@@ -97,17 +97,22 @@ export const positionBalance = readable(initValue, (set) => {
 		};
 	};
 
-	const unwatchOpen = watchContractEvent(
-		config,
-		{
-			address: get(addresses).addresses.tradePair,
-			abi: parseAbi([
-				'event PositionOpened(address indexed trader,uint256 positionId,uint256 collateral,uint256 shares,uint256 leverage,bool isLong,uint256 entryPrice,uint256 liquidationPrice,uint256 takeProfitPrice,uint256 openDate)'
-			]),
-			eventName: 'PositionOpened'
-		},
-		(log) => {
+	const unwatchOpen = watchContractEvent(config, {
+		address: get(addresses).addresses.tradePair,
+		abi: parseAbi([
+			'event PositionOpened(address indexed trader,uint256 positionId,uint256 collateral,uint256 shares,uint256 leverage,bool isLong,uint256 entryPrice,uint256 liquidationPrice,uint256 takeProfitPrice,uint256 openDate)'
+		]),
+		eventName: 'PositionOpened',
+		onLogs: (log) => {
 			log.forEach(({ args: { collateral, shares, isLong } }) => {
+				// return if either args is undefined (just required for type safety)
+				if (
+					typeof collateral === 'undefined' ||
+					typeof shares === 'undefined' ||
+					typeof isLong === 'undefined'
+				) {
+					return;
+				}
 				if (isLong) {
 					state = {
 						...state,
@@ -127,19 +132,20 @@ export const positionBalance = readable(initValue, (set) => {
 			updatePercentages();
 			set(state);
 		}
-	);
+	});
 
-	const unwatchClose = watchContractEvent(
-		config,
-		{
-			address: get(addresses).addresses.tradePair,
-			abi: parseAbi([
-				'event PositionClosed(address indexed trader,uint256 positionId,bool isLong,uint256 shares,uint256 entryPrice,uint256 leverage,int256 pnlShares,uint256 closePrice,uint256 closeDate)'
-			]),
-			eventName: 'PositionClosed'
-		},
-		(log) => {
+	const unwatchClose = watchContractEvent(config, {
+		address: get(addresses).addresses.tradePair,
+		abi: parseAbi([
+			'event PositionClosed(address indexed trader,uint256 positionId,bool isLong,uint256 shares,uint256 entryPrice,uint256 leverage,int256 pnlShares,uint256 closePrice,uint256 closeDate)'
+		]),
+		eventName: 'PositionClosed',
+		onLogs: (log) => {
 			log.forEach(({ args: { shares, isLong } }) => {
+				// return if either args is undefined (just required for type safety)
+				if (typeof shares === 'undefined' || typeof isLong === 'undefined') {
+					return;
+				}
 				if (isLong) {
 					state = {
 						...state,
@@ -157,7 +163,7 @@ export const positionBalance = readable(initValue, (set) => {
 			updatePercentages();
 			set(state);
 		}
-	);
+	});
 
 	const unsubscribeGraphStore = graphClientStore.subscribe(($graphClient) => {
 		if (!$graphClient) {

@@ -78,16 +78,16 @@ export const increaseAllowance = async (/** @type {bigint} */ amount) => {
 	const signer = await fetchSignerOrWarn();
 	if (!signer) return;
 
-	const tx = await writeContract(config, {
+	const hash = await writeContract(config, {
 		address: get(addresses).addresses.usdc,
 		abi: parseAbi(['function increaseAllowance(address, uint256)']),
 		functionName: 'increaseAllowance',
 		args: [get(addresses).addresses.liquidityPool, amount]
 	});
 
-	transactionLog.add({ hash: tx, message: 'Approve TestUSDC' });
+	transactionLog.add({ hash, message: 'Approve TestUSDC' });
 
-	await waitForTransaction(config, tx);
+	await waitForTransaction(config, { hash });
 
 	userUsdc.requestUpdate();
 
@@ -98,15 +98,15 @@ export const requestFunds = async () => {
 	const signer = await fetchSignerOrWarn();
 	if (!signer) return;
 
-	const tx = await writeContract(config, {
+	const hash = await writeContract(config, {
 		address: get(addresses).addresses.faucet,
 		abi: parseAbi(['function requestFunds()']),
 		functionName: 'requestFunds'
 	});
 
-	transactionLog.add({ hash: tx, message: 'Requesting Funds' });
+	transactionLog.add({ hash, message: 'Requesting Funds' });
 
-	await waitForTransaction(config, tx);
+	await waitForTransaction(config, { hash });
 
 	userUsdc.requestUpdate();
 

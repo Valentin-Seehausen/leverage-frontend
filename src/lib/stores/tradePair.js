@@ -1,4 +1,4 @@
-import { waitForTransaction, writeContract } from '@wagmi/core';
+import { waitForTransactionReceipt, writeContract } from '@wagmi/core';
 import { userUsdc, getAllowance, increaseAllowance } from './usdc';
 import { leverageDecimals } from '$lib/config/constants';
 import { closeablePositions } from './positions/closeablePositions';
@@ -28,16 +28,16 @@ export const openPosition = async (collateral, leverage, isLong) => {
 		await increaseAllowance(collateral * 100n);
 	}
 
-	const tx = await writeContract(config, {
+	const hash = await writeContract(config, {
 		address: get(addresses).addresses.tradePair,
 		abi: parseAbi(['function openPosition(uint256, uint256, bool)']),
 		functionName: 'openPosition',
 		args: [collateral, parsedLeverage, isLong]
 	});
 
-	transactionLog.add({ hash: tx, message: 'Open Position' });
+	transactionLog.add({ hash, message: 'Open Position' });
 
-	await waitForTransaction(config, tx);
+	await waitForTransactionReceipt(config, { hash });
 
 	userUsdc.requestUpdate();
 };
@@ -48,16 +48,16 @@ export const closeCloseablePositions = async () => {
 
 	const ids = get(closeablePositions);
 
-	const tx = await writeContract(config, {
+	const hash = await writeContract(config, {
 		address: get(addresses).addresses.tradePair,
 		abi: parseAbi(['function closePositions(uint256[])']),
 		functionName: 'closePositions',
 		args: [ids]
 	});
 
-	transactionLog.add({ hash: tx, message: 'House Keeping' });
+	transactionLog.add({ hash, message: 'House Keeping' });
 
-	await waitForTransaction(config, tx);
+	await waitForTransactionReceipt(config, { hash });
 
 	closeablePositions.reset();
 };

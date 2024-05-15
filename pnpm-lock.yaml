@@ -17,6 +17,9 @@ dependencies:
   '@wagmi/core':
     specifier: ^2.9.3
     version: 2.9.3(react@18.3.1)(typescript@5.4.5)(viem@2.10.3)
+  abitype:
+    specifier: ^1.0.2
+    version: 1.0.2(typescript@5.4.5)
   chart.js:
     specifier: ^4.3.0
     version: 4.4.2
@@ -26,6 +29,9 @@ dependencies:
   svelte-headlessui:
     specifier: ^0.0.15
     version: 0.0.15
+  svelte-transition:
+    specifier: ^0.0.16
+    version: 0.0.16(svelte@3.59.2)
   truncate-eth-address:
     specifier: ^1.0.2
     version: 1.0.2
@@ -3786,6 +3792,20 @@ packages:
 
   /abitype@1.0.0(typescript@5.4.5):
     resolution: {integrity: sha512-NMeMah//6bJ56H5XRj8QCV4AwuW6hB6zqz2LnhhLdcWVQOsXki6/Pn3APeqxCma62nXIcmZWdu1DlHWS74umVQ==}
+    peerDependencies:
+      typescript: '>=5.0.4'
+      zod: ^3 >=3.22.0
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+      zod:
+        optional: true
+    dependencies:
+      typescript: 5.4.5
+    dev: false
+
+  /abitype@1.0.2(typescript@5.4.5):
+    resolution: {integrity: sha512-aFt4k2H+eiAKy/zxtnORa9iIb10BMBeWL18l8v4+QuwYEBXPxxjSB1bFZCzQmKPoj8m7j68K705l3uY+E2gAjg==}
     peerDependencies:
       typescript: '>=5.0.4'
       zod: ^3 >=3.22.0
@@ -8188,6 +8208,14 @@ packages:
       svelte: 3.59.2
       typescript: 5.4.5
     dev: true
+
+  /svelte-transition@0.0.16(svelte@3.59.2):
+    resolution: {integrity: sha512-rhzWvA9KNTiKd3pW7Z4jvX9vjtRtmgyG5KhPKqDUkvNQ4bfK0RFToKYIlOiHCu+fDmXbiGetlKc4qd+f9WGD7w==}
+    peerDependencies:
+      svelte: ^3.59.1 || ^4.0.0 || ^5.0.0
+    dependencies:
+      svelte: 3.59.2
+    dev: false
 
   /svelte-transition@0.0.7:
     resolution: {integrity: sha512-YMbl+eIkzeYKBz6E/I8KI8RMezhqB38t2B/Mx8BotmtiN+5wnKath7CWDc+8U9zKGJ/iUYHmx4MwQjIzo05nVg==}

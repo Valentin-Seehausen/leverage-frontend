@@ -79,6 +79,20 @@ export const openUserPositionsFromEvents = derived(
 							openDate
 						}
 					}) => {
+						// return if either args is undefined (just required for type safety)
+						if (
+							typeof collateral === 'undefined' ||
+							typeof positionId === 'undefined' ||
+							typeof shares === 'undefined' ||
+							typeof leverage === 'undefined' ||
+							typeof isLong === 'undefined' ||
+							typeof entryPrice === 'undefined' ||
+							typeof liquidationPrice === 'undefined' ||
+							typeof takeProfitPrice === 'undefined' ||
+							typeof openDate === 'undefined'
+						) {
+							return;
+						}
 						/** @type{Position} */
 						const newPosition = {
 							id: positionId.toString(),
