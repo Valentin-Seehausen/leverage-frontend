@@ -8,7 +8,6 @@ import { readable } from 'svelte/store';
 export const metaMaskConnector = injected({ target: 'metaMask' });
 
 export const config = createConfig({
-	autoConnect: true,
 	chains: [arbitrumSepolia],
 	transports: { [arbitrumSepolia.id]: http(ALCHEMY_ARBITRUM_SEPOLIA_RPC) },
 	connectors: [metaMaskConnector]

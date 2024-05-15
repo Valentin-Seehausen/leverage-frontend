@@ -168,7 +168,6 @@
 					},
 					scales: {
 						y: {
-							beginAtZero: true,
 							// @ts-ignore
 							type: 'logarithmic',
 							grid: {

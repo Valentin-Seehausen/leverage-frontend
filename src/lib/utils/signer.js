@@ -1,6 +1,6 @@
 import { arbitrumSepoliaChainId } from '$lib/config/constants';
 import { config } from '$lib/stores/client';
-import { getWalletClient, switchNetwork } from '@wagmi/core';
+import { getWalletClient, switchChain } from '@wagmi/core';
 import { toast } from '@zerodevx/svelte-toast';
 
 export const fetchSignerOrWarn = async () => {
@@ -16,7 +16,7 @@ export const fetchSignerOrWarn = async () => {
 	const signerChainId = await signer.getChainId();
 
 	if (signerChainId != arbitrumSepoliaChainId) {
-		const newNetwork = await switchNetwork({ chainId: arbitrumSepoliaChainId });
+		const newNetwork = await switchChain(config, { chainId: arbitrumSepoliaChainId });
 		if (newNetwork.id != arbitrumSepoliaChainId) {
 			toast.push('Please switch to Arbitrum Sepolia Testnet', {
 				duration: 2000,

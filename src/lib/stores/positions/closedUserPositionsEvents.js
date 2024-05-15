@@ -39,6 +39,15 @@ export const closedUserPositionsEvents = derived(
 				closedUserPositionsSubgraphUpdater.requestUpdate();
 				log.forEach(
 					({ transactionHash, args: { positionId, pnlShares, closePrice, closeDate } }) => {
+						// return if undefined (just required for type safety)
+						if (
+							typeof positionId === 'undefined' ||
+							typeof pnlShares === 'undefined' ||
+							typeof closePrice === 'undefined' ||
+							typeof closeDate === 'undefined'
+						) {
+							return;
+						}
 						const newClosedPosition = {
 							id: positionId,
 							openTransactionHash: transactionHash || '',

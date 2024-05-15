@@ -25,19 +25,18 @@ export const currentPriceUpdate = derived(
 			set(data[1]);
 		});
 
-		const unwatch = watchContractEvent(
-			config,
-			{
-				address: $addresses.addresses.priceFeedAggregator,
-				abi: parseAbi([
-					'event AnswerUpdated(int256 indexed current, uint256 indexed roundId, uint256 timestamp)'
-				]),
-				eventName: 'AnswerUpdated'
-			},
-			(log) => {
+		const unwatch = watchContractEvent(config, {
+			address: $addresses.addresses.priceFeedAggregator,
+			abi: parseAbi([
+				'event AnswerUpdated(int256 indexed current, uint256 indexed roundId, uint256 timestamp)'
+			]),
+			eventName: 'AnswerUpdated',
+			onLogs: (log) => {
+				// return if undefined (just required for type safety)
+				if (typeof log[0].args.current === 'undefined') return;
 				set(log[0].args.current);
 			}
-		);
+		});
 
 		return unwatch;
 	},
@@ -84,7 +83,7 @@ export const toggleDevPrice = async () => {
 
 	const newPrice = get(currentPriceUpdate) == price1 ? price2 : price1;
 
-	const tx = await writeContract(config, {
+	const hash = await writeContract(config, {
 		address: get(addresses).addresses.priceFeedAggregator,
 		abi: parseAbi(['function setNewPrice(int256 newPrice) public']),
 		functionName: 'setNewPrice',
@@ -96,7 +95,7 @@ export const toggleDevPrice = async () => {
 		classes: ['info']
 	});
 
-	await waitForTransaction(config, tx);
+	await waitForTransaction(config, { hash });
 
 	toast.pop(txToast);
 
